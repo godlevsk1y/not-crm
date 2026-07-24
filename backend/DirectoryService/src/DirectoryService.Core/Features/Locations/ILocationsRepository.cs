@@ -1,6 +1,6 @@
 using DirectoryService.Domain.Models;
 
-namespace DirectoryService.Core.Locations;
+namespace DirectoryService.Core.Features.Locations;
 
 public interface ILocationsRepository
 {

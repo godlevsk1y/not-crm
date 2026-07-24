@@ -1,5 +1,5 @@
-using DirectoryService.Core.Departments;
-using DirectoryService.Core.Locations;
+using DirectoryService.Core.Features.Departments;
+using DirectoryService.Core.Features.Locations;
 using DirectoryService.Infrastructure.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

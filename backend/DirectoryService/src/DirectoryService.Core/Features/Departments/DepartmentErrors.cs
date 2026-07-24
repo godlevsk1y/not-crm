@@ -1,6 +1,6 @@
 using DirectoryService.Shared.Errors;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Features.Departments;
 
 public static class DepartmentErrors
 {

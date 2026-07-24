@@ -1,7 +1,7 @@
 using DirectoryService.Contracts.WebApi.Departments;
 using FluentValidation;
 
-namespace DirectoryService.Core.Departments.Validators;
+namespace DirectoryService.Core.Features.Departments.Validators;
 
 public class UpdateDepartmentValidator : AbstractValidator<UpdateDepartmentRequest>
 {

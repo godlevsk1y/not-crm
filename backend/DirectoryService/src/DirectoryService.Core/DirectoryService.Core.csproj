@@ -10,5 +10,10 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Features\" />
+    <Folder Include="Validation\" />
+  </ItemGroup>
 
 </Project>

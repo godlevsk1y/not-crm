@@ -7,7 +7,7 @@ using DirectoryService.Shared.Errors;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace DirectoryService.Core.Locations;
+namespace DirectoryService.Core.Features.Locations;
 
 public partial class LocationsService : ILocationsService
 {

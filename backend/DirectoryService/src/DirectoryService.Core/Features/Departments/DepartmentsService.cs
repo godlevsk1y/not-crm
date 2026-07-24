@@ -1,14 +1,14 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Extensions;
-using DirectoryService.Core.Locations;
+using DirectoryService.Core.Features.Locations;
 using DirectoryService.Domain.Models;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Shared.Errors;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Features.Departments;
 
 public partial class DepartmentsService : IDepartmentsService
 {

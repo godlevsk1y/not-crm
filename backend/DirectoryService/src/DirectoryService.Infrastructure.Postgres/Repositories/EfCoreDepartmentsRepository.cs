@@ -1,4 +1,4 @@
-using DirectoryService.Core.Departments;
+using DirectoryService.Core.Features.Departments;
 using DirectoryService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 

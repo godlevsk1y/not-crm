@@ -1,6 +1,6 @@
 using DirectoryService.Domain.Models;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Features.Departments;
 
 public interface IDepartmentsRepository
 {

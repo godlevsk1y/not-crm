@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Locations;
 using DirectoryService.Shared.Errors;
 
-namespace DirectoryService.Core.Locations;
+namespace DirectoryService.Core.Features.Locations;
 
 public interface ILocationsService
 {
