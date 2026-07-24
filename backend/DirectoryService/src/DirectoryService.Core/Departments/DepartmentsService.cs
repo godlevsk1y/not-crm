@@ -66,22 +66,24 @@ public partial class DepartmentsService : IDepartmentsService
             }
         }
 
+        var nameResult = DepartmentName.Create(dto.Name);
+        if (nameResult.IsFailure)
+        {
+            return nameResult.Error;
+        }
+        
         var slugResult = Slug.Create(dto.Slug);
         if (slugResult.IsFailure)
         {
             return slugResult.Error;
         }
         
-        var departmentResult = Department.Create(dto.Name, slugResult.Value, parentDepartment);
-        if (departmentResult.IsFailure)
-        {
-            return departmentResult.Error;
-        }
+        var department = Department.Create(nameResult.Value, slugResult.Value, parentDepartment);
 
-        var departmentLocations = locations.Select(l => new DepartmentLocation(departmentResult.Value.Id, l.Id));
+        var departmentLocations = locations.Select(l => new DepartmentLocation(department.Id, l.Id));
         
         var createdDepartmentId = await _departmentsRepository.AddAsync(
-            departmentResult.Value, 
+            department, 
             departmentLocations, 
             cancellationToken
         );
@@ -90,10 +92,10 @@ public partial class DepartmentsService : IDepartmentsService
 
         return new DepartmentDto(
             createdDepartmentId,
-            departmentResult.Value.Name,
-            departmentResult.Value.Slug,
-            departmentResult.Value.Path.Value,
-            departmentResult.Value.ParentId?.Value
+            department.Name.Value,
+            department.Slug,
+            department.Path.Value,
+            department.ParentId?.Value
         );
     }
 
@@ -113,11 +115,13 @@ public partial class DepartmentsService : IDepartmentsService
 
         if (dto.Name is not null)
         {
-            var renameResult = department.Rename(dto.Name);
-            if (renameResult.IsFailure)
+            var newNameResult = DepartmentName.Create(dto.Name);
+            if (newNameResult.IsFailure)
             {
-                return renameResult.Error;
+                return newNameResult.Error;
             }
+            
+            department.Rename(newNameResult.Value);
         }
 
         if (dto.Slug is not null)

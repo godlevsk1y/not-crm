@@ -27,4 +27,31 @@ public static class ValueObjectErrors
         public static Error HouseNumberEmpty() =>
             Error.Domain(new ErrorMessage("address.housenumber.empty", "House number cannot be empty"));
     }
+
+    public static class LocationName
+    {
+        public static Error Empty() => 
+            Error.Domain(new ErrorMessage("location.name.empty", "Location name cannot be empty"));
+        
+        public static Error TooLong() =>
+            Error.Domain(new ErrorMessage("location.name.long", "Location name is too long"));
+    }
+    
+    public static class PositionName
+    {
+        public static Error Empty() => 
+            Error.Domain(new ErrorMessage("position.name.empty", "Position name cannot be empty"));
+        
+        public static Error TooLong() =>
+            Error.Domain(new ErrorMessage("position.name.long", "Position name is too long"));
+    }
+    
+    public static class DepartmentName
+    {
+        public static Error Empty() => 
+            Error.Domain(new ErrorMessage("department.name.empty", "Department name cannot be empty"));
+        
+        public static Error TooLong() =>
+            Error.Domain(new ErrorMessage("department.name.long", "Department name is too long"));
+    }
 }

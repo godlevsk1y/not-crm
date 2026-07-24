@@ -10,7 +10,7 @@ public class Location
 {
     public LocationId Id { get; private set; } = null!;
     
-    public string Name { get; private set; } = null!;
+    public LocationName Name { get; private set; } = null!;
     
     public Address Address { get; private set; } = null!;
 
@@ -21,7 +21,7 @@ public class Location
     
     private Location() { } // EF Core
     
-    private Location(LocationId id, string name, Address address)
+    private Location(LocationId id, LocationName name, Address address)
     {
         Id = id;
         
@@ -32,26 +32,16 @@ public class Location
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public static Result<Location, Error> Create(string name, Address address)
+    public static Location Create(LocationName name, Address address)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return ModelErrors.Location.NameEmpty();
-        
         return new Location(new LocationId(Guid.NewGuid()), name, address);
     }
     
-    public UnitResult<Error> Update(string name, Address address)
+    public void Update(LocationName name, Address address)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            return ModelErrors.Location.NameEmpty();
-        }
-        
         Name = name;
         Address = address;
         
         UpdatedAt = DateTime.UtcNow;
-        
-        return UnitResult.Success<Error>();
     }
 }

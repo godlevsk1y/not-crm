@@ -11,7 +11,7 @@ public class Department
 {
     public DepartmentId Id { get; private set; } = null!;
     
-    public string Name { get; private set; } = null!;
+    public DepartmentName Name { get; private set; } = null!;
     
     public Slug Slug { get; private set; } = null!;
     
@@ -28,10 +28,10 @@ public class Department
     
     private Department() { } // EF Core
     
-    private Department(string name, Slug slug, Department? parent = null)
+    private Department(DepartmentName name, Slug slug, Department? parent = null)
     {
         Id = new DepartmentId(Guid.NewGuid());
-        Name = name.Trim();
+        Name = name;
         Slug = slug;
         Parent = parent;
         ParentId = parent?.Id;
@@ -42,24 +42,16 @@ public class Department
         Path = CalculatePath();
     }
 
-    public static Result<Department, Error> Create(string name, Slug slug, Department? parent = null)
+    public static Department Create(DepartmentName name, Slug slug, Department? parent = null)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return ModelErrors.Department.NameEmpty();
-        
         return new Department(name, slug, parent);
     }
     
-    public UnitResult<Error> Rename(string name)
+    public void Rename(DepartmentName name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return ModelErrors.Department.NameEmpty();
-        
-        Name = name.Trim();
+        Name = name;
         
         UpdatedAt = DateTime.UtcNow;
-        
-        return UnitResult.Success<Error>();
     }
     
     public void ChangeSlug(Slug slug)
