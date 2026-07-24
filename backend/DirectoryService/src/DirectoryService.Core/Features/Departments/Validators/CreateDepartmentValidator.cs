@@ -1,4 +1,7 @@
 using DirectoryService.Contracts.WebApi.Departments;
+using DirectoryService.Core.Validation;
+using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Shared.Errors;
 using FluentValidation;
 
 namespace DirectoryService.Core.Features.Departments.Validators;
@@ -7,25 +10,20 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentReque
 {
     public CreateDepartmentValidator()
     {
-        RuleFor(d => d.Name)
-            .NotEmpty()
-                .WithErrorCode("department.name.empty")
-                .WithMessage("Name is required")
-            .MaximumLength(100)
-                .WithErrorCode("department.name.too.long")
-                .WithMessage("Name must not exceed 100 characters");
+        RuleFor(request => request.Name)
+            .MustBeValueObject(DepartmentName.Create);
         
-        RuleFor(d => d.Slug)
-            .NotEmpty()
-                .WithErrorCode("department.slug.empty")
-                .WithMessage("Slug is required")
-            .MaximumLength(100)
-                .WithErrorCode("department.slug.too.long")
-                .WithMessage("Slug must not exceed 100 characters");
+        RuleFor(request => request.Slug)
+            .MustBeValueObject(Slug.Create);
 
-        RuleFor(d => d.LocationIds)
+        RuleFor(request => request.LocationIds)
             .NotNull()
-            .WithErrorCode("department.locations.null")
-            .WithMessage("Location IDs cannot be null");
+            .WithError(Error.Validation(
+                new ErrorMessage(
+                    "department.locations.null", 
+                    "Location IDs cannot be null", 
+                    nameof(CreateDepartmentRequest.LocationIds)
+                )
+            ));
     }
 }
