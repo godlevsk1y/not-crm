@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.Infrastructure.Postgres;
 
-public static class PostgresServiceCollectionExtensions
+public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddPostgresInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {

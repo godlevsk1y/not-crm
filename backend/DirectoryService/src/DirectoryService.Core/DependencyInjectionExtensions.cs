@@ -5,11 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.Core;
 
-public static class CoreServiceCollectionExtensions
+public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddCore(this IServiceCollection services)
     {
-        services.AddValidatorsFromAssembly(typeof(CoreServiceCollectionExtensions).Assembly);
+        services.AddValidatorsFromAssembly(typeof(DependencyInjectionExtensions).Assembly);
         
         services.AddScoped<ILocationsService, LocationsService>();
         services.AddScoped<IDepartmentsService, DepartmentsService>();

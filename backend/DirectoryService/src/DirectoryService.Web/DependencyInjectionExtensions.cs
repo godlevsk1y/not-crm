@@ -3,7 +3,7 @@ using DirectoryService.Infrastructure.Postgres;
 
 namespace DirectoryService.Web;
 
-public static class ProgramServiceCollectionExtensions
+public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services
