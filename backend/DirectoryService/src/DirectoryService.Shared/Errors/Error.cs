@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace DirectoryService.Shared.Errors;
 
 public record Error
@@ -6,6 +8,13 @@ public record Error
     
     public ErrorType Type { get; }
 
+    [JsonConstructor]
+    private Error(IReadOnlyList<ErrorMessage> messages, ErrorType type)
+    {
+        Messages = messages;
+        Type = type;
+    }
+    
     private Error(IEnumerable<ErrorMessage> messages, ErrorType errorType)
     {
         Messages = messages.ToArray();
