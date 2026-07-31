@@ -24,8 +24,20 @@ public static class DependencyInjectionExtensions
             options.LowercaseUrls = true
         );
 
-        services.Configure<ApiBehaviorOptions>(options => 
-            options.SuppressModelStateInvalidFilter = true);
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = 
+                context => new BadRequestObjectResult(
+                    Envelope.Failure(
+                        Error.BadRequest(
+                            new ErrorMessage(
+                                "invalid.model.state",
+                                "The request is provided in the incorrect format."
+                            )
+                        )
+                    )
+                );
+        });
 
         return services;
     }
