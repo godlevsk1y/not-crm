@@ -1,5 +1,6 @@
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
+using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,12 +17,15 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(d => d.Id)
             .HasConversion(d => d.Value, id => new DepartmentId(id))
             .HasColumnName("id");
-        
-        builder.Property(d => d.Name)
-            .IsRequired()
-            .HasMaxLength(100)
-            .HasColumnName("name");
 
+        builder.ComplexProperty(d => d.Name, nb =>
+        {
+            nb.Property(n => n.Value)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasColumnName("name");
+        });
+        
         builder.ComplexProperty(d => d.Slug, sb =>
         {
             sb.Property(s => s.Value)
