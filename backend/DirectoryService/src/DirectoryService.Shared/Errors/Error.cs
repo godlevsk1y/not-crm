@@ -38,4 +38,7 @@ public record Error
     
     public static Error Domain(params IEnumerable<ErrorMessage> messages) =>
         new(messages, ErrorType.Domain);
+    
+    public static Error BadRequest(params IEnumerable<ErrorMessage> messages) =>
+        new(messages, ErrorType.BadRequest);
 }

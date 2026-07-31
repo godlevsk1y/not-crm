@@ -32,4 +32,8 @@ public enum ErrorType
     /// Indicates a domain error.
     /// </summary>
     Domain,
+    /// <summary>
+    /// Indicates a bad request error.
+    /// </summary>
+    BadRequest,
 }
