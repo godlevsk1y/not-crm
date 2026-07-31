@@ -17,9 +17,7 @@ public partial class DepartmentsService : IDepartmentsService
     
     private readonly IValidator<CreateDepartmentRequest> _createDepartmentRequestValidator;
     private readonly IValidator<UpdateDepartmentRequest> _updateDepartmentRequestValidator;
-
-    private readonly ILogger<DepartmentsService> _logger;
-
+    
     public DepartmentsService(
         IDepartmentsRepository departmentsRepository,
         ILocationsRepository locationsRepository,
@@ -30,7 +28,6 @@ public partial class DepartmentsService : IDepartmentsService
     {
         _createDepartmentRequestValidator = createDepartmentRequestValidator;
         _updateDepartmentRequestValidator = updateDepartmentRequestValidator;
-        _logger = logger;
         _departmentsRepository = departmentsRepository;
         _locationsRepository = locationsRepository;
     }
@@ -87,8 +84,6 @@ public partial class DepartmentsService : IDepartmentsService
             departmentLocations, 
             cancellationToken
         );
-        
-        LogDepartmentCreated(createdDepartmentId);
 
         return new DepartmentDto(
             createdDepartmentId,
@@ -204,9 +199,4 @@ public partial class DepartmentsService : IDepartmentsService
         
         return UnitResult.Success<Error>();
     }
-
-    [LoggerMessage(
-        Level = LogLevel.Information, 
-        Message = "Department created with id {departmentId}")]
-    private partial void LogDepartmentCreated(Guid departmentId);
 }
