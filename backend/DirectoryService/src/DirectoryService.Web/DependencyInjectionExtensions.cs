@@ -1,5 +1,8 @@
 using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
+using DirectoryService.Shared.Errors;
+using DirectoryService.Web.Results;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.Web;
 
@@ -20,6 +23,9 @@ public static class DependencyInjectionExtensions
         services.Configure<RouteOptions>(options => 
             options.LowercaseUrls = true
         );
+
+        services.Configure<ApiBehaviorOptions>(options => 
+            options.SuppressModelStateInvalidFilter = true);
 
         return services;
     }
