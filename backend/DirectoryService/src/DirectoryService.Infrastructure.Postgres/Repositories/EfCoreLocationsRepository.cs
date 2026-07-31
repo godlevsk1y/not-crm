@@ -1,4 +1,4 @@
-using DirectoryService.Core.Locations;
+using DirectoryService.Core.Features.Locations;
 using DirectoryService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +34,6 @@ public class EfCoreLocationsRepository : ILocationsRepository
 
     public async Task<Location?> GetByNameAsync(string name, CancellationToken cancellationToken)
     {
-        return await _context.Locations.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
+        return await _context.Locations.FirstOrDefaultAsync(l => l.Name.Value == name, cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models.Errors;
+using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Domain.Models;
@@ -9,7 +10,7 @@ public class Position
 {
     public PositionId Id { get; private set; } = null!;
     
-    public string Name { get; private set; } = null!;
+    public PositionName Name { get; private set; } = null!;
     
     public DateTime CreatedAt { get; private set; }
     
@@ -18,7 +19,7 @@ public class Position
     
     private Position() { } // EF core
     
-    private Position(string name)
+    private Position(PositionName name)
     {
         Id = new PositionId(Guid.NewGuid());
         Name = name;
@@ -27,11 +28,8 @@ public class Position
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public static Result<Position, Error> Create(string name)
+    public static Position Create(PositionName name)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return ModelErrors.Position.NameEmpty();
-
         return new Position(name);
     }
 }

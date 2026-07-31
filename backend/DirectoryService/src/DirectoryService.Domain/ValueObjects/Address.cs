@@ -87,7 +87,7 @@ public record Address
     /// <value>A string representing the postal or ZIP code.</value>
     /// <remarks>This field is required and cannot be null or whitespace.</remarks>
     public string? PostalCode { get; }
-
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="Address"/> value object.
     /// </summary>
@@ -123,17 +123,24 @@ public record Address
         string country, string? region, string city, string? district,
         string street, string houseNumber, string? postalCode)
     {
+        var errors = new List<ErrorMessage>();
+        
         if (string.IsNullOrWhiteSpace(country))
-            return ValueObjectErrors.Address.CountryEmpty();
+            errors.Add(ValueObjectErrors.Address.CountryEmptyMessage);
         
         if (string.IsNullOrWhiteSpace(city))
-            return ValueObjectErrors.Address.CityEmpty();
+            errors.Add(ValueObjectErrors.Address.CityEmptyMessage);
         
         if (string.IsNullOrWhiteSpace(street))
-            return ValueObjectErrors.Address.StreetEmpty();
+            errors.Add(ValueObjectErrors.Address.StreetEmptyMessage);
         
         if (string.IsNullOrWhiteSpace(houseNumber))
-            return ValueObjectErrors.Address.HouseNumberEmpty();
+            errors.Add(ValueObjectErrors.Address.HouseNumberEmptyMessage);
+
+        if (errors.Count > 0)
+        {
+            return ValueObjectErrors.Address.Invalid(errors);
+        }
         
         return new Address(country, region, city, district, street, houseNumber, postalCode);
     }

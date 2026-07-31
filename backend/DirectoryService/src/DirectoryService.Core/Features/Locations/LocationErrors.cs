@@ -1,6 +1,6 @@
 using DirectoryService.Shared.Errors;
 
-namespace DirectoryService.Core.Locations;
+namespace DirectoryService.Core.Features.Locations;
 
 public static class LocationErrors
 {

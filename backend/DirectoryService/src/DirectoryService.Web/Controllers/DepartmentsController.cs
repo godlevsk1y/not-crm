@@ -1,5 +1,5 @@
 using DirectoryService.Contracts.WebApi.Departments;
-using DirectoryService.Core.Departments;
+using DirectoryService.Core.Features.Departments;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace DirectoryService.Shared.Errors;
 
 /// <summary>
 /// Represents the type of error.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ErrorType
 {
     /// <summary>

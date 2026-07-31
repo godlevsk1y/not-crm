@@ -15,16 +15,64 @@ public static class ValueObjectErrors
 
     public static class Address
     {
-        public static Error CountryEmpty() =>
-            Error.Domain(new ErrorMessage("address.country.empty", "Country cannot be empty"));
+        public static ErrorMessage CountryEmptyMessage =>
+            new("address.country.empty", "Country cannot be empty", nameof(ValueObjects.Address.Country));
         
-        public static Error CityEmpty() =>
-            Error.Domain(new ErrorMessage("address.city.empty", "City cannot be empty"));
+        public static ErrorMessage CityEmptyMessage =>
+            new("address.city.empty", "City cannot be empty", nameof(ValueObjects.Address.City));
         
-        public static Error StreetEmpty() =>
-            Error.Domain(new ErrorMessage("address.street.empty", "Street cannot be empty"));
+        public static ErrorMessage StreetEmptyMessage =>
+            new("address.street.empty", "Street cannot be empty", nameof(ValueObjects.Address.Street));
         
-        public static Error HouseNumberEmpty() =>
-            Error.Domain(new ErrorMessage("address.housenumber.empty", "House number cannot be empty"));
+        public static ErrorMessage HouseNumberEmptyMessage =>
+            new("address.housenumber.empty", "House number cannot be empty", nameof(ValueObjects.Address.HouseNumber));
+        
+        public static Error Invalid(params IEnumerable<ErrorMessage> errors)
+            => Error.Domain(errors);
+    }
+
+    public static class LocationName
+    {
+        public static Error Empty() => 
+            Error.Domain(new ErrorMessage(
+                "location.name.empty", 
+                "Location name cannot be empty", 
+                nameof(ValueObjects.LocationName)));
+        
+        public static Error TooLong() =>
+            Error.Domain(new ErrorMessage(
+                "location.name.long", 
+                "Location name is too long", 
+                nameof(ValueObjects.LocationName)));
+    }
+    
+    public static class PositionName
+    {
+        public static Error Empty() => 
+            Error.Domain(new ErrorMessage(
+                "position.name.empty",
+                "Position name cannot be empty",
+                nameof(ValueObjects.PositionName)));
+        
+        public static Error TooLong() =>
+            Error.Domain(new ErrorMessage(
+                "position.name.long", 
+                "Position name is too long",
+                nameof(ValueObjects.PositionName)));
+    }
+    
+    public static class DepartmentName
+    {
+        public static Error Empty() => 
+            Error.Domain(new ErrorMessage(
+                "department.name.empty", 
+                "Department name cannot be empty",
+                nameof(ValueObjects.DepartmentName)));
+        
+        public static Error TooLong() =>
+            Error.Domain(new ErrorMessage(
+                "department.name.long", 
+                "Department name is too long",
+                nameof(ValueObjects.DepartmentName)));
     }
 }

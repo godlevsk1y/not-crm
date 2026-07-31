@@ -58,7 +58,6 @@ public record Path
     /// <exception cref="ArgumentException">Thrown when <paramref name="value"/> is null or whitespace.</exception>
     private Path(string value)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value);
         Value = value;
     }
 

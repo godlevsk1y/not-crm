@@ -17,11 +17,14 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
         builder.Property(p => p.Id)
             .HasConversion(p => p.Value, id => new PositionId(id))
             .HasColumnName("id");
-        
-        builder.Property(p => p.Name)
-            .HasMaxLength(100)
-            .IsRequired()
-            .HasColumnName("name");
+
+        builder.ComplexProperty(p => p.Name, nb =>
+        {
+            nb.Property(n => n.Value)
+                .HasMaxLength(100)
+                .IsRequired()
+                .HasColumnName("name");
+        });
         
         builder.Property(p => p.CreatedAt)
             .IsRequired()

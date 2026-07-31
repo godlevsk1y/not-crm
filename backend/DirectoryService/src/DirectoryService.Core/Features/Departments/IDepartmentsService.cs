@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Shared.Errors;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Features.Departments;
 
 public interface IDepartmentsService
 {
