@@ -9,8 +9,6 @@
     <!-- HTTP / OpenAPI -->
     <PackageVersion Include="CSharpFunctionalExtensions" Version="3.7.0" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.4" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
     <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
     <!-- This is a transitive Microsoft.AspNetCore.OpenApi's dependency. The latest 10.0.9 references Microsoft.OpenApi/2.0.0 which has a known high severity vulnerability -->
     <PackageVersion Include="Scalar.AspNetCore" Version="2.16.4" />
@@ -23,6 +21,13 @@
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
     <PackageVersion Include="Meziantou.Analyzer" Version="3.0.44" />
     <PackageVersion Include="AsyncFixer" Version="2.1.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+    <PackageVersion Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.24.0.138807" />
+    <!--  Logging  -->
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.4" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
   </ItemGroup>
 </Project>

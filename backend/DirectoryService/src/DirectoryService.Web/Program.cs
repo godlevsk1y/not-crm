@@ -1,22 +1,31 @@
-using DirectoryService.Web;
+using System.Globalization;
+using DirectoryService.Web.Configuration;
 using DirectoryService.Web.Middlewares;
 using Scalar.AspNetCore;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateBootstrapLogger();
 
-builder.Services.AddProgramDependencies(builder.Configuration);
-
-var app = builder.Build();
-
-app.UseExceptionMiddleware();
-
-if (!app.Environment.IsProduction())
+try
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Services.AddProgramDependencies(builder.Configuration);
+
+    var app = builder.Build();
+
+    app.Configure();
+
+    await app.RunAsync();
 }
-
-app.MapControllers();
-app.MapHealthChecks("/api/health");
-
-await app.RunAsync();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application startup failed");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
