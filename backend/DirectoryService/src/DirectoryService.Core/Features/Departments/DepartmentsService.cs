@@ -215,20 +215,20 @@ public partial class DepartmentsService : IDepartmentsService
     [LoggerMessage(
         LogLevel.Information, 
         "Department created with ID {DepartmentId}")]
-    partial void LogDepartmentCreated(Guid departmentId);
+    private partial void LogDepartmentCreated(Guid departmentId);
 
     [LoggerMessage(
         LogLevel.Information, 
         "Department updated with ID {DepartmentId}")]
-    partial void LogDepartmentUpdated(Guid departmentId);
+    private partial void LogDepartmentUpdated(Guid departmentId);
 
     [LoggerMessage(
         LogLevel.Information, 
         "Location {LocationId} added to department {DepartmentId}")]
-    partial void LogLocationAdded(Guid locationId, Guid departmentId);
+    private partial void LogLocationAdded(Guid locationId, Guid departmentId);
     
     [LoggerMessage(
         LogLevel.Information,
         "Location {LocationId} removed from department {DepartmentId}")]
-    partial void LogLocationRemoved(Guid locationId, Guid departmentId);
+    private partial void LogLocationRemoved(Guid locationId, Guid departmentId);
 }

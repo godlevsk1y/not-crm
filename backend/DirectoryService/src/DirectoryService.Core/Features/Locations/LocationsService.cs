@@ -145,10 +145,10 @@ public partial class LocationsService : ILocationsService
     [LoggerMessage(
         LogLevel.Information,
         "Location created with id {LocationId}")]
-    partial void LogLocationCreated(Guid locationId);
+    private partial void LogLocationCreated(Guid locationId);
 
     [LoggerMessage(
         LogLevel.Information, 
         "Location updated with id {LocationId}")]
-    partial void LogLocationUpdated(Guid locationId);
+    private partial void LogLocationUpdated(Guid locationId);
 }
