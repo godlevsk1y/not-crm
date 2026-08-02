@@ -18,6 +18,7 @@
     <PackageReference Include="Serilog.Enrichers.Environment" />
     <PackageReference Include="Serilog.Enrichers.Thread" />
     <PackageReference Include="Serilog.Exceptions" />
+    <PackageReference Include="Serilog.Sinks.Seq" />
   </ItemGroup>
 
 </Project>
