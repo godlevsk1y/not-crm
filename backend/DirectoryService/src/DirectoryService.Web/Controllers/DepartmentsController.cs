@@ -59,7 +59,7 @@ public class DepartmentsController : ControllerBase
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken)
     {
-        var command = new AddLocationCommand(locationId, departmentId);
+        var command = new AddLocationCommand(departmentId, locationId);
         
         var addResult = await handler.Handle(command, cancellationToken);
         if (addResult.IsFailure)
@@ -77,7 +77,7 @@ public class DepartmentsController : ControllerBase
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken)
     {
-        var command = new RemoveLocationCommand(locationId, departmentId);
+        var command = new RemoveLocationCommand(departmentId, locationId);
         
         var removeResult = await handler.Handle(command, cancellationToken);
         if (removeResult.IsFailure)
