@@ -2,6 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Locations;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Extensions;
+using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Shared.Errors;
 using FluentValidation;
@@ -34,7 +35,7 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
             return validationResult.ToError();
         }
 
-        var location = await _locationsRepository.GetByIdAsync(command.Id, cancellationToken);
+        var location = await _locationsRepository.GetByIdAsync(new LocationId(command.Id), cancellationToken);
         if (location is null)
         {
             return LocationErrors.NotFound(command.Id);

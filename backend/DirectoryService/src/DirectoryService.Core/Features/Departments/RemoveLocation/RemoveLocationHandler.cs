@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Domain.Ids;
 using DirectoryService.Shared.Errors;
 using Microsoft.Extensions.Logging;
 
@@ -21,8 +22,11 @@ public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationComma
     public async Task<UnitResult<Error>> Handle(RemoveLocationCommand command, 
         CancellationToken cancellationToken)
     {
-        var departmentLocation = await _departmentsRepository
-            .GetDepartmentLocation(command.DepartmentId, command.LocationId, cancellationToken);
+        var departmentLocation = await _departmentsRepository.GetDepartmentLocation(
+            new DepartmentId(command.DepartmentId), 
+            new LocationId(command.LocationId), 
+            cancellationToken
+        );
         
         if (departmentLocation is null)
         {

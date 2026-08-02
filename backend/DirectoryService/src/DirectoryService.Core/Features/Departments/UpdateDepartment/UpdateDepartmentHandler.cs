@@ -2,6 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Extensions;
+using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Shared.Errors;
 using FluentValidation;
@@ -33,7 +34,8 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             return validationResult.ToError();
         }
 
-        var department = await _departmentsRepository.GetByIdWithParentAsync(command.Id, cancellationToken);
+        var department = await _departmentsRepository.GetByIdWithParentAsync(
+            new DepartmentId(command.Id), cancellationToken);
         if (department is null)
         {
             return DepartmentErrors.NotFound(command.Id);
@@ -71,7 +73,9 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
         }
         else if (command.Dto.ParentId is not null)
         {
-            var parentDepartment = await _departmentsRepository.GetByIdAsync(command.Dto.ParentId.Value, cancellationToken);
+            var parentDepartment = await _departmentsRepository.GetByIdAsync(
+                new DepartmentId(command.Dto.ParentId.Value), cancellationToken);
+            
             if (parentDepartment is null)
             {
                 return DepartmentErrors.NotFound(command.Dto.ParentId.Value);

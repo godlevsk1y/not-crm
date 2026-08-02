@@ -3,6 +3,7 @@ using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Features.Locations;
+using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Shared.Errors;
@@ -39,7 +40,10 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
             return validationResult.ToError();
         }
 
-        var locations = await _locationsRepository.GetByIdsAsync(command.Dto.LocationIds, cancellationToken);
+        var locations = await _locationsRepository.GetByIdsAsync(
+            [..command.Dto.LocationIds.Select(id => new LocationId(id))], 
+            cancellationToken
+        );
 
         if (locations.Count != command.Dto.LocationIds.Count)
         {
@@ -56,7 +60,7 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         Department? parentDepartment = null;
         if (command.Dto.ParentId is not null)
         {
-            parentDepartment = await _departmentsRepository.GetByIdAsync(command.Dto.ParentId.Value, cancellationToken);
+            parentDepartment = await _departmentsRepository.GetByIdAsync(new DepartmentId(command.Dto.ParentId.Value), cancellationToken);
             if (parentDepartment is null)
             {
                 return DepartmentErrors.NotFound(command.Dto.ParentId.Value);

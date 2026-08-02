@@ -37,7 +37,8 @@ public partial class CreateLocationHandler : ICommandHandler<CreateLocationComma
             return validationResult.ToError();
         }
 
-        var existingLocation = await _locationsRepository.GetByNameAsync(command.Dto.Name, cancellationToken);
+        var existingLocation = await _locationsRepository.GetByNameAsync(
+            LocationName.Create(command.Dto.Name).Value, cancellationToken);
         if (existingLocation is not null)
         {
             return LocationErrors.AlreadyExists(existingLocation.Name.Value);

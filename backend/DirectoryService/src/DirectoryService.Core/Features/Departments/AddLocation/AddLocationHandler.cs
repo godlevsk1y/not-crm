@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Locations;
+using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
 using DirectoryService.Shared.Errors;
 using Microsoft.Extensions.Logging;
@@ -25,14 +26,14 @@ public partial class AddLocationHandler : ICommandHandler<AddLocationCommand>
     
     public async Task<UnitResult<Error>> Handle(AddLocationCommand command, CancellationToken cancellationToken)
     {
-        var department = await _departmentsRepository.GetByIdAsync(command.DepartmentId, cancellationToken);
+        var department = await _departmentsRepository.GetByIdAsync(new DepartmentId(command.DepartmentId), cancellationToken);
 
         if (department is null)
         {
             return DepartmentErrors.NotFound(command.DepartmentId);
         }
         
-        var location = await _locationsRepository.GetByIdAsync(command.LocationId, cancellationToken);
+        var location = await _locationsRepository.GetByIdAsync(new LocationId(command.LocationId), cancellationToken);
         if (location is null)
         {
             return LocationErrors.NotFound(command.LocationId);
