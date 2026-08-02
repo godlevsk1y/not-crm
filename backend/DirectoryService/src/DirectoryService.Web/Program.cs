@@ -1,7 +1,5 @@
 using System.Globalization;
 using DirectoryService.Web.Configuration;
-using DirectoryService.Web.Middlewares;
-using Scalar.AspNetCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
