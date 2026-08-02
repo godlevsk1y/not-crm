@@ -1,0 +1,6 @@
+using DirectoryService.Contracts.WebApi.Departments;
+using DirectoryService.Core.Abstractions;
+
+namespace DirectoryService.Core.Features.Departments.UpdateDepartment;
+
+public record UpdateDepartmentCommand(Guid Id, UpdateDepartmentRequest Dto) : ICommand;

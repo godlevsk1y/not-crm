@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Scrutor" />
   </ItemGroup>
   
   <ItemGroup>

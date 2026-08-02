@@ -30,5 +30,7 @@
     <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
     <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageVersion Include="Serilog.Exceptions" Version="8.4.0" />
+    <!--  DependencyInjection extensions  -->
+    <PackageVersion Include="Scrutor" Version="7.0.0" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 using DirectoryService.Core.Features.Locations;
+using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
+using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
@@ -27,13 +29,21 @@ public class EfCoreLocationsRepository : ILocationsRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Location?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Location?> GetByIdAsync(LocationId id, CancellationToken cancellationToken)
     {
         return await _context.Locations.FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
     }
 
-    public async Task<Location?> GetByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Location>> GetByIdsAsync(IReadOnlyCollection<LocationId> ids, CancellationToken cancellationToken)
     {
-        return await _context.Locations.FirstOrDefaultAsync(l => l.Name.Value == name, cancellationToken);
+        if (ids.Count == 0)
+            return [];
+        
+        return await _context.Locations.Where(l => ids.Contains(l.Id)).ToListAsync(cancellationToken);
+    }
+
+    public async Task<Location?> GetByNameAsync(LocationName name, CancellationToken cancellationToken)
+    {
+        return await _context.Locations.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
     }
 }

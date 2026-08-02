@@ -1,4 +1,5 @@
 using DirectoryService.Core.Features.Departments;
+using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,12 +30,12 @@ public class EfCoreDepartmentsRepository : IDepartmentsRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Department?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Department?> GetByIdAsync(DepartmentId id, CancellationToken cancellationToken)
     {
         return await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 
-    public async Task<Department?> GetByIdWithParentAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Department?> GetByIdWithParentAsync(DepartmentId id, CancellationToken cancellationToken)
     {
         var department = await _context.Departments
             .Include(d => d.Parent)
@@ -69,7 +70,7 @@ public class EfCoreDepartmentsRepository : IDepartmentsRepository
             .ExecuteDeleteAsync(cancellationToken);
     }
 
-    public async Task<DepartmentLocation?> GetDepartmentLocation(Guid departmentId, Guid locationId, CancellationToken cancellationToken)
+    public async Task<DepartmentLocation?> GetDepartmentLocation(DepartmentId departmentId, LocationId locationId, CancellationToken cancellationToken)
     {
         return await _context.DepartmentLocations.FirstOrDefaultAsync(
             dl => dl.DepartmentId == departmentId 
