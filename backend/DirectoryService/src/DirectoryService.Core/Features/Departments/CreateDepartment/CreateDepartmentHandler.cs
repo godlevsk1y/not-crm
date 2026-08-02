@@ -39,16 +39,18 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
             return validationResult.ToError();
         }
 
-        List<Location> locations = [];
-        foreach (var locationId in command.Dto.LocationIds)
+        var locations = await _locationsRepository.GetByIdsAsync(command.Dto.LocationIds, cancellationToken);
+
+        if (locations.Count != command.Dto.LocationIds.Count)
         {
-            var location = await _locationsRepository.GetByIdAsync(locationId, cancellationToken);
-            if (location is null)
-            {
-                return LocationErrors.NotFound(locationId);
-            }
+            var foundIds = locations
+                .Select(l => l.Id.Value)
+                .ToHashSet();
+
+            var missingId = command.Dto.LocationIds
+                .First(id => !foundIds.Contains(id));
             
-            locations.Add(location);
+            return LocationErrors.NotFound(missingId);
         }
         
         Department? parentDepartment = null;

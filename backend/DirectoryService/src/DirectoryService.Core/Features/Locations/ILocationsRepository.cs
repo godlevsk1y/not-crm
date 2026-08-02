@@ -10,5 +10,7 @@ public interface ILocationsRepository
     
     Task<Location?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     
+    Task<IReadOnlyList<Location>> GetByIdsAsync(IReadOnlyCollection<Guid> ids, CancellationToken cancellationToken);
+    
     Task<Location?> GetByNameAsync(string name, CancellationToken cancellationToken);
 }
