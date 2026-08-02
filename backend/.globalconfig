@@ -13,6 +13,9 @@ dotnet_diagnostic.CA1000.severity = none
 # MA0018: static members on generic types
 dotnet_diagnostic.MA0018.severity = none
 
+# CA1040: empty interfaces are necessary in Core layer for commands
+dotnet_diagnostic.CA1040.severity = none
+
 # CA1062: null argument validation is handled by nullable reference types
 dotnet_diagnostic.CA1062.severity = none
 
