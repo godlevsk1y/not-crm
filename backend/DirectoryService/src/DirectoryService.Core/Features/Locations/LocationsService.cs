@@ -15,16 +15,19 @@ public partial class LocationsService : ILocationsService
     
     private readonly IValidator<CreateLocationRequest> _createLocationRequestValidator;
     private readonly IValidator<UpdateLocationRequest> _updateLocationRequestValidator;
+    private readonly ILogger<LocationsService> _logger;
 
     public LocationsService(
         ILocationsRepository locationsRepository,
         IValidator<CreateLocationRequest> createLocationRequestValidator,
-        IValidator<UpdateLocationRequest> updateLocationRequestValidator
+        IValidator<UpdateLocationRequest> updateLocationRequestValidator,
+        ILogger<LocationsService> logger
     )
     {
         _locationsRepository = locationsRepository;
         _createLocationRequestValidator = createLocationRequestValidator;
         _updateLocationRequestValidator = updateLocationRequestValidator;
+        _logger = logger;
     }
     
     public async Task<Result<LocationDto, Error>> CreateAsync(CreateLocationRequest dto, CancellationToken cancellationToken)
@@ -69,6 +72,8 @@ public partial class LocationsService : ILocationsService
         );
         
         await _locationsRepository.AddAsync(location, cancellationToken);
+        
+        LogLocationCreated(location.Id.Value);
         
         return new LocationDto(
             Id: location.Id,
@@ -132,6 +137,18 @@ public partial class LocationsService : ILocationsService
         
         await _locationsRepository.SaveAsync(cancellationToken);
         
+        LogLocationUpdated(location.Id.Value);
+        
         return location.Id.Value;
     }
+
+    [LoggerMessage(
+        LogLevel.Information,
+        "Location created with id {LocationId}")]
+    partial void LogLocationCreated(Guid locationId);
+
+    [LoggerMessage(
+        LogLevel.Information, 
+        "Location updated with id {LocationId}")]
+    partial void LogLocationUpdated(Guid locationId);
 }

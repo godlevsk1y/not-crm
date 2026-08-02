@@ -17,7 +17,8 @@ public partial class DepartmentsService : IDepartmentsService
     
     private readonly IValidator<CreateDepartmentRequest> _createDepartmentRequestValidator;
     private readonly IValidator<UpdateDepartmentRequest> _updateDepartmentRequestValidator;
-    
+    private readonly ILogger<DepartmentsService> _logger;
+
     public DepartmentsService(
         IDepartmentsRepository departmentsRepository,
         ILocationsRepository locationsRepository,
@@ -28,6 +29,7 @@ public partial class DepartmentsService : IDepartmentsService
     {
         _createDepartmentRequestValidator = createDepartmentRequestValidator;
         _updateDepartmentRequestValidator = updateDepartmentRequestValidator;
+        _logger = logger;
         _departmentsRepository = departmentsRepository;
         _locationsRepository = locationsRepository;
     }
@@ -79,14 +81,16 @@ public partial class DepartmentsService : IDepartmentsService
 
         var departmentLocations = locations.Select(l => new DepartmentLocation(department.Id, l.Id));
         
-        var createdDepartmentId = await _departmentsRepository.AddAsync(
+        await _departmentsRepository.AddAsync(
             department, 
             departmentLocations, 
             cancellationToken
         );
 
+        LogDepartmentCreated(department.Id.Value);
+        
         return new DepartmentDto(
-            createdDepartmentId,
+            department.Id.Value,
             department.Name.Value,
             department.Slug,
             department.Path.Value,
@@ -155,6 +159,8 @@ public partial class DepartmentsService : IDepartmentsService
         
         await _departmentsRepository.SaveAsync(cancellationToken);
         
+        LogDepartmentUpdated(department.Id.Value);
+        
         return department.Id.Value;
     }
 
@@ -182,6 +188,8 @@ public partial class DepartmentsService : IDepartmentsService
         
         await _departmentsRepository.AddLocationAsync(departmentLocation, cancellationToken);
         
+        LogLocationAdded(location.Id.Value, department.Id.Value);
+        
         return UnitResult.Success<Error>();
     }
 
@@ -197,6 +205,30 @@ public partial class DepartmentsService : IDepartmentsService
         
         await _departmentsRepository.RemoveLocationAsync(departmentLocation, cancellationToken);
         
+        LogLocationRemoved(departmentLocation.LocationId, departmentLocation.DepartmentId);
+        
         return UnitResult.Success<Error>();
     }
+
+    
+    
+    [LoggerMessage(
+        LogLevel.Information, 
+        "Department created with ID {DepartmentId}")]
+    partial void LogDepartmentCreated(Guid departmentId);
+
+    [LoggerMessage(
+        LogLevel.Information, 
+        "Department updated with ID {DepartmentId}")]
+    partial void LogDepartmentUpdated(Guid departmentId);
+
+    [LoggerMessage(
+        LogLevel.Information, 
+        "Location {LocationId} added to department {DepartmentId}")]
+    partial void LogLocationAdded(Guid locationId, Guid departmentId);
+    
+    [LoggerMessage(
+        LogLevel.Information,
+        "Location {LocationId} removed from department {DepartmentId}")]
+    partial void LogLocationRemoved(Guid locationId, Guid departmentId);
 }
