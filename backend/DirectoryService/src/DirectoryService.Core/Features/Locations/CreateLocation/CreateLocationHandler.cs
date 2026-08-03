@@ -86,7 +86,11 @@ public partial class CreateLocationHandler : ICommandHandler<CreateLocationComma
 
         await _transactionManager.SaveChangesAsync(cancellationToken);
 
-        transaction.Commit();
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         LogLocationCreated(location.Id.Value);
         

@@ -65,7 +65,11 @@ public partial class AddLocationHandler : ICommandHandler<AddLocationCommand>
         
         await _transactionManager.SaveChangesAsync(cancellationToken);
         
-        transaction.Commit();
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         LogLocationAdded(location.Id.Value, department.Id.Value);
         

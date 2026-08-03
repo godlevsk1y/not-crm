@@ -105,7 +105,11 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         
         await _transactionManager.SaveChangesAsync(cancellationToken);
         
-        transaction.Commit();
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
 
         LogDepartmentCreated(department.Id.Value);
         

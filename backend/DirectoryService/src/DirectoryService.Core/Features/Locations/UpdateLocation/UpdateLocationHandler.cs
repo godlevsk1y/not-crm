@@ -89,7 +89,11 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
         
         await _transactionManager.SaveChangesAsync(cancellationToken);
         
-        transaction.Commit();
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         LogLocationUpdated(location.Id.Value);
         

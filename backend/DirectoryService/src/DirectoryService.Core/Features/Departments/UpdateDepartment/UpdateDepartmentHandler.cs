@@ -107,7 +107,11 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
         
         await _transactionManager.SaveChangesAsync(cancellationToken);
         
-        transaction.Commit();
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         LogDepartmentUpdated(department.Id.Value);
         

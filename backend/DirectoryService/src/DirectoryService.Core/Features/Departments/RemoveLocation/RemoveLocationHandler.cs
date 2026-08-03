@@ -49,7 +49,11 @@ public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationComma
         
         await _transactionManager.SaveChangesAsync(cancellationToken);
         
-        transaction.Commit();
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         LogLocationRemoved(departmentLocation.LocationId, departmentLocation.DepartmentId);
         
