@@ -27,16 +27,26 @@ public class DepartmentPositionConfiguration : IEntityTypeConfiguration<Departme
             .HasConversion(dp => dp.Value, id => new PositionId(id))
             .HasColumnName("position_id");
 
+        builder.HasIndex(dp => new { dp.DepartmentId, dp.PositionId })
+            .IsUnique()
+            .HasDatabaseName("uq_department_positions_department_id_position_id");
+        
         builder.HasOne<Department>()
             .WithMany()
             .HasForeignKey(dp => dp.DepartmentId)
             .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("fk_department_positions_departments_department_id");
         
+        builder.HasIndex(dp => dp.DepartmentId)
+            .HasDatabaseName("ix_department_positions_department_id");
+        
         builder.HasOne<Position>()
             .WithMany()
             .HasForeignKey(dp => dp.PositionId)
             .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("fk_department_positions_positions_position_id");
+        
+        builder.HasIndex(dp => dp.PositionId)
+            .HasDatabaseName("ix_department_positions_position_id");
     }
 }

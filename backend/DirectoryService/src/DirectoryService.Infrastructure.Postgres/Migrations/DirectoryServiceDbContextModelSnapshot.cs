@@ -79,9 +79,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         });
 
                     b.HasKey("Id")
-                        .HasName("pk_department");
+                        .HasName("pk_departments");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_departments_parent_id");
 
                     b.ToTable("departments", (string)null);
                 });
@@ -108,12 +109,15 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_locations");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("DepartmentId")
+                        .HasDatabaseName("ix_department_locations_department_id");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("LocationId")
+                        .HasDatabaseName("ix_department_locations_location_id");
 
-                    b.HasIndex("Id", "LocationId")
-                        .IsUnique();
+                    b.HasIndex("DepartmentId", "LocationId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_department_locations_department_id_location_id");
 
                     b.ToTable("department_locations", (string)null);
                 });
@@ -136,9 +140,15 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_positions");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("DepartmentId")
+                        .HasDatabaseName("ix_department_positions_department_id");
 
-                    b.HasIndex("PositionId");
+                    b.HasIndex("PositionId")
+                        .HasDatabaseName("ix_department_positions_position_id");
+
+                    b.HasIndex("DepartmentId", "PositionId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_department_positions_department_id_position_id");
 
                     b.ToTable("department_positions", (string)null);
                 });
@@ -263,7 +273,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .WithMany()
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("fk_department_parent");
+                        .HasConstraintName("fk_departments_parent");
 
                     b.Navigation("Parent");
                 });
