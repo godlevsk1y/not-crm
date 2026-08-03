@@ -1,6 +1,7 @@
 using System.Data;
 using CSharpFunctionalExtensions;
 using DirectoryService.Core.Database;
+using DirectoryService.Core.Features.Locations;
 using DirectoryService.Shared.Errors;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +11,7 @@ public partial class Transaction : ITransaction
 {
     private readonly IDbTransaction _transaction;
     private readonly ILogger<Transaction> _logger;
+    private bool _completed;
 
     public Transaction(
         IDbTransaction transaction,
@@ -24,6 +26,7 @@ public partial class Transaction : ITransaction
         try
         {
             _transaction.Commit();
+            _completed = true;
             return UnitResult.Success<Error>();
         }
         catch (Exception ex)
@@ -38,11 +41,12 @@ public partial class Transaction : ITransaction
         try
         {
             _transaction.Rollback();
+            _completed = true;
             return UnitResult.Success<Error>();
         }
         catch (Exception ex)
         {
-            LogCommitFailed(ex);
+            LogRollbackFailed(ex);
             return Error.Internal(new ErrorMessage("transaction.rollback.failed", "Failed to rollback transaction"));
         }
     }
@@ -54,12 +58,27 @@ public partial class Transaction : ITransaction
     }
     protected virtual void Dispose(bool disposing)
     {
-        if (disposing)
+        if (!disposing)
+            return;
+
+        if (!_completed)
         {
-            _transaction.Dispose();
+            try
+            {
+                _transaction.Rollback();
+            }
+            catch (Exception ex)
+            {
+                LogRollbackFailed(ex);
+            }
         }
+
+        _transaction.Dispose();
     }
     
     [LoggerMessage(LogLevel.Error, "Failed to commit transaction")]
     private partial void LogCommitFailed(Exception exception);
+    
+    [LoggerMessage(LogLevel.Error, "Failed to rollback transaction")]
+    private partial void LogRollbackFailed(Exception exception);
 }
