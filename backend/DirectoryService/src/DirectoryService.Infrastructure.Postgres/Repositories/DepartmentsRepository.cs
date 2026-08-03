@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
-public class EfCoreDepartmentsRepository : IDepartmentsRepository
+public class DepartmentsRepository : IDepartmentsRepository
 {
     private readonly DirectoryServiceDbContext _context;
 
-    public EfCoreDepartmentsRepository(DirectoryServiceDbContext context)
+    public DepartmentsRepository(DirectoryServiceDbContext context)
     {
         _context = context;
     }
@@ -20,14 +20,7 @@ public class EfCoreDepartmentsRepository : IDepartmentsRepository
         
         await _context.DepartmentLocations.AddRangeAsync(locations, cancellationToken);
         
-        await _context.SaveChangesAsync(cancellationToken);
-        
         return department.Id;
-    }
-
-    public async Task SaveAsync(CancellationToken cancellationToken)
-    {
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Department?> GetByIdAsync(DepartmentId id, CancellationToken cancellationToken)

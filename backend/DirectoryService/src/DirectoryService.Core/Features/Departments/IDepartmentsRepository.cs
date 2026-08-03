@@ -9,8 +9,6 @@ public interface IDepartmentsRepository
         Department department, 
         IEnumerable<DepartmentLocation> locations, 
         CancellationToken cancellationToken);
-
-    Task SaveAsync(CancellationToken cancellationToken);
     
     Task<Department?> GetByIdAsync(DepartmentId id, CancellationToken cancellationToken);
     

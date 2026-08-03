@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Database;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Domain.Ids;
@@ -16,17 +17,20 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
 {
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ILocationsRepository _locationsRepository;
+    private readonly ITransactionManager _transactionManager;
     private readonly IValidator<CreateDepartmentRequest> _validator;
     private readonly ILogger<CreateDepartmentHandler> _logger;
 
     public CreateDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
         ILocationsRepository locationsRepository,
+        ITransactionManager transactionManager,
         IValidator<CreateDepartmentRequest> validator,
         ILogger<CreateDepartmentHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
         _locationsRepository = locationsRepository;
+        _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
     }
@@ -34,11 +38,17 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
     public async Task<Result<DepartmentDto, Error>> Handle(CreateDepartmentCommand command, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(command.Dto, cancellationToken);
-
         if (!validationResult.IsValid)
         {
             return validationResult.ToError();
         }
+        
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+        if (transactionScopeResult.IsFailure)
+        {
+            return transactionScopeResult.Error;
+        }
+        using var transaction = transactionScopeResult.Value;
 
         var locations = await _locationsRepository.GetByIdsAsync(
             [..command.Dto.LocationIds.Select(id => new LocationId(id))], 
@@ -53,7 +63,8 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
 
             var missingId = command.Dto.LocationIds
                 .First(id => !foundIds.Contains(id));
-            
+
+            transaction.Rollback();
             return LocationErrors.NotFound(missingId);
         }
         
@@ -63,6 +74,7 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
             parentDepartment = await _departmentsRepository.GetByIdAsync(new DepartmentId(command.Dto.ParentId.Value), cancellationToken);
             if (parentDepartment is null)
             {
+                transaction.Rollback();
                 return DepartmentErrors.NotFound(command.Dto.ParentId.Value);
             }
         }
@@ -70,12 +82,14 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         var nameResult = DepartmentName.Create(command.Dto.Name);
         if (nameResult.IsFailure)
         {
+            transaction.Rollback();
             return nameResult.Error;
         }
         
         var slugResult = Slug.Create(command.Dto.Slug);
         if (slugResult.IsFailure)
         {
+            transaction.Rollback();
             return slugResult.Error;
         }
         
@@ -88,6 +102,10 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
             departmentLocations, 
             cancellationToken
         );
+        
+        await _transactionManager.SaveChangesAsync(cancellationToken);
+        
+        transaction.Commit();
 
         LogDepartmentCreated(department.Id.Value);
         

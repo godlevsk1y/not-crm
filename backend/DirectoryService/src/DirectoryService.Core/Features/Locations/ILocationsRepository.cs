@@ -8,8 +8,6 @@ public interface ILocationsRepository
 {
     Task<Guid> AddAsync(Location location, CancellationToken cancellationToken);
     
-    Task SaveAsync(CancellationToken cancellationToken);
-    
     Task<Location?> GetByIdAsync(LocationId id, CancellationToken cancellationToken);
     
     Task<IReadOnlyList<Location>> GetByIdsAsync(IReadOnlyCollection<LocationId> ids, CancellationToken cancellationToken);

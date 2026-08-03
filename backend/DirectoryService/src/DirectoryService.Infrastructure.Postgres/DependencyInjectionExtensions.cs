@@ -1,6 +1,8 @@
+using DirectoryService.Core.Database;
 using DirectoryService.Core.Features.Departments;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Infrastructure.Postgres.Repositories;
+using DirectoryService.Infrastructure.Postgres.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,8 +19,10 @@ public static class DependencyInjectionExtensions
             options.UseNpgsql(connectionString)
         );
 
-        services.AddScoped<ILocationsRepository, EfCoreLocationsRepository>();
-        services.AddScoped<IDepartmentsRepository, EfCoreDepartmentsRepository>();
+        services.AddScoped<ILocationsRepository, LocationsRepository>();
+        services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
+
+        services.AddScoped<ITransactionManager, TransactionManager>();
         
         return services;
     }

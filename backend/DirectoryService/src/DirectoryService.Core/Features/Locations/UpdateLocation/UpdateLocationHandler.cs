@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Locations;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Database;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.ValueObjects;
@@ -13,15 +14,18 @@ namespace DirectoryService.Core.Features.Locations.UpdateLocation;
 public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationCommand, Guid>
 {
     private readonly ILocationsRepository _locationsRepository;
+    private readonly ITransactionManager _transactionManager;
     private readonly IValidator<UpdateLocationRequest> _validator;
     private readonly ILogger<UpdateLocationHandler> _logger;
 
     public UpdateLocationHandler(
         ILocationsRepository locationsRepository,
+        ITransactionManager transactionManager,
         IValidator<UpdateLocationRequest> validator,
         ILogger<UpdateLocationHandler> logger)
     {
         _locationsRepository = locationsRepository;
+        _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
     }
@@ -35,9 +39,17 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
             return validationResult.ToError();
         }
 
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+        if (transactionScopeResult.IsFailure)
+        {
+            return transactionScopeResult.Error;
+        }
+        using var transaction = transactionScopeResult.Value;
+        
         var location = await _locationsRepository.GetByIdAsync(new LocationId(command.Id), cancellationToken);
         if (location is null)
         {
+            transaction.Rollback();
             return LocationErrors.NotFound(command.Id);
         }
 
@@ -56,6 +68,7 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
         );
         if (newAddressResult.IsFailure)
         {
+            transaction.Rollback();
             return newAddressResult.Error;
         }
 
@@ -65,6 +78,7 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
             var newNameResult = LocationName.Create(command.Dto.Name);
             if (newNameResult.IsFailure)
             {
+                transaction.Rollback();
                 return newNameResult.Error;
             }
             
@@ -73,7 +87,9 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
         
         location.Update(newName, newAddressResult.Value);
         
-        await _locationsRepository.SaveAsync(cancellationToken);
+        await _transactionManager.SaveChangesAsync(cancellationToken);
+        
+        transaction.Commit();
         
         LogLocationUpdated(location.Id.Value);
         
