@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
-public class EfCoreLocationsRepository : ILocationsRepository
+public class LocationsRepository : ILocationsRepository
 {
     private readonly DirectoryServiceDbContext _context;
 
-    public EfCoreLocationsRepository(DirectoryServiceDbContext context)
+    public LocationsRepository(DirectoryServiceDbContext context)
     {
         _context = context;
     }
@@ -19,14 +19,7 @@ public class EfCoreLocationsRepository : ILocationsRepository
     {
         await _context.Locations.AddAsync(location, cancellationToken);
         
-        await _context.SaveChangesAsync(cancellationToken);
-        
         return location.Id;
-    }
-
-    public async Task SaveAsync(CancellationToken cancellationToken)
-    {
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Location?> GetByIdAsync(LocationId id, CancellationToken cancellationToken)

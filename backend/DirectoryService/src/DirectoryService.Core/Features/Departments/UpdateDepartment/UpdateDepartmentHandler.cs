@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Database;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.ValueObjects;
@@ -13,15 +14,18 @@ namespace DirectoryService.Core.Features.Departments.UpdateDepartment;
 public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentCommand, Guid>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly ITransactionManager _transactionManager;
     private readonly IValidator<UpdateDepartmentRequest> _validator;
     private readonly ILogger<UpdateDepartmentHandler> _logger;
 
     public UpdateDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
+        ITransactionManager transactionManager,
         IValidator<UpdateDepartmentRequest> validator,
         ILogger<UpdateDepartmentHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
+        _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
     }
@@ -33,11 +37,19 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
         {
             return validationResult.ToError();
         }
+        
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+        if (transactionScopeResult.IsFailure)
+        {
+            return transactionScopeResult.Error;
+        }
+        using var transaction = transactionScopeResult.Value;
 
         var department = await _departmentsRepository.GetByIdWithParentAsync(
             new DepartmentId(command.Id), cancellationToken);
         if (department is null)
         {
+            transaction.Rollback();
             return DepartmentErrors.NotFound(command.Id);
         }
 
@@ -46,6 +58,7 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             var newNameResult = DepartmentName.Create(command.Dto.Name);
             if (newNameResult.IsFailure)
             {
+                transaction.Rollback();
                 return newNameResult.Error;
             }
             
@@ -57,6 +70,7 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             var slugResult = Slug.Create(command.Dto.Slug);
             if (slugResult.IsFailure)
             {
+                transaction.Rollback();
                 return slugResult.Error;
             }
             
@@ -68,6 +82,7 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             var setParentResult = department.SetParent(parent: null);
             if (setParentResult.IsFailure)
             {
+                transaction.Rollback();
                 return setParentResult.Error;
             }
         }
@@ -78,17 +93,25 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             
             if (parentDepartment is null)
             {
+                transaction.Rollback();
                 return DepartmentErrors.NotFound(command.Dto.ParentId.Value);
             }
         
             var setParentResult = department.SetParent(parentDepartment);
             if (setParentResult.IsFailure)
             {
+                transaction.Rollback();
                 return setParentResult.Error;
             }
         }
         
-        await _departmentsRepository.SaveAsync(cancellationToken);
+        await _transactionManager.SaveChangesAsync(cancellationToken);
+        
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         LogDepartmentUpdated(department.Id.Value);
         

@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(DirectoryServiceDbContext))]
-    [Migration("20260701110351_Initial")]
+    [Migration("20260803202839_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -38,12 +38,6 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid")
                         .HasColumnName("parent_id");
@@ -53,6 +47,17 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("now()");
+
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Name", "DirectoryService.Domain.Models.Department.Name#DepartmentName", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("name");
+                        });
 
                     b.ComplexProperty(typeof(Dictionary<string, object>), "Path", "DirectoryService.Domain.Models.Department.Path#Path", b1 =>
                         {
@@ -77,9 +82,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         });
 
                     b.HasKey("Id")
-                        .HasName("pk_department");
+                        .HasName("pk_departments");
 
-                    b.HasIndex("ParentId");
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_departments_parent_id");
 
                     b.ToTable("departments", (string)null);
                 });
@@ -106,9 +112,15 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_locations");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("DepartmentId")
+                        .HasDatabaseName("ix_department_locations_department_id");
 
-                    b.HasIndex("LocationId");
+                    b.HasIndex("LocationId")
+                        .HasDatabaseName("ix_department_locations_location_id");
+
+                    b.HasIndex("DepartmentId", "LocationId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_department_locations_department_id_location_id");
 
                     b.ToTable("department_locations", (string)null);
                 });
@@ -131,9 +143,15 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_positions");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("DepartmentId")
+                        .HasDatabaseName("ix_department_positions_department_id");
 
-                    b.HasIndex("PositionId");
+                    b.HasIndex("PositionId")
+                        .HasDatabaseName("ix_department_positions_position_id");
+
+                    b.HasIndex("DepartmentId", "PositionId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_department_positions_department_id_position_id");
 
                     b.ToTable("department_positions", (string)null);
                 });
@@ -149,12 +167,6 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
 
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -206,6 +218,17 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                                 .HasColumnName("street");
                         });
 
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Name", "DirectoryService.Domain.Models.Location.Name#LocationName", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("name");
+                        });
+
                     b.HasKey("Id")
                         .HasName("pk_locations");
 
@@ -224,17 +247,22 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("now()");
+
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Name", "DirectoryService.Domain.Models.Position.Name#PositionName", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("name");
+                        });
 
                     b.HasKey("Id")
                         .HasName("pk_positions");
@@ -248,7 +276,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .WithMany()
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .HasConstraintName("fk_department_parent");
+                        .HasConstraintName("fk_departments_parent");
 
                     b.Navigation("Parent");
                 });

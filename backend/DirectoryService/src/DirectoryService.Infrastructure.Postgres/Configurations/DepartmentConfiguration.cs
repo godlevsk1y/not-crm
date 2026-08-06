@@ -12,7 +12,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
     {
         builder.ToTable("departments");
         
-        builder.HasKey(d => d.Id).HasName("pk_department");
+        builder.HasKey(d => d.Id).HasName("pk_departments");
         
         builder.Property(d => d.Id)
             .HasConversion(d => d.Value, id => new DepartmentId(id))
@@ -48,10 +48,13 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .IsRequired(false)
             .HasForeignKey(d => d.ParentId)
             .OnDelete(DeleteBehavior.NoAction)
-            .HasConstraintName("fk_department_parent");
+            .HasConstraintName("fk_departments_parent");
 
         builder.Property(d => d.ParentId)
             .HasColumnName("parent_id");
+        
+        builder.HasIndex(d => d.ParentId)
+            .HasDatabaseName("ix_departments_parent_id");
         
         builder.Property(d => d.CreatedAt)
             .IsRequired()

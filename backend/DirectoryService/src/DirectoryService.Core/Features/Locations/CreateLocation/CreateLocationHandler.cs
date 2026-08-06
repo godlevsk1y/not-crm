@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.WebApi.Locations;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Database;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Domain.Models;
 using DirectoryService.Domain.ValueObjects;
@@ -13,15 +14,18 @@ namespace DirectoryService.Core.Features.Locations.CreateLocation;
 public partial class CreateLocationHandler : ICommandHandler<CreateLocationCommand, LocationDto>
 {
     private readonly ILocationsRepository _locationsRepository;
+    private readonly ITransactionManager _transactionManager;
     private readonly IValidator<CreateLocationRequest> _validator;
     private readonly ILogger<CreateLocationHandler> _logger;
 
     public CreateLocationHandler(
         ILocationsRepository locationsRepository,
+        ITransactionManager transactionManager,
         IValidator<CreateLocationRequest> validator,
         ILogger<CreateLocationHandler> logger)
     {
         _locationsRepository = locationsRepository;
+        _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
     }
@@ -31,16 +35,23 @@ public partial class CreateLocationHandler : ICommandHandler<CreateLocationComma
     {
         var validationResult = await _validator
             .ValidateAsync(command.Dto, cancellationToken);
-
         if (!validationResult.IsValid)
         {
             return validationResult.ToError();
         }
+        
+        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+        if (transactionScopeResult.IsFailure)
+        {
+            return transactionScopeResult.Error;
+        }
+        using var transaction = transactionScopeResult.Value;
 
         var existingLocation = await _locationsRepository.GetByNameAsync(
             LocationName.Create(command.Dto.Name).Value, cancellationToken);
         if (existingLocation is not null)
         {
+            transaction.Rollback();
             return LocationErrors.AlreadyExists(existingLocation.Name.Value);
         }
 
@@ -55,12 +66,14 @@ public partial class CreateLocationHandler : ICommandHandler<CreateLocationComma
         );
         if (addressResult.IsFailure)
         {
+            transaction.Rollback();
             return addressResult.Error;
         }
         
         var nameResult = LocationName.Create(command.Dto.Name);
         if (nameResult.IsFailure)
         {
+            transaction.Rollback();
             return nameResult.Error;
         }
         
@@ -70,6 +83,14 @@ public partial class CreateLocationHandler : ICommandHandler<CreateLocationComma
         );
         
         await _locationsRepository.AddAsync(location, cancellationToken);
+
+        await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        var commitResult = transaction.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         LogLocationCreated(location.Id.Value);
         

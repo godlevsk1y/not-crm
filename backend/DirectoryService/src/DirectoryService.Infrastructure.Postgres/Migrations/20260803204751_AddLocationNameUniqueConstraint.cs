@@ -5,24 +5,26 @@
 namespace DirectoryService.Infrastructure.Postgres.Migrations
 {
     /// <inheritdoc />
-    public partial class AddLocationNameUniqueIndex : Migration
+    public partial class AddLocationNameUniqueConstraint : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateIndex(
-                name: "IX_locations_name",
+                name: "uq_locations_name",
                 table: "locations",
                 column: "name",
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropIndex(
-                name: "IX_locations_name",
-                table: "locations");
+                name: "uq_locations_name",
+                table: "locations"
+            );
         }
     }
 }
