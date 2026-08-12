@@ -52,8 +52,6 @@ public class DepartmentsRepository : IDepartmentsRepository
     public async Task AddLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
     {
         await _context.DepartmentLocations.AddAsync(departmentLocation, cancellationToken);
-        
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task RemoveLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)

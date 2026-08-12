@@ -37,19 +37,11 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
         {
             return validationResult.ToError();
         }
-        
-        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-        {
-            return transactionScopeResult.Error;
-        }
-        using var transaction = transactionScopeResult.Value;
 
         var department = await _departmentsRepository.GetByIdWithParentAsync(
             new DepartmentId(command.Id), cancellationToken);
         if (department is null)
         {
-            transaction.Rollback();
             return DepartmentErrors.NotFound(command.Id);
         }
 
@@ -58,7 +50,6 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             var newNameResult = DepartmentName.Create(command.Dto.Name);
             if (newNameResult.IsFailure)
             {
-                transaction.Rollback();
                 return newNameResult.Error;
             }
             
@@ -70,7 +61,6 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             var slugResult = Slug.Create(command.Dto.Slug);
             if (slugResult.IsFailure)
             {
-                transaction.Rollback();
                 return slugResult.Error;
             }
             
@@ -82,7 +72,6 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             var setParentResult = department.SetParent(parent: null);
             if (setParentResult.IsFailure)
             {
-                transaction.Rollback();
                 return setParentResult.Error;
             }
         }
@@ -93,24 +82,20 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
             
             if (parentDepartment is null)
             {
-                transaction.Rollback();
                 return DepartmentErrors.NotFound(command.Dto.ParentId.Value);
             }
         
             var setParentResult = department.SetParent(parentDepartment);
             if (setParentResult.IsFailure)
             {
-                transaction.Rollback();
                 return setParentResult.Error;
             }
         }
         
-        await _transactionManager.SaveChangesAsync(cancellationToken);
-        
-        var commitResult = transaction.Commit();
-        if (commitResult.IsFailure)
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
         {
-            return commitResult.Error;
+            return saveResult.Error;
         }
         
         LogDepartmentUpdated(department.Id.Value);

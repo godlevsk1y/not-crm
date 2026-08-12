@@ -42,13 +42,6 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         {
             return validationResult.ToError();
         }
-        
-        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-        {
-            return transactionScopeResult.Error;
-        }
-        using var transaction = transactionScopeResult.Value;
 
         var locations = await _locationsRepository.GetByIdsAsync(
             [..command.Dto.LocationIds.Select(id => new LocationId(id))], 
@@ -63,8 +56,7 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
 
             var missingId = command.Dto.LocationIds
                 .First(id => !foundIds.Contains(id));
-
-            transaction.Rollback();
+            
             return LocationErrors.NotFound(missingId);
         }
         
@@ -74,7 +66,6 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
             parentDepartment = await _departmentsRepository.GetByIdAsync(new DepartmentId(command.Dto.ParentId.Value), cancellationToken);
             if (parentDepartment is null)
             {
-                transaction.Rollback();
                 return DepartmentErrors.NotFound(command.Dto.ParentId.Value);
             }
         }
@@ -82,14 +73,12 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         var nameResult = DepartmentName.Create(command.Dto.Name);
         if (nameResult.IsFailure)
         {
-            transaction.Rollback();
             return nameResult.Error;
         }
         
         var slugResult = Slug.Create(command.Dto.Slug);
         if (slugResult.IsFailure)
         {
-            transaction.Rollback();
             return slugResult.Error;
         }
         
@@ -103,12 +92,10 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
             cancellationToken
         );
         
-        await _transactionManager.SaveChangesAsync(cancellationToken);
-        
-        var commitResult = transaction.Commit();
-        if (commitResult.IsFailure)
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
         {
-            return commitResult.Error;
+            return saveResult.Error;
         }
 
         LogDepartmentCreated(department.Id.Value);
