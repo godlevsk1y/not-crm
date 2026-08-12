@@ -26,12 +26,6 @@ public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationComma
     public async Task<UnitResult<Error>> Handle(RemoveLocationCommand command, 
         CancellationToken cancellationToken)
     {
-        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-        {
-            return transactionScopeResult.Error;
-        }
-        using var transaction = transactionScopeResult.Value;
         
         var departmentLocation = await _departmentsRepository.GetDepartmentLocation(
             new DepartmentId(command.DepartmentId), 
@@ -41,18 +35,15 @@ public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationComma
         
         if (departmentLocation is null)
         {
-            transaction.Rollback();
             return DepartmentErrors.DepartmentLocationNotFound(command.DepartmentId, command.LocationId);
         }
         
         await _departmentsRepository.RemoveLocationAsync(departmentLocation, cancellationToken);
         
-        await _transactionManager.SaveChangesAsync(cancellationToken);
-        
-        var commitResult = transaction.Commit();
-        if (commitResult.IsFailure)
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
         {
-            return commitResult.Error;
+            return saveResult.Error;
         }
         
         LogLocationRemoved(departmentLocation.LocationId, departmentLocation.DepartmentId);

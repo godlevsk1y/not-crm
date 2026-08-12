@@ -38,18 +38,10 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
         {
             return validationResult.ToError();
         }
-
-        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-        {
-            return transactionScopeResult.Error;
-        }
-        using var transaction = transactionScopeResult.Value;
         
         var location = await _locationsRepository.GetByIdAsync(new LocationId(command.Id), cancellationToken);
         if (location is null)
         {
-            transaction.Rollback();
             return LocationErrors.NotFound(command.Id);
         }
 
@@ -68,7 +60,6 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
         );
         if (newAddressResult.IsFailure)
         {
-            transaction.Rollback();
             return newAddressResult.Error;
         }
 
@@ -78,7 +69,6 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
             var newNameResult = LocationName.Create(command.Dto.Name);
             if (newNameResult.IsFailure)
             {
-                transaction.Rollback();
                 return newNameResult.Error;
             }
             
@@ -87,12 +77,10 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
         
         location.Update(newName, newAddressResult.Value);
         
-        await _transactionManager.SaveChangesAsync(cancellationToken);
-        
-        var commitResult = transaction.Commit();
-        if (commitResult.IsFailure)
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
         {
-            return commitResult.Error;
+            return saveResult.Error;
         }
         
         LogLocationUpdated(location.Id.Value);

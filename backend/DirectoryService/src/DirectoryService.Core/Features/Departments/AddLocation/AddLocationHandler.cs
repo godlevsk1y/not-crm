@@ -30,26 +30,17 @@ public partial class AddLocationHandler : ICommandHandler<AddLocationCommand>
     
     public async Task<UnitResult<Error>> Handle(AddLocationCommand command, CancellationToken cancellationToken)
     {
-        var transactionScopeResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-        {
-            return transactionScopeResult.Error;
-        }
-        using var transaction = transactionScopeResult.Value;
-        
         var department = await _departmentsRepository.GetByIdAsync(
             new DepartmentId(command.DepartmentId), cancellationToken);
 
         if (department is null)
         {
-            transaction.Rollback();
             return DepartmentErrors.NotFound(command.DepartmentId);
         }
         
         var location = await _locationsRepository.GetByIdAsync(new LocationId(command.LocationId), cancellationToken);
         if (location is null)
         {
-            transaction.Rollback();
             return LocationErrors.NotFound(command.LocationId);
         }
 
@@ -57,18 +48,15 @@ public partial class AddLocationHandler : ICommandHandler<AddLocationCommand>
 
         if (await _departmentsRepository.HasDepartmentLocationAsync(departmentLocation, cancellationToken))
         {
-            transaction.Rollback();
             return DepartmentErrors.LocationAlreadyAdded(command.DepartmentId, command.LocationId);
         }
         
         await _departmentsRepository.AddLocationAsync(departmentLocation, cancellationToken);
         
-        await _transactionManager.SaveChangesAsync(cancellationToken);
-        
-        var commitResult = transaction.Commit();
-        if (commitResult.IsFailure)
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
         {
-            return commitResult.Error;
+            return saveResult.Error;
         }
         
         LogLocationAdded(location.Id.Value, department.Id.Value);
