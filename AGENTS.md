@@ -58,6 +58,26 @@ Never:
 - Introduce unnecessary abstractions.
 - Commit secrets or credentials.
 
+# Git Workflow
+
+notCRM follows GitHub Flow. When a new feature or change is needed, create a
+new branch from `main`. Make the changes on that branch, open a pull request
+against `main`, and merge it after review and the required checks pass.
+
+## Commit Naming Conventions
+
+Use Conventional Commits for commit messages:
+
+```text
+<type>(<scope>): <short imperative description>
+```
+
+Use a lowercase type such as `feat`, `fix`, `docs`, `refactor`, `test`, or
+`chore`. The scope is optional and should identify the affected area. Keep the
+description concise, start it with a verb, and do not end it with a period.
+For breaking changes, append `!` after the type or scope and explain the
+breaking change in the commit body or footer.
+
 # Before Making Changes
 
 Inspect:
