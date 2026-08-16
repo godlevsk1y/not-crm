@@ -64,6 +64,8 @@ notCRM follows GitHub Flow. When a new feature or change is needed, create a
 new branch from `main`. Make the changes on that branch, open a pull request
 against `main`, and merge it after review and the required checks pass.
 
+If the current branch is already a feature or task-specific branch, continue working on it instead of creating a new branch.
+
 ## Commit Naming Conventions
 
 Use Conventional Commits for commit messages:
