@@ -1,6 +1,7 @@
 using DirectoryService.Contracts.WebApi.Positions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Positions.CreatePosition;
+using DirectoryService.Core.Features.Positions.UpdatePosition;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,5 +29,23 @@ public class PositionsController : ControllerBase
             $"/positions/{createResult.Value.Id}",
             createResult.Value
         );
+    }
+
+    [HttpPatch("{id:guid}")]
+    public async Task<IResult> Update(
+        [FromServices] ICommandHandler<UpdatePositionCommand, Guid> handler,
+        [FromRoute] Guid id,
+        [FromBody] UpdatePositionRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdatePositionCommand(id, request);
+
+        var updateResult = await handler.Handle(command, cancellationToken);
+        if (updateResult.IsFailure)
+        {
+            return EndpointResults.Error(updateResult.Error);
+        }
+
+        return EndpointResults.Ok(updateResult.Value);
     }
 }
