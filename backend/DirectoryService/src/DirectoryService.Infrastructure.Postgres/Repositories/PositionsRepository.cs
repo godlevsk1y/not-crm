@@ -27,4 +27,11 @@ public class PositionsRepository : IPositionsRepository
             position => position.Id == id,
             cancellationToken);
     }
+
+    public async Task DeleteAsync(Position position, CancellationToken cancellationToken)
+    {
+        await _context.Positions
+            .Where(existingPosition => existingPosition.Id == position.Id)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
 }

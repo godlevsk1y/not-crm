@@ -1,6 +1,7 @@
 using DirectoryService.Contracts.WebApi.Positions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Positions.CreatePosition;
+using DirectoryService.Core.Features.Positions.DeletePosition;
 using DirectoryService.Core.Features.Positions.UpdatePosition;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -47,5 +48,22 @@ public class PositionsController : ControllerBase
         }
 
         return EndpointResults.Ok(updateResult.Value);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IResult> Delete(
+        [FromServices] ICommandHandler<DeletePositionCommand> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeletePositionCommand(id);
+
+        var deleteResult = await handler.Handle(command, cancellationToken);
+        if (deleteResult.IsFailure)
+        {
+            return EndpointResults.Error(deleteResult.Error);
+        }
+
+        return EndpointResults.NoContent();
     }
 }

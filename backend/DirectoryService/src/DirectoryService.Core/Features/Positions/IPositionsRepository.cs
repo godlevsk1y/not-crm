@@ -8,4 +8,6 @@ public interface IPositionsRepository
     Task<Guid> AddAsync(Position position, CancellationToken cancellationToken);
 
     Task<Position?> GetByIdAsync(PositionId id, CancellationToken cancellationToken);
+
+    Task DeleteAsync(Position position, CancellationToken cancellationToken);
 }
