@@ -1,8 +1,8 @@
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Features.Departments;
 using DirectoryService.Core.Features.Departments.AddLocation;
 using DirectoryService.Core.Features.Departments.CreateDepartment;
+using DirectoryService.Core.Features.Departments.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.RemoveLocation;
 using DirectoryService.Core.Features.Departments.UpdateDepartment;
 using DirectoryService.Web.Results;
@@ -50,6 +50,23 @@ public class DepartmentsController : ControllerBase
         }
         
         return EndpointResults.Ok(updateResult.Value);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IResult> Delete(
+        [FromServices] ICommandHandler<DeleteDepartmentCommand> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteDepartmentCommand(id);
+
+        var deleteResult = await handler.Handle(command, cancellationToken);
+        if (deleteResult.IsFailure)
+        {
+            return EndpointResults.Error(deleteResult.Error);
+        }
+
+        return EndpointResults.NoContent();
     }
 
     [HttpPost("{departmentId:guid}/locations/{locationId:guid}")]

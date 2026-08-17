@@ -13,6 +13,8 @@ public interface IDepartmentsRepository
     Task<Department?> GetByIdAsync(DepartmentId id, CancellationToken cancellationToken);
     
     Task<Department?> GetByIdWithParentAsync(DepartmentId id, CancellationToken cancellationToken);
+
+    Task DeleteAsync(Department department, CancellationToken cancellationToken);
     
     Task<bool> HasDepartmentLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken);
     

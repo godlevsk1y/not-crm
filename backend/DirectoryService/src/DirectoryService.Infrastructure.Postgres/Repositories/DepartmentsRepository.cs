@@ -37,6 +37,13 @@ public class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
+    public async Task DeleteAsync(Department department, CancellationToken cancellationToken)
+    {
+        await _context.Departments
+            .Where(existingDepartment => existingDepartment.Id == department.Id)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
+
     public async Task<bool> HasDepartmentLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
     {
         var existing = await _context.DepartmentLocations.FirstOrDefaultAsync(
