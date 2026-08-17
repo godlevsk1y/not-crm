@@ -47,7 +47,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .WithMany()
             .IsRequired(false)
             .HasForeignKey(d => d.ParentId)
-            .OnDelete(DeleteBehavior.NoAction)
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName("fk_departments_parent");
 
         builder.Property(d => d.ParentId)

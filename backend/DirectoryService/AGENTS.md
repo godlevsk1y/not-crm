@@ -97,9 +97,12 @@ Run commands from `backend/DirectoryService` unless noted otherwise:
 
 ```bash
 dotnet restore DirectoryService.slnx
-dotnet build DirectoryService.slnx --configuration Debug
+dotnet build DirectoryService.slnx --configuration Debug --disable-build-servers -m:1
 dotnet run --project src/DirectoryService.Web
 ```
+
+When running under AI agents (such as Codex CLI), always pass `--disable-build-servers` to `dotnet build` because MSBuild/Roslyn build servers may hang in sandboxed environments.
+Codex CLI may hang when MSBuild uses multiple worker nodes.
 
 Before handing off a change:
 

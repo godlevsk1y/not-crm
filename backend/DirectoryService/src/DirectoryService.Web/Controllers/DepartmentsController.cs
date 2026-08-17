@@ -1,9 +1,11 @@
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Features.Departments;
 using DirectoryService.Core.Features.Departments.AddLocation;
+using DirectoryService.Core.Features.Departments.AddPosition;
 using DirectoryService.Core.Features.Departments.CreateDepartment;
+using DirectoryService.Core.Features.Departments.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.RemoveLocation;
+using DirectoryService.Core.Features.Departments.RemovePosition;
 using DirectoryService.Core.Features.Departments.UpdateDepartment;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +54,23 @@ public class DepartmentsController : ControllerBase
         return EndpointResults.Ok(updateResult.Value);
     }
 
+    [HttpDelete("{id:guid}")]
+    public async Task<IResult> Delete(
+        [FromServices] ICommandHandler<DeleteDepartmentCommand> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteDepartmentCommand(id);
+
+        var deleteResult = await handler.Handle(command, cancellationToken);
+        if (deleteResult.IsFailure)
+        {
+            return EndpointResults.Error(deleteResult.Error);
+        }
+
+        return EndpointResults.NoContent();
+    }
+
     [HttpPost("{departmentId:guid}/locations/{locationId:guid}")]
     public async Task<IResult> AddLocationAsync(
         [FromServices] ICommandHandler<AddLocationCommand> handler,
@@ -70,6 +89,24 @@ public class DepartmentsController : ControllerBase
         return EndpointResults.NoContent();
     }
 
+    [HttpPost("{departmentId:guid}/positions/{positionId:guid}")]
+    public async Task<IResult> AddPositionAsync(
+        [FromServices] ICommandHandler<AddPositionCommand> handler,
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid positionId,
+        CancellationToken cancellationToken)
+    {
+        var command = new AddPositionCommand(departmentId, positionId);
+
+        var addResult = await handler.Handle(command, cancellationToken);
+        if (addResult.IsFailure)
+        {
+            return EndpointResults.Error(addResult.Error);
+        }
+
+        return EndpointResults.NoContent();
+    }
+
     [HttpDelete("{departmentId:guid}/locations/{locationId:guid}")]
     public async Task<IResult> RemoveLocationAsync(
         [FromServices] ICommandHandler<RemoveLocationCommand> handler,
@@ -85,6 +122,24 @@ public class DepartmentsController : ControllerBase
             return EndpointResults.Error(removeResult.Error);
         }
         
+        return EndpointResults.NoContent();
+    }
+
+    [HttpDelete("{departmentId:guid}/positions/{positionId:guid}")]
+    public async Task<IResult> RemovePositionAsync(
+        [FromServices] ICommandHandler<RemovePositionCommand> handler,
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid positionId,
+        CancellationToken cancellationToken)
+    {
+        var command = new RemovePositionCommand(departmentId, positionId);
+
+        var removeResult = await handler.Handle(command, cancellationToken);
+        if (removeResult.IsFailure)
+        {
+            return EndpointResults.Error(removeResult.Error);
+        }
+
         return EndpointResults.NoContent();
     }
 }

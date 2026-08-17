@@ -2,6 +2,7 @@ using DirectoryService.Contracts.WebApi.Locations;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Core.Features.Locations.CreateLocation;
+using DirectoryService.Core.Features.Locations.DeleteLocation;
 using DirectoryService.Core.Features.Locations.UpdateLocation;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -49,5 +50,22 @@ public class LocationsController : ControllerBase
         }
         
         return EndpointResults.Ok(updateResult.Value);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IResult> Delete(
+        [FromServices] ICommandHandler<DeleteLocationCommand> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteLocationCommand(id);
+
+        var deleteResult = await handler.Handle(command, cancellationToken);
+        if (deleteResult.IsFailure)
+        {
+            return EndpointResults.Error(deleteResult.Error);
+        }
+
+        return EndpointResults.NoContent();
     }
 }

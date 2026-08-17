@@ -39,4 +39,9 @@ public class LocationsRepository : ILocationsRepository
     {
         return await _context.Locations.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
     }
+
+    public void Delete(Location location)
+    {
+        _context.Locations.Remove(location);
+    }
 }

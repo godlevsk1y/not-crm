@@ -32,4 +32,10 @@ public class Position
     {
         return new Position(name);
     }
+
+    public void Rename(PositionName name)
+    {
+        Name = name;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

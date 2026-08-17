@@ -37,6 +37,11 @@ public class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
+    public void Delete(Department department)
+    {
+        _context.Departments.Remove(department);
+    }
+
     public async Task<bool> HasDepartmentLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
     {
         var existing = await _context.DepartmentLocations.FirstOrDefaultAsync(
@@ -54,11 +59,26 @@ public class DepartmentsRepository : IDepartmentsRepository
         await _context.DepartmentLocations.AddAsync(departmentLocation, cancellationToken);
     }
 
-    public async Task RemoveLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
+    public async Task<bool> HasDepartmentPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
     {
-        await _context.DepartmentLocations
-            .Where(dl => dl.Id == departmentLocation.Id)
-            .ExecuteDeleteAsync(cancellationToken);
+        var existing = await _context.DepartmentPositions.FirstOrDefaultAsync(
+            dp => dp.DepartmentId == departmentPosition.DepartmentId
+                  &&
+                  dp.PositionId == departmentPosition.PositionId,
+            cancellationToken
+        );
+
+        return existing is not null;
+    }
+
+    public async Task AddPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
+    {
+        await _context.DepartmentPositions.AddAsync(departmentPosition, cancellationToken);
+    }
+
+    public void RemoveLocation(DepartmentLocation departmentLocation)
+    {
+        _context.DepartmentLocations.Remove(departmentLocation);
     }
 
     public async Task<DepartmentLocation?> GetDepartmentLocation(DepartmentId departmentId, LocationId locationId, CancellationToken cancellationToken)
@@ -67,6 +87,21 @@ public class DepartmentsRepository : IDepartmentsRepository
             dl => dl.DepartmentId == departmentId 
                   && 
                   dl.LocationId == locationId, 
+            cancellationToken
+        );
+    }
+
+    public void RemovePosition(DepartmentPosition departmentPosition)
+    {
+        _context.DepartmentPositions.Remove(departmentPosition);
+    }
+
+    public async Task<DepartmentPosition?> GetDepartmentPosition(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken)
+    {
+        return await _context.DepartmentPositions.FirstOrDefaultAsync(
+            dp => dp.DepartmentId == departmentId
+                  &&
+                  dp.PositionId == positionId,
             cancellationToken
         );
     }

@@ -13,4 +13,6 @@ public interface ILocationsRepository
     Task<IReadOnlyList<Location>> GetByIdsAsync(IReadOnlyCollection<LocationId> ids, CancellationToken cancellationToken);
     
     Task<Location?> GetByNameAsync(LocationName name, CancellationToken cancellationToken);
+
+    void Delete(Location location);
 }
