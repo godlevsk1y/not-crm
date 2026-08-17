@@ -11,6 +11,11 @@ public static class DepartmentErrors
         Error.Conflict(new ErrorMessage(
             "department.location.already.added", 
             $"Department with id '{departmentId}' already has Location with id '{locationId}' added"));
+
+    public static Error PositionAlreadyAdded(Guid departmentId, Guid positionId) =>
+        Error.Conflict(new ErrorMessage(
+            "department.position.already.added",
+            $"Department with id '{departmentId}' already has Position with id '{positionId}' added"));
     
     public static Error DepartmentLocationNotFound(Guid departmentId, Guid locationId) =>
         Error.NotFound(new ErrorMessage("department.location.not.found",

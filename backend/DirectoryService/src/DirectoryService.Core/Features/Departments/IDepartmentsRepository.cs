@@ -19,6 +19,10 @@ public interface IDepartmentsRepository
     Task<bool> HasDepartmentLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken);
     
     Task AddLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken);
+
+    Task<bool> HasDepartmentPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken);
+
+    Task AddPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken);
     
     Task RemoveLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken);
     

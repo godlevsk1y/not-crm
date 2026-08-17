@@ -61,6 +61,23 @@ public class DepartmentsRepository : IDepartmentsRepository
         await _context.DepartmentLocations.AddAsync(departmentLocation, cancellationToken);
     }
 
+    public async Task<bool> HasDepartmentPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
+    {
+        var existing = await _context.DepartmentPositions.FirstOrDefaultAsync(
+            dp => dp.DepartmentId == departmentPosition.DepartmentId
+                  &&
+                  dp.PositionId == departmentPosition.PositionId,
+            cancellationToken
+        );
+
+        return existing is not null;
+    }
+
+    public async Task AddPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
+    {
+        await _context.DepartmentPositions.AddAsync(departmentPosition, cancellationToken);
+    }
+
     public async Task RemoveLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
     {
         await _context.DepartmentLocations

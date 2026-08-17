@@ -1,6 +1,7 @@
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Departments.AddLocation;
+using DirectoryService.Core.Features.Departments.AddPosition;
 using DirectoryService.Core.Features.Departments.CreateDepartment;
 using DirectoryService.Core.Features.Departments.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.RemoveLocation;
@@ -84,6 +85,24 @@ public class DepartmentsController : ControllerBase
             return EndpointResults.Error(addResult.Error);
         }
         
+        return EndpointResults.NoContent();
+    }
+
+    [HttpPost("{departmentId:guid}/positions/{positionId:guid}")]
+    public async Task<IResult> AddPositionAsync(
+        [FromServices] ICommandHandler<AddPositionCommand> handler,
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid positionId,
+        CancellationToken cancellationToken)
+    {
+        var command = new AddPositionCommand(departmentId, positionId);
+
+        var addResult = await handler.Handle(command, cancellationToken);
+        if (addResult.IsFailure)
+        {
+            return EndpointResults.Error(addResult.Error);
+        }
+
         return EndpointResults.NoContent();
     }
 
