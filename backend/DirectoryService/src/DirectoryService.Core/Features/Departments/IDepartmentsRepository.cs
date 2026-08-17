@@ -27,4 +27,8 @@ public interface IDepartmentsRepository
     Task RemoveLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken);
     
     Task<DepartmentLocation?> GetDepartmentLocation(DepartmentId departmentId, LocationId locationId, CancellationToken cancellationToken);
+
+    Task RemovePositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken);
+
+    Task<DepartmentPosition?> GetDepartmentPosition(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken);
 }

@@ -94,4 +94,21 @@ public class DepartmentsRepository : IDepartmentsRepository
             cancellationToken
         );
     }
+
+    public async Task RemovePositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
+    {
+        await _context.DepartmentPositions
+            .Where(dp => dp.Id == departmentPosition.Id)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
+
+    public async Task<DepartmentPosition?> GetDepartmentPosition(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken)
+    {
+        return await _context.DepartmentPositions.FirstOrDefaultAsync(
+            dp => dp.DepartmentId == departmentId
+                  &&
+                  dp.PositionId == positionId,
+            cancellationToken
+        );
+    }
 }
