@@ -28,10 +28,8 @@ public class PositionsRepository : IPositionsRepository
             cancellationToken);
     }
 
-    public async Task DeleteAsync(Position position, CancellationToken cancellationToken)
+    public void Delete(Position position)
     {
-        await _context.Positions
-            .Where(existingPosition => existingPosition.Id == position.Id)
-            .ExecuteDeleteAsync(cancellationToken);
+        _context.Positions.Remove(position);
     }
 }

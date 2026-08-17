@@ -37,7 +37,7 @@ public partial class RemovePositionHandler : ICommandHandler<RemovePositionComma
             return DepartmentErrors.DepartmentPositionNotFound(command.DepartmentId, command.PositionId);
         }
 
-        await _departmentsRepository.RemovePositionAsync(departmentPosition, cancellationToken);
+        _departmentsRepository.RemovePosition(departmentPosition);
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)

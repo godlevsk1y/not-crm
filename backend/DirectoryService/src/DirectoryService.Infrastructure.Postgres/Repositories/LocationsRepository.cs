@@ -40,10 +40,8 @@ public class LocationsRepository : ILocationsRepository
         return await _context.Locations.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
     }
 
-    public async Task DeleteAsync(Location location, CancellationToken cancellationToken)
+    public void Delete(Location location)
     {
-        await _context.Locations
-            .Where(existingLocation => existingLocation.Id == location.Id)
-            .ExecuteDeleteAsync(cancellationToken);
+        _context.Locations.Remove(location);
     }
 }

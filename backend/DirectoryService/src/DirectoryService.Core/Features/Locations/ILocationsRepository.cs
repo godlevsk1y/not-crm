@@ -14,5 +14,5 @@ public interface ILocationsRepository
     
     Task<Location?> GetByNameAsync(LocationName name, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Location location, CancellationToken cancellationToken);
+    void Delete(Location location);
 }

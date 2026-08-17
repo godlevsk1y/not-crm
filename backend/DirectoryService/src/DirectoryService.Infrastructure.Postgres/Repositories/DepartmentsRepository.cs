@@ -37,11 +37,9 @@ public class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
-    public async Task DeleteAsync(Department department, CancellationToken cancellationToken)
+    public void Delete(Department department)
     {
-        await _context.Departments
-            .Where(existingDepartment => existingDepartment.Id == department.Id)
-            .ExecuteDeleteAsync(cancellationToken);
+        _context.Departments.Remove(department);
     }
 
     public async Task<bool> HasDepartmentLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
@@ -78,11 +76,9 @@ public class DepartmentsRepository : IDepartmentsRepository
         await _context.DepartmentPositions.AddAsync(departmentPosition, cancellationToken);
     }
 
-    public async Task RemoveLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
+    public void RemoveLocation(DepartmentLocation departmentLocation)
     {
-        await _context.DepartmentLocations
-            .Where(dl => dl.Id == departmentLocation.Id)
-            .ExecuteDeleteAsync(cancellationToken);
+        _context.DepartmentLocations.Remove(departmentLocation);
     }
 
     public async Task<DepartmentLocation?> GetDepartmentLocation(DepartmentId departmentId, LocationId locationId, CancellationToken cancellationToken)
@@ -95,11 +91,9 @@ public class DepartmentsRepository : IDepartmentsRepository
         );
     }
 
-    public async Task RemovePositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
+    public void RemovePosition(DepartmentPosition departmentPosition)
     {
-        await _context.DepartmentPositions
-            .Where(dp => dp.Id == departmentPosition.Id)
-            .ExecuteDeleteAsync(cancellationToken);
+        _context.DepartmentPositions.Remove(departmentPosition);
     }
 
     public async Task<DepartmentPosition?> GetDepartmentPosition(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken)

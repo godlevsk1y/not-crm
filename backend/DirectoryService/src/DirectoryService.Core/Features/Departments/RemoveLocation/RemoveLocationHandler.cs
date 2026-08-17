@@ -38,7 +38,7 @@ public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationComma
             return DepartmentErrors.DepartmentLocationNotFound(command.DepartmentId, command.LocationId);
         }
         
-        await _departmentsRepository.RemoveLocationAsync(departmentLocation, cancellationToken);
+        _departmentsRepository.RemoveLocation(departmentLocation);
         
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)

@@ -14,7 +14,7 @@ public interface IDepartmentsRepository
     
     Task<Department?> GetByIdWithParentAsync(DepartmentId id, CancellationToken cancellationToken);
 
-    Task DeleteAsync(Department department, CancellationToken cancellationToken);
+    void Delete(Department department);
     
     Task<bool> HasDepartmentLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken);
     
@@ -24,11 +24,11 @@ public interface IDepartmentsRepository
 
     Task AddPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken);
     
-    Task RemoveLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken);
+    void RemoveLocation(DepartmentLocation departmentLocation);
     
     Task<DepartmentLocation?> GetDepartmentLocation(DepartmentId departmentId, LocationId locationId, CancellationToken cancellationToken);
 
-    Task RemovePositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken);
+    void RemovePosition(DepartmentPosition departmentPosition);
 
     Task<DepartmentPosition?> GetDepartmentPosition(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken);
 }
