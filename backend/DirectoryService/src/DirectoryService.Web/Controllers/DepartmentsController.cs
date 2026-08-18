@@ -73,7 +73,7 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpPost("{departmentId:guid}/locations/{locationId:guid}")]
-    public async Task<IResult> AddLocationAsync(
+    public async Task<IResult> AddLocation(
         [FromServices] ICommandHandler<AddLocationCommand> handler,
         [FromRoute] Guid departmentId, 
         [FromRoute] Guid locationId,
@@ -91,7 +91,7 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpPost("{departmentId:guid}/positions/{positionId:guid}")]
-    public async Task<IResult> AddPositionAsync(
+    public async Task<IResult> AddPosition(
         [FromServices] ICommandHandler<AddPositionCommand> handler,
         [FromRoute] Guid departmentId,
         [FromRoute] Guid positionId,
@@ -109,7 +109,7 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpDelete("{departmentId:guid}/locations/{locationId:guid}")]
-    public async Task<IResult> RemoveLocationAsync(
+    public async Task<IResult> RemoveLocation(
         [FromServices] ICommandHandler<RemoveLocationCommand> handler,
         [FromRoute] Guid departmentId,
         [FromRoute] Guid locationId,
@@ -127,7 +127,7 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpDelete("{departmentId:guid}/positions/{positionId:guid}")]
-    public async Task<IResult> RemovePositionAsync(
+    public async Task<IResult> RemovePosition(
         [FromServices] ICommandHandler<RemovePositionCommand> handler,
         [FromRoute] Guid departmentId,
         [FromRoute] Guid positionId,
