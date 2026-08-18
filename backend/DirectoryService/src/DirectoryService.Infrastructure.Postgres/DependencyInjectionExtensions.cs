@@ -19,6 +19,10 @@ public static class DependencyInjectionExtensions
         services.AddDbContext<DirectoryServiceDbContext>(options => 
             options.UseNpgsql(connectionString)
         );
+        
+        services.AddDbContext<IReadDbContext, DirectoryServiceDbContext>(options => 
+            options.UseNpgsql(connectionString)
+        );
 
         services.AddScoped<ILocationsRepository, LocationsRepository>();
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();

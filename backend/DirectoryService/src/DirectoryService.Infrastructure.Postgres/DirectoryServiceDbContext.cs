@@ -1,15 +1,20 @@
+using DirectoryService.Core.Database;
 using DirectoryService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Infrastructure.Postgres;
 
-public sealed class DirectoryServiceDbContext : DbContext
+public sealed class DirectoryServiceDbContext : DbContext, IReadDbContext
 {
-    public DbSet<Department> Departments { get; set; }
-    public DbSet<Location> Locations { get; set; }
-    public DbSet<Position> Positions { get; set; }
-    public DbSet<DepartmentLocation> DepartmentLocations { get; set; }
-    public DbSet<DepartmentPosition> DepartmentPositions { get; set; }
+    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<Location> Locations => Set<Location>();
+    public DbSet<Position> Positions => Set<Position>();
+    public DbSet<DepartmentLocation> DepartmentLocations => Set<DepartmentLocation>();
+    public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
+    
+    public IQueryable<Location> LocationsRead => Set<Location>()
+        .AsQueryable()
+        .AsNoTracking();
     
     public DirectoryServiceDbContext(DbContextOptions<DirectoryServiceDbContext> options)
         : base(options) { }
