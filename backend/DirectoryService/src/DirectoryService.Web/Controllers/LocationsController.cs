@@ -1,9 +1,8 @@
 using DirectoryService.Contracts.WebApi.Locations;
 using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Features.Locations;
-using DirectoryService.Core.Features.Locations.CreateLocation;
-using DirectoryService.Core.Features.Locations.DeleteLocation;
-using DirectoryService.Core.Features.Locations.UpdateLocation;
+using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
+using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
+using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,12 +1,12 @@
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Features.Departments.AddLocation;
-using DirectoryService.Core.Features.Departments.AddPosition;
-using DirectoryService.Core.Features.Departments.CreateDepartment;
-using DirectoryService.Core.Features.Departments.DeleteDepartment;
-using DirectoryService.Core.Features.Departments.RemoveLocation;
-using DirectoryService.Core.Features.Departments.RemovePosition;
-using DirectoryService.Core.Features.Departments.UpdateDepartment;
+using DirectoryService.Core.Features.Departments.Commands.AddLocation;
+using DirectoryService.Core.Features.Departments.Commands.AddPosition;
+using DirectoryService.Core.Features.Departments.Commands.CreateDepartment;
+using DirectoryService.Core.Features.Departments.Commands.DeleteDepartment;
+using DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
+using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
+using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
