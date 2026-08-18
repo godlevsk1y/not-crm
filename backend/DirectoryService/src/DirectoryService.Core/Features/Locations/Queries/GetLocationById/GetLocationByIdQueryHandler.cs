@@ -4,7 +4,7 @@ using DirectoryService.Core.Database;
 using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 
-namespace DirectoryService.Core.Features.Locations.Queries;
+namespace DirectoryService.Core.Features.Locations.Queries.GetLocationById;
 
 public class GetLocationByIdQueryHandler
 {

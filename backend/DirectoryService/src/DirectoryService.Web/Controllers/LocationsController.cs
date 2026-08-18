@@ -4,6 +4,7 @@ using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
 using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
 using DirectoryService.Core.Features.Locations.Queries;
+using DirectoryService.Core.Features.Locations.Queries.GetLocationById;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
