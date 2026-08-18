@@ -7,6 +7,7 @@ using DirectoryService.Core.Features.Departments.Commands.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
 using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
+using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -141,5 +142,23 @@ public class DepartmentsController : ControllerBase
         }
 
         return EndpointResults.NoContent();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IResult> GetById(
+        [FromServices] GetDepartmentByIdQueryHandler handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetDepartmentByIdQuery(id);
+
+        var departmentResult = await handler.Handle(query, cancellationToken);
+        if (departmentResult.IsFailure)
+        {
+            return EndpointResults.Error(departmentResult.Error);
+        }
+        
+        return EndpointResults.Ok(departmentResult.Value);
     }
 }

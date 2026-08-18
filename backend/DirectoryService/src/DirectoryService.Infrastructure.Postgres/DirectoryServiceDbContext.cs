@@ -11,6 +11,11 @@ public sealed class DirectoryServiceDbContext : DbContext, IReadDbContext
     public DbSet<Position> Positions => Set<Position>();
     public DbSet<DepartmentLocation> DepartmentLocations => Set<DepartmentLocation>();
     public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
+
+    
+    public IQueryable<Department> DepartmentsRead => Set<Department>()
+        .AsQueryable()
+        .AsNoTracking();
     
     public IQueryable<Location> LocationsRead => Set<Location>()
         .AsQueryable()
