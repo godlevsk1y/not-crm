@@ -8,12 +8,16 @@
   
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Scrutor" />
   </ItemGroup>
   
   <ItemGroup>
     <Folder Include="Features\" />
+    <Folder Include="Features\Departments\Commands\" />
+    <Folder Include="Features\Locations\Commands\" />
+    <Folder Include="Features\Positions\Commands\" />
   </ItemGroup>
 
 </Project>

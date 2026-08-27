@@ -1,9 +1,10 @@
 using DirectoryService.Contracts.WebApi.Locations;
 using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Features.Locations;
-using DirectoryService.Core.Features.Locations.CreateLocation;
-using DirectoryService.Core.Features.Locations.DeleteLocation;
-using DirectoryService.Core.Features.Locations.UpdateLocation;
+using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
+using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
+using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
+using DirectoryService.Core.Features.Locations.Queries;
+using DirectoryService.Core.Features.Locations.Queries.GetLocationById;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +33,6 @@ public class LocationsController : ControllerBase
             createResult.Value
         );
     }
-
 
     [HttpPatch("{id:guid}")]
     public async Task<IResult> Update(
@@ -67,5 +67,23 @@ public class LocationsController : ControllerBase
         }
 
         return EndpointResults.NoContent();
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IResult> GetById(
+        [FromServices] GetLocationByIdQueryHandler handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetLocationByIdQuery(id);
+
+        var locationResult = await handler.Handle(query, cancellationToken);
+        if (locationResult.IsFailure)
+        {
+            return EndpointResults.Error(locationResult.Error);
+        }
+        
+        return EndpointResults.Ok(locationResult.Value);
     }
 }

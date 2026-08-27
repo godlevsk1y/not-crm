@@ -31,4 +31,6 @@ public record DepartmentName
 
         return new DepartmentName(name);
     }
+    
+    public override string ToString() => Value;
 }

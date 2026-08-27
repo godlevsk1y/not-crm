@@ -31,4 +31,6 @@ public record LocationName
 
         return new LocationName(name);
     }
+
+    public override string ToString() => Value;
 }
