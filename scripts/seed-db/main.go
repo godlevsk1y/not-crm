@@ -28,10 +28,6 @@ func main() {
 	defer conn.Close(ctx)
 
 	fmt.Printf("Connected to PostgreSQL database on %s\n", args[0])
-
-	fmt.Println(SeedDepartments(300, 30, 40))
-	SeedLocations(200)
-	SeedPositions(200)
 }
 
 func getConnStr(args []string) string {
