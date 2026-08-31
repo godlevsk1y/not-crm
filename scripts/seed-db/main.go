@@ -31,6 +31,7 @@ func main() {
 
 	fmt.Println(SeedDepartments(300, 30, 40))
 	SeedLocations(200)
+	SeedPositions(200)
 }
 
 func getConnStr(args []string) string {
