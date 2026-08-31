@@ -1,4 +1,4 @@
-package main
+package seeders
 
 import (
 	"encoding/json"
@@ -63,7 +63,10 @@ func SeedDepartments(count int, minRoot int, maxRoot int) []*Department {
 	}
 
 	for _, pair := range pairsPool {
-		parent := selectRandomDepartment(departments)
+		parent, ok := choice(departments)
+		if !ok {
+			panic("departments slice is empty")
+		}
 
 		departments = append(departments, NewDepartment(
 			pair.Name,
@@ -113,15 +116,6 @@ func selectRandomNameSlugPairs(pairs []nameSlugPair, count int) []nameSlugPair {
 	})
 
 	return shuffled[:count]
-}
-
-func selectRandomDepartment(departments []*Department) *Department {
-	if len(departments) == 0 {
-		return nil
-	}
-
-	idx := rand.IntN(len(departments))
-	return departments[idx]
 }
 
 func randomRange(min, max int) int {
