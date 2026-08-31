@@ -30,14 +30,16 @@ func NewDepartment(name string, slug string, parent *Department) *Department {
 		parentId = &parent.ID
 	}
 
+	now := time.Now()
+
 	return &Department{
 		ID:        uuid.New(),
 		Name:      name,
 		Slug:      slug,
 		Path:      path,
 		ParentID:  parentId,
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
+		CreatedAt: now.UTC(),
+		UpdatedAt: now.UTC(),
 	}
 }
 
