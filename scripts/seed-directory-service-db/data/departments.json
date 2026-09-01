@@ -1,0 +1,2002 @@
+[
+  {
+    "name": "Accounting Department",
+    "slug": "accounting-department"
+  },
+  {
+    "name": "Accounting Team",
+    "slug": "accounting-team"
+  },
+  {
+    "name": "Accounting Division",
+    "slug": "accounting-division"
+  },
+  {
+    "name": "Accounting Office",
+    "slug": "accounting-office"
+  },
+  {
+    "name": "Accounting Group",
+    "slug": "accounting-group"
+  },
+  {
+    "name": "Accounts Payable Department",
+    "slug": "accounts-payable-department"
+  },
+  {
+    "name": "Accounts Payable Team",
+    "slug": "accounts-payable-team"
+  },
+  {
+    "name": "Accounts Payable Division",
+    "slug": "accounts-payable-division"
+  },
+  {
+    "name": "Accounts Payable Office",
+    "slug": "accounts-payable-office"
+  },
+  {
+    "name": "Accounts Payable Group",
+    "slug": "accounts-payable-group"
+  },
+  {
+    "name": "Accounts Receivable Department",
+    "slug": "accounts-receivable-department"
+  },
+  {
+    "name": "Accounts Receivable Team",
+    "slug": "accounts-receivable-team"
+  },
+  {
+    "name": "Accounts Receivable Division",
+    "slug": "accounts-receivable-division"
+  },
+  {
+    "name": "Accounts Receivable Office",
+    "slug": "accounts-receivable-office"
+  },
+  {
+    "name": "Accounts Receivable Group",
+    "slug": "accounts-receivable-group"
+  },
+  {
+    "name": "Administration Department",
+    "slug": "administration-department"
+  },
+  {
+    "name": "Administration Team",
+    "slug": "administration-team"
+  },
+  {
+    "name": "Administration Division",
+    "slug": "administration-division"
+  },
+  {
+    "name": "Administration Office",
+    "slug": "administration-office"
+  },
+  {
+    "name": "Administration Group",
+    "slug": "administration-group"
+  },
+  {
+    "name": "Advertising Department",
+    "slug": "advertising-department"
+  },
+  {
+    "name": "Advertising Team",
+    "slug": "advertising-team"
+  },
+  {
+    "name": "Advertising Division",
+    "slug": "advertising-division"
+  },
+  {
+    "name": "Advertising Office",
+    "slug": "advertising-office"
+  },
+  {
+    "name": "Advertising Group",
+    "slug": "advertising-group"
+  },
+  {
+    "name": "Analytics Department",
+    "slug": "analytics-department"
+  },
+  {
+    "name": "Analytics Team",
+    "slug": "analytics-team"
+  },
+  {
+    "name": "Analytics Division",
+    "slug": "analytics-division"
+  },
+  {
+    "name": "Analytics Office",
+    "slug": "analytics-office"
+  },
+  {
+    "name": "Analytics Group",
+    "slug": "analytics-group"
+  },
+  {
+    "name": "Application Development Department",
+    "slug": "application-development-department"
+  },
+  {
+    "name": "Application Development Team",
+    "slug": "application-development-team"
+  },
+  {
+    "name": "Application Development Division",
+    "slug": "application-development-division"
+  },
+  {
+    "name": "Application Development Office",
+    "slug": "application-development-office"
+  },
+  {
+    "name": "Application Development Group",
+    "slug": "application-development-group"
+  },
+  {
+    "name": "Architecture Department",
+    "slug": "architecture-department"
+  },
+  {
+    "name": "Architecture Team",
+    "slug": "architecture-team"
+  },
+  {
+    "name": "Architecture Division",
+    "slug": "architecture-division"
+  },
+  {
+    "name": "Architecture Office",
+    "slug": "architecture-office"
+  },
+  {
+    "name": "Architecture Group",
+    "slug": "architecture-group"
+  },
+  {
+    "name": "Asset Management Department",
+    "slug": "asset-management-department"
+  },
+  {
+    "name": "Asset Management Team",
+    "slug": "asset-management-team"
+  },
+  {
+    "name": "Asset Management Division",
+    "slug": "asset-management-division"
+  },
+  {
+    "name": "Asset Management Office",
+    "slug": "asset-management-office"
+  },
+  {
+    "name": "Asset Management Group",
+    "slug": "asset-management-group"
+  },
+  {
+    "name": "Audit Department",
+    "slug": "audit-department"
+  },
+  {
+    "name": "Audit Team",
+    "slug": "audit-team"
+  },
+  {
+    "name": "Audit Division",
+    "slug": "audit-division"
+  },
+  {
+    "name": "Audit Office",
+    "slug": "audit-office"
+  },
+  {
+    "name": "Audit Group",
+    "slug": "audit-group"
+  },
+  {
+    "name": "Benefits Department",
+    "slug": "benefits-department"
+  },
+  {
+    "name": "Benefits Team",
+    "slug": "benefits-team"
+  },
+  {
+    "name": "Benefits Division",
+    "slug": "benefits-division"
+  },
+  {
+    "name": "Benefits Office",
+    "slug": "benefits-office"
+  },
+  {
+    "name": "Benefits Group",
+    "slug": "benefits-group"
+  },
+  {
+    "name": "Brand Management Department",
+    "slug": "brand-management-department"
+  },
+  {
+    "name": "Brand Management Team",
+    "slug": "brand-management-team"
+  },
+  {
+    "name": "Brand Management Division",
+    "slug": "brand-management-division"
+  },
+  {
+    "name": "Brand Management Office",
+    "slug": "brand-management-office"
+  },
+  {
+    "name": "Brand Management Group",
+    "slug": "brand-management-group"
+  },
+  {
+    "name": "Business Continuity Department",
+    "slug": "business-continuity-department"
+  },
+  {
+    "name": "Business Continuity Team",
+    "slug": "business-continuity-team"
+  },
+  {
+    "name": "Business Continuity Division",
+    "slug": "business-continuity-division"
+  },
+  {
+    "name": "Business Continuity Office",
+    "slug": "business-continuity-office"
+  },
+  {
+    "name": "Business Continuity Group",
+    "slug": "business-continuity-group"
+  },
+  {
+    "name": "Business Development Department",
+    "slug": "business-development-department"
+  },
+  {
+    "name": "Business Development Team",
+    "slug": "business-development-team"
+  },
+  {
+    "name": "Business Development Division",
+    "slug": "business-development-division"
+  },
+  {
+    "name": "Business Development Office",
+    "slug": "business-development-office"
+  },
+  {
+    "name": "Business Development Group",
+    "slug": "business-development-group"
+  },
+  {
+    "name": "Business Intelligence Department",
+    "slug": "business-intelligence-department"
+  },
+  {
+    "name": "Business Intelligence Team",
+    "slug": "business-intelligence-team"
+  },
+  {
+    "name": "Business Intelligence Division",
+    "slug": "business-intelligence-division"
+  },
+  {
+    "name": "Business Intelligence Office",
+    "slug": "business-intelligence-office"
+  },
+  {
+    "name": "Business Intelligence Group",
+    "slug": "business-intelligence-group"
+  },
+  {
+    "name": "Change Management Department",
+    "slug": "change-management-department"
+  },
+  {
+    "name": "Change Management Team",
+    "slug": "change-management-team"
+  },
+  {
+    "name": "Change Management Division",
+    "slug": "change-management-division"
+  },
+  {
+    "name": "Change Management Office",
+    "slug": "change-management-office"
+  },
+  {
+    "name": "Change Management Group",
+    "slug": "change-management-group"
+  },
+  {
+    "name": "Client Services Department",
+    "slug": "client-services-department"
+  },
+  {
+    "name": "Client Services Team",
+    "slug": "client-services-team"
+  },
+  {
+    "name": "Client Services Division",
+    "slug": "client-services-division"
+  },
+  {
+    "name": "Client Services Office",
+    "slug": "client-services-office"
+  },
+  {
+    "name": "Client Services Group",
+    "slug": "client-services-group"
+  },
+  {
+    "name": "Cloud Operations Department",
+    "slug": "cloud-operations-department"
+  },
+  {
+    "name": "Cloud Operations Team",
+    "slug": "cloud-operations-team"
+  },
+  {
+    "name": "Cloud Operations Division",
+    "slug": "cloud-operations-division"
+  },
+  {
+    "name": "Cloud Operations Office",
+    "slug": "cloud-operations-office"
+  },
+  {
+    "name": "Cloud Operations Group",
+    "slug": "cloud-operations-group"
+  },
+  {
+    "name": "Communications Department",
+    "slug": "communications-department"
+  },
+  {
+    "name": "Communications Team",
+    "slug": "communications-team"
+  },
+  {
+    "name": "Communications Division",
+    "slug": "communications-division"
+  },
+  {
+    "name": "Communications Office",
+    "slug": "communications-office"
+  },
+  {
+    "name": "Communications Group",
+    "slug": "communications-group"
+  },
+  {
+    "name": "Compliance Department",
+    "slug": "compliance-department"
+  },
+  {
+    "name": "Compliance Team",
+    "slug": "compliance-team"
+  },
+  {
+    "name": "Compliance Division",
+    "slug": "compliance-division"
+  },
+  {
+    "name": "Compliance Office",
+    "slug": "compliance-office"
+  },
+  {
+    "name": "Compliance Group",
+    "slug": "compliance-group"
+  },
+  {
+    "name": "Content Strategy Department",
+    "slug": "content-strategy-department"
+  },
+  {
+    "name": "Content Strategy Team",
+    "slug": "content-strategy-team"
+  },
+  {
+    "name": "Content Strategy Division",
+    "slug": "content-strategy-division"
+  },
+  {
+    "name": "Content Strategy Office",
+    "slug": "content-strategy-office"
+  },
+  {
+    "name": "Content Strategy Group",
+    "slug": "content-strategy-group"
+  },
+  {
+    "name": "Corporate Development Department",
+    "slug": "corporate-development-department"
+  },
+  {
+    "name": "Corporate Development Team",
+    "slug": "corporate-development-team"
+  },
+  {
+    "name": "Corporate Development Division",
+    "slug": "corporate-development-division"
+  },
+  {
+    "name": "Corporate Development Office",
+    "slug": "corporate-development-office"
+  },
+  {
+    "name": "Corporate Development Group",
+    "slug": "corporate-development-group"
+  },
+  {
+    "name": "Corporate Strategy Department",
+    "slug": "corporate-strategy-department"
+  },
+  {
+    "name": "Corporate Strategy Team",
+    "slug": "corporate-strategy-team"
+  },
+  {
+    "name": "Corporate Strategy Division",
+    "slug": "corporate-strategy-division"
+  },
+  {
+    "name": "Corporate Strategy Office",
+    "slug": "corporate-strategy-office"
+  },
+  {
+    "name": "Corporate Strategy Group",
+    "slug": "corporate-strategy-group"
+  },
+  {
+    "name": "Creative Services Department",
+    "slug": "creative-services-department"
+  },
+  {
+    "name": "Creative Services Team",
+    "slug": "creative-services-team"
+  },
+  {
+    "name": "Creative Services Division",
+    "slug": "creative-services-division"
+  },
+  {
+    "name": "Creative Services Office",
+    "slug": "creative-services-office"
+  },
+  {
+    "name": "Creative Services Group",
+    "slug": "creative-services-group"
+  },
+  {
+    "name": "Customer Experience Department",
+    "slug": "customer-experience-department"
+  },
+  {
+    "name": "Customer Experience Team",
+    "slug": "customer-experience-team"
+  },
+  {
+    "name": "Customer Experience Division",
+    "slug": "customer-experience-division"
+  },
+  {
+    "name": "Customer Experience Office",
+    "slug": "customer-experience-office"
+  },
+  {
+    "name": "Customer Experience Group",
+    "slug": "customer-experience-group"
+  },
+  {
+    "name": "Customer Success Department",
+    "slug": "customer-success-department"
+  },
+  {
+    "name": "Customer Success Team",
+    "slug": "customer-success-team"
+  },
+  {
+    "name": "Customer Success Division",
+    "slug": "customer-success-division"
+  },
+  {
+    "name": "Customer Success Office",
+    "slug": "customer-success-office"
+  },
+  {
+    "name": "Customer Success Group",
+    "slug": "customer-success-group"
+  },
+  {
+    "name": "Customer Support Department",
+    "slug": "customer-support-department"
+  },
+  {
+    "name": "Customer Support Team",
+    "slug": "customer-support-team"
+  },
+  {
+    "name": "Customer Support Division",
+    "slug": "customer-support-division"
+  },
+  {
+    "name": "Customer Support Office",
+    "slug": "customer-support-office"
+  },
+  {
+    "name": "Customer Support Group",
+    "slug": "customer-support-group"
+  },
+  {
+    "name": "Cybersecurity Department",
+    "slug": "cybersecurity-department"
+  },
+  {
+    "name": "Cybersecurity Team",
+    "slug": "cybersecurity-team"
+  },
+  {
+    "name": "Cybersecurity Division",
+    "slug": "cybersecurity-division"
+  },
+  {
+    "name": "Cybersecurity Office",
+    "slug": "cybersecurity-office"
+  },
+  {
+    "name": "Cybersecurity Group",
+    "slug": "cybersecurity-group"
+  },
+  {
+    "name": "Data Engineering Department",
+    "slug": "data-engineering-department"
+  },
+  {
+    "name": "Data Engineering Team",
+    "slug": "data-engineering-team"
+  },
+  {
+    "name": "Data Engineering Division",
+    "slug": "data-engineering-division"
+  },
+  {
+    "name": "Data Engineering Office",
+    "slug": "data-engineering-office"
+  },
+  {
+    "name": "Data Engineering Group",
+    "slug": "data-engineering-group"
+  },
+  {
+    "name": "Data Governance Department",
+    "slug": "data-governance-department"
+  },
+  {
+    "name": "Data Governance Team",
+    "slug": "data-governance-team"
+  },
+  {
+    "name": "Data Governance Division",
+    "slug": "data-governance-division"
+  },
+  {
+    "name": "Data Governance Office",
+    "slug": "data-governance-office"
+  },
+  {
+    "name": "Data Governance Group",
+    "slug": "data-governance-group"
+  },
+  {
+    "name": "Data Science Department",
+    "slug": "data-science-department"
+  },
+  {
+    "name": "Data Science Team",
+    "slug": "data-science-team"
+  },
+  {
+    "name": "Data Science Division",
+    "slug": "data-science-division"
+  },
+  {
+    "name": "Data Science Office",
+    "slug": "data-science-office"
+  },
+  {
+    "name": "Data Science Group",
+    "slug": "data-science-group"
+  },
+  {
+    "name": "Design Department",
+    "slug": "design-department"
+  },
+  {
+    "name": "Design Team",
+    "slug": "design-team"
+  },
+  {
+    "name": "Design Division",
+    "slug": "design-division"
+  },
+  {
+    "name": "Design Office",
+    "slug": "design-office"
+  },
+  {
+    "name": "Design Group",
+    "slug": "design-group"
+  },
+  {
+    "name": "DevOps Department",
+    "slug": "devops-department"
+  },
+  {
+    "name": "DevOps Team",
+    "slug": "devops-team"
+  },
+  {
+    "name": "DevOps Division",
+    "slug": "devops-division"
+  },
+  {
+    "name": "DevOps Office",
+    "slug": "devops-office"
+  },
+  {
+    "name": "DevOps Group",
+    "slug": "devops-group"
+  },
+  {
+    "name": "Digital Marketing Department",
+    "slug": "digital-marketing-department"
+  },
+  {
+    "name": "Digital Marketing Team",
+    "slug": "digital-marketing-team"
+  },
+  {
+    "name": "Digital Marketing Division",
+    "slug": "digital-marketing-division"
+  },
+  {
+    "name": "Digital Marketing Office",
+    "slug": "digital-marketing-office"
+  },
+  {
+    "name": "Digital Marketing Group",
+    "slug": "digital-marketing-group"
+  },
+  {
+    "name": "Distribution Department",
+    "slug": "distribution-department"
+  },
+  {
+    "name": "Distribution Team",
+    "slug": "distribution-team"
+  },
+  {
+    "name": "Distribution Division",
+    "slug": "distribution-division"
+  },
+  {
+    "name": "Distribution Office",
+    "slug": "distribution-office"
+  },
+  {
+    "name": "Distribution Group",
+    "slug": "distribution-group"
+  },
+  {
+    "name": "E-commerce Department",
+    "slug": "e-commerce-department"
+  },
+  {
+    "name": "E-commerce Team",
+    "slug": "e-commerce-team"
+  },
+  {
+    "name": "E-commerce Division",
+    "slug": "e-commerce-division"
+  },
+  {
+    "name": "E-commerce Office",
+    "slug": "e-commerce-office"
+  },
+  {
+    "name": "E-commerce Group",
+    "slug": "e-commerce-group"
+  },
+  {
+    "name": "Engineering Department",
+    "slug": "engineering-department"
+  },
+  {
+    "name": "Engineering Team",
+    "slug": "engineering-team"
+  },
+  {
+    "name": "Engineering Division",
+    "slug": "engineering-division"
+  },
+  {
+    "name": "Engineering Office",
+    "slug": "engineering-office"
+  },
+  {
+    "name": "Engineering Group",
+    "slug": "engineering-group"
+  },
+  {
+    "name": "Enterprise Architecture Department",
+    "slug": "enterprise-architecture-department"
+  },
+  {
+    "name": "Enterprise Architecture Team",
+    "slug": "enterprise-architecture-team"
+  },
+  {
+    "name": "Enterprise Architecture Division",
+    "slug": "enterprise-architecture-division"
+  },
+  {
+    "name": "Enterprise Architecture Office",
+    "slug": "enterprise-architecture-office"
+  },
+  {
+    "name": "Enterprise Architecture Group",
+    "slug": "enterprise-architecture-group"
+  },
+  {
+    "name": "Environmental Health and Safety Department",
+    "slug": "environmental-health-and-safety-department"
+  },
+  {
+    "name": "Environmental Health and Safety Team",
+    "slug": "environmental-health-and-safety-team"
+  },
+  {
+    "name": "Environmental Health and Safety Division",
+    "slug": "environmental-health-and-safety-division"
+  },
+  {
+    "name": "Environmental Health and Safety Office",
+    "slug": "environmental-health-and-safety-office"
+  },
+  {
+    "name": "Environmental Health and Safety Group",
+    "slug": "environmental-health-and-safety-group"
+  },
+  {
+    "name": "Facilities Department",
+    "slug": "facilities-department"
+  },
+  {
+    "name": "Facilities Team",
+    "slug": "facilities-team"
+  },
+  {
+    "name": "Facilities Division",
+    "slug": "facilities-division"
+  },
+  {
+    "name": "Facilities Office",
+    "slug": "facilities-office"
+  },
+  {
+    "name": "Facilities Group",
+    "slug": "facilities-group"
+  },
+  {
+    "name": "Field Operations Department",
+    "slug": "field-operations-department"
+  },
+  {
+    "name": "Field Operations Team",
+    "slug": "field-operations-team"
+  },
+  {
+    "name": "Field Operations Division",
+    "slug": "field-operations-division"
+  },
+  {
+    "name": "Field Operations Office",
+    "slug": "field-operations-office"
+  },
+  {
+    "name": "Field Operations Group",
+    "slug": "field-operations-group"
+  },
+  {
+    "name": "Finance Department",
+    "slug": "finance-department"
+  },
+  {
+    "name": "Finance Team",
+    "slug": "finance-team"
+  },
+  {
+    "name": "Finance Division",
+    "slug": "finance-division"
+  },
+  {
+    "name": "Finance Office",
+    "slug": "finance-office"
+  },
+  {
+    "name": "Finance Group",
+    "slug": "finance-group"
+  },
+  {
+    "name": "Financial Planning and Analysis Department",
+    "slug": "financial-planning-and-analysis-department"
+  },
+  {
+    "name": "Financial Planning and Analysis Team",
+    "slug": "financial-planning-and-analysis-team"
+  },
+  {
+    "name": "Financial Planning and Analysis Division",
+    "slug": "financial-planning-and-analysis-division"
+  },
+  {
+    "name": "Financial Planning and Analysis Office",
+    "slug": "financial-planning-and-analysis-office"
+  },
+  {
+    "name": "Financial Planning and Analysis Group",
+    "slug": "financial-planning-and-analysis-group"
+  },
+  {
+    "name": "Fraud Prevention Department",
+    "slug": "fraud-prevention-department"
+  },
+  {
+    "name": "Fraud Prevention Team",
+    "slug": "fraud-prevention-team"
+  },
+  {
+    "name": "Fraud Prevention Division",
+    "slug": "fraud-prevention-division"
+  },
+  {
+    "name": "Fraud Prevention Office",
+    "slug": "fraud-prevention-office"
+  },
+  {
+    "name": "Fraud Prevention Group",
+    "slug": "fraud-prevention-group"
+  },
+  {
+    "name": "Government Relations Department",
+    "slug": "government-relations-department"
+  },
+  {
+    "name": "Government Relations Team",
+    "slug": "government-relations-team"
+  },
+  {
+    "name": "Government Relations Division",
+    "slug": "government-relations-division"
+  },
+  {
+    "name": "Government Relations Office",
+    "slug": "government-relations-office"
+  },
+  {
+    "name": "Government Relations Group",
+    "slug": "government-relations-group"
+  },
+  {
+    "name": "Human Resources Department",
+    "slug": "human-resources-department"
+  },
+  {
+    "name": "Human Resources Team",
+    "slug": "human-resources-team"
+  },
+  {
+    "name": "Human Resources Division",
+    "slug": "human-resources-division"
+  },
+  {
+    "name": "Human Resources Office",
+    "slug": "human-resources-office"
+  },
+  {
+    "name": "Human Resources Group",
+    "slug": "human-resources-group"
+  },
+  {
+    "name": "Information Security Department",
+    "slug": "information-security-department"
+  },
+  {
+    "name": "Information Security Team",
+    "slug": "information-security-team"
+  },
+  {
+    "name": "Information Security Division",
+    "slug": "information-security-division"
+  },
+  {
+    "name": "Information Security Office",
+    "slug": "information-security-office"
+  },
+  {
+    "name": "Information Security Group",
+    "slug": "information-security-group"
+  },
+  {
+    "name": "Information Technology Department",
+    "slug": "information-technology-department"
+  },
+  {
+    "name": "Information Technology Team",
+    "slug": "information-technology-team"
+  },
+  {
+    "name": "Information Technology Division",
+    "slug": "information-technology-division"
+  },
+  {
+    "name": "Information Technology Office",
+    "slug": "information-technology-office"
+  },
+  {
+    "name": "Information Technology Group",
+    "slug": "information-technology-group"
+  },
+  {
+    "name": "Innovation Department",
+    "slug": "innovation-department"
+  },
+  {
+    "name": "Innovation Team",
+    "slug": "innovation-team"
+  },
+  {
+    "name": "Innovation Division",
+    "slug": "innovation-division"
+  },
+  {
+    "name": "Innovation Office",
+    "slug": "innovation-office"
+  },
+  {
+    "name": "Innovation Group",
+    "slug": "innovation-group"
+  },
+  {
+    "name": "Internal Audit Department",
+    "slug": "internal-audit-department"
+  },
+  {
+    "name": "Internal Audit Team",
+    "slug": "internal-audit-team"
+  },
+  {
+    "name": "Internal Audit Division",
+    "slug": "internal-audit-division"
+  },
+  {
+    "name": "Internal Audit Office",
+    "slug": "internal-audit-office"
+  },
+  {
+    "name": "Internal Audit Group",
+    "slug": "internal-audit-group"
+  },
+  {
+    "name": "Investor Relations Department",
+    "slug": "investor-relations-department"
+  },
+  {
+    "name": "Investor Relations Team",
+    "slug": "investor-relations-team"
+  },
+  {
+    "name": "Investor Relations Division",
+    "slug": "investor-relations-division"
+  },
+  {
+    "name": "Investor Relations Office",
+    "slug": "investor-relations-office"
+  },
+  {
+    "name": "Investor Relations Group",
+    "slug": "investor-relations-group"
+  },
+  {
+    "name": "Learning and Development Department",
+    "slug": "learning-and-development-department"
+  },
+  {
+    "name": "Learning and Development Team",
+    "slug": "learning-and-development-team"
+  },
+  {
+    "name": "Learning and Development Division",
+    "slug": "learning-and-development-division"
+  },
+  {
+    "name": "Learning and Development Office",
+    "slug": "learning-and-development-office"
+  },
+  {
+    "name": "Learning and Development Group",
+    "slug": "learning-and-development-group"
+  },
+  {
+    "name": "Legal Department",
+    "slug": "legal-department"
+  },
+  {
+    "name": "Legal Team",
+    "slug": "legal-team"
+  },
+  {
+    "name": "Legal Division",
+    "slug": "legal-division"
+  },
+  {
+    "name": "Legal Office",
+    "slug": "legal-office"
+  },
+  {
+    "name": "Legal Group",
+    "slug": "legal-group"
+  },
+  {
+    "name": "Localization Department",
+    "slug": "localization-department"
+  },
+  {
+    "name": "Localization Team",
+    "slug": "localization-team"
+  },
+  {
+    "name": "Localization Division",
+    "slug": "localization-division"
+  },
+  {
+    "name": "Localization Office",
+    "slug": "localization-office"
+  },
+  {
+    "name": "Localization Group",
+    "slug": "localization-group"
+  },
+  {
+    "name": "Logistics Department",
+    "slug": "logistics-department"
+  },
+  {
+    "name": "Logistics Team",
+    "slug": "logistics-team"
+  },
+  {
+    "name": "Logistics Division",
+    "slug": "logistics-division"
+  },
+  {
+    "name": "Logistics Office",
+    "slug": "logistics-office"
+  },
+  {
+    "name": "Logistics Group",
+    "slug": "logistics-group"
+  },
+  {
+    "name": "Manufacturing Department",
+    "slug": "manufacturing-department"
+  },
+  {
+    "name": "Manufacturing Team",
+    "slug": "manufacturing-team"
+  },
+  {
+    "name": "Manufacturing Division",
+    "slug": "manufacturing-division"
+  },
+  {
+    "name": "Manufacturing Office",
+    "slug": "manufacturing-office"
+  },
+  {
+    "name": "Manufacturing Group",
+    "slug": "manufacturing-group"
+  },
+  {
+    "name": "Market Research Department",
+    "slug": "market-research-department"
+  },
+  {
+    "name": "Market Research Team",
+    "slug": "market-research-team"
+  },
+  {
+    "name": "Market Research Division",
+    "slug": "market-research-division"
+  },
+  {
+    "name": "Market Research Office",
+    "slug": "market-research-office"
+  },
+  {
+    "name": "Market Research Group",
+    "slug": "market-research-group"
+  },
+  {
+    "name": "Marketing Department",
+    "slug": "marketing-department"
+  },
+  {
+    "name": "Marketing Team",
+    "slug": "marketing-team"
+  },
+  {
+    "name": "Marketing Division",
+    "slug": "marketing-division"
+  },
+  {
+    "name": "Marketing Office",
+    "slug": "marketing-office"
+  },
+  {
+    "name": "Marketing Group",
+    "slug": "marketing-group"
+  },
+  {
+    "name": "Media Relations Department",
+    "slug": "media-relations-department"
+  },
+  {
+    "name": "Media Relations Team",
+    "slug": "media-relations-team"
+  },
+  {
+    "name": "Media Relations Division",
+    "slug": "media-relations-division"
+  },
+  {
+    "name": "Media Relations Office",
+    "slug": "media-relations-office"
+  },
+  {
+    "name": "Media Relations Group",
+    "slug": "media-relations-group"
+  },
+  {
+    "name": "Network Operations Department",
+    "slug": "network-operations-department"
+  },
+  {
+    "name": "Network Operations Team",
+    "slug": "network-operations-team"
+  },
+  {
+    "name": "Network Operations Division",
+    "slug": "network-operations-division"
+  },
+  {
+    "name": "Network Operations Office",
+    "slug": "network-operations-office"
+  },
+  {
+    "name": "Network Operations Group",
+    "slug": "network-operations-group"
+  },
+  {
+    "name": "Operations Department",
+    "slug": "operations-department"
+  },
+  {
+    "name": "Operations Team",
+    "slug": "operations-team"
+  },
+  {
+    "name": "Operations Division",
+    "slug": "operations-division"
+  },
+  {
+    "name": "Operations Office",
+    "slug": "operations-office"
+  },
+  {
+    "name": "Operations Group",
+    "slug": "operations-group"
+  },
+  {
+    "name": "Partner Management Department",
+    "slug": "partner-management-department"
+  },
+  {
+    "name": "Partner Management Team",
+    "slug": "partner-management-team"
+  },
+  {
+    "name": "Partner Management Division",
+    "slug": "partner-management-division"
+  },
+  {
+    "name": "Partner Management Office",
+    "slug": "partner-management-office"
+  },
+  {
+    "name": "Partner Management Group",
+    "slug": "partner-management-group"
+  },
+  {
+    "name": "Payroll Department",
+    "slug": "payroll-department"
+  },
+  {
+    "name": "Payroll Team",
+    "slug": "payroll-team"
+  },
+  {
+    "name": "Payroll Division",
+    "slug": "payroll-division"
+  },
+  {
+    "name": "Payroll Office",
+    "slug": "payroll-office"
+  },
+  {
+    "name": "Payroll Group",
+    "slug": "payroll-group"
+  },
+  {
+    "name": "People Operations Department",
+    "slug": "people-operations-department"
+  },
+  {
+    "name": "People Operations Team",
+    "slug": "people-operations-team"
+  },
+  {
+    "name": "People Operations Division",
+    "slug": "people-operations-division"
+  },
+  {
+    "name": "People Operations Office",
+    "slug": "people-operations-office"
+  },
+  {
+    "name": "People Operations Group",
+    "slug": "people-operations-group"
+  },
+  {
+    "name": "Performance Management Department",
+    "slug": "performance-management-department"
+  },
+  {
+    "name": "Performance Management Team",
+    "slug": "performance-management-team"
+  },
+  {
+    "name": "Performance Management Division",
+    "slug": "performance-management-division"
+  },
+  {
+    "name": "Performance Management Office",
+    "slug": "performance-management-office"
+  },
+  {
+    "name": "Performance Management Group",
+    "slug": "performance-management-group"
+  },
+  {
+    "name": "Privacy Department",
+    "slug": "privacy-department"
+  },
+  {
+    "name": "Privacy Team",
+    "slug": "privacy-team"
+  },
+  {
+    "name": "Privacy Division",
+    "slug": "privacy-division"
+  },
+  {
+    "name": "Privacy Office",
+    "slug": "privacy-office"
+  },
+  {
+    "name": "Privacy Group",
+    "slug": "privacy-group"
+  },
+  {
+    "name": "Procurement Department",
+    "slug": "procurement-department"
+  },
+  {
+    "name": "Procurement Team",
+    "slug": "procurement-team"
+  },
+  {
+    "name": "Procurement Division",
+    "slug": "procurement-division"
+  },
+  {
+    "name": "Procurement Office",
+    "slug": "procurement-office"
+  },
+  {
+    "name": "Procurement Group",
+    "slug": "procurement-group"
+  },
+  {
+    "name": "Product Design Department",
+    "slug": "product-design-department"
+  },
+  {
+    "name": "Product Design Team",
+    "slug": "product-design-team"
+  },
+  {
+    "name": "Product Design Division",
+    "slug": "product-design-division"
+  },
+  {
+    "name": "Product Design Office",
+    "slug": "product-design-office"
+  },
+  {
+    "name": "Product Design Group",
+    "slug": "product-design-group"
+  },
+  {
+    "name": "Product Management Department",
+    "slug": "product-management-department"
+  },
+  {
+    "name": "Product Management Team",
+    "slug": "product-management-team"
+  },
+  {
+    "name": "Product Management Division",
+    "slug": "product-management-division"
+  },
+  {
+    "name": "Product Management Office",
+    "slug": "product-management-office"
+  },
+  {
+    "name": "Product Management Group",
+    "slug": "product-management-group"
+  },
+  {
+    "name": "Program Management Department",
+    "slug": "program-management-department"
+  },
+  {
+    "name": "Program Management Team",
+    "slug": "program-management-team"
+  },
+  {
+    "name": "Program Management Division",
+    "slug": "program-management-division"
+  },
+  {
+    "name": "Program Management Office",
+    "slug": "program-management-office"
+  },
+  {
+    "name": "Program Management Group",
+    "slug": "program-management-group"
+  },
+  {
+    "name": "Project Management Department",
+    "slug": "project-management-department"
+  },
+  {
+    "name": "Project Management Team",
+    "slug": "project-management-team"
+  },
+  {
+    "name": "Project Management Division",
+    "slug": "project-management-division"
+  },
+  {
+    "name": "Project Management Office",
+    "slug": "project-management-office"
+  },
+  {
+    "name": "Project Management Group",
+    "slug": "project-management-group"
+  },
+  {
+    "name": "Public Relations Department",
+    "slug": "public-relations-department"
+  },
+  {
+    "name": "Public Relations Team",
+    "slug": "public-relations-team"
+  },
+  {
+    "name": "Public Relations Division",
+    "slug": "public-relations-division"
+  },
+  {
+    "name": "Public Relations Office",
+    "slug": "public-relations-office"
+  },
+  {
+    "name": "Public Relations Group",
+    "slug": "public-relations-group"
+  },
+  {
+    "name": "Quality Assurance Department",
+    "slug": "quality-assurance-department"
+  },
+  {
+    "name": "Quality Assurance Team",
+    "slug": "quality-assurance-team"
+  },
+  {
+    "name": "Quality Assurance Division",
+    "slug": "quality-assurance-division"
+  },
+  {
+    "name": "Quality Assurance Office",
+    "slug": "quality-assurance-office"
+  },
+  {
+    "name": "Quality Assurance Group",
+    "slug": "quality-assurance-group"
+  },
+  {
+    "name": "Recruiting Department",
+    "slug": "recruiting-department"
+  },
+  {
+    "name": "Recruiting Team",
+    "slug": "recruiting-team"
+  },
+  {
+    "name": "Recruiting Division",
+    "slug": "recruiting-division"
+  },
+  {
+    "name": "Recruiting Office",
+    "slug": "recruiting-office"
+  },
+  {
+    "name": "Recruiting Group",
+    "slug": "recruiting-group"
+  },
+  {
+    "name": "Regulatory Affairs Department",
+    "slug": "regulatory-affairs-department"
+  },
+  {
+    "name": "Regulatory Affairs Team",
+    "slug": "regulatory-affairs-team"
+  },
+  {
+    "name": "Regulatory Affairs Division",
+    "slug": "regulatory-affairs-division"
+  },
+  {
+    "name": "Regulatory Affairs Office",
+    "slug": "regulatory-affairs-office"
+  },
+  {
+    "name": "Regulatory Affairs Group",
+    "slug": "regulatory-affairs-group"
+  },
+  {
+    "name": "Research and Development Department",
+    "slug": "research-and-development-department"
+  },
+  {
+    "name": "Research and Development Team",
+    "slug": "research-and-development-team"
+  },
+  {
+    "name": "Research and Development Division",
+    "slug": "research-and-development-division"
+  },
+  {
+    "name": "Research and Development Office",
+    "slug": "research-and-development-office"
+  },
+  {
+    "name": "Research and Development Group",
+    "slug": "research-and-development-group"
+  },
+  {
+    "name": "Revenue Operations Department",
+    "slug": "revenue-operations-department"
+  },
+  {
+    "name": "Revenue Operations Team",
+    "slug": "revenue-operations-team"
+  },
+  {
+    "name": "Revenue Operations Division",
+    "slug": "revenue-operations-division"
+  },
+  {
+    "name": "Revenue Operations Office",
+    "slug": "revenue-operations-office"
+  },
+  {
+    "name": "Revenue Operations Group",
+    "slug": "revenue-operations-group"
+  },
+  {
+    "name": "Risk Management Department",
+    "slug": "risk-management-department"
+  },
+  {
+    "name": "Risk Management Team",
+    "slug": "risk-management-team"
+  },
+  {
+    "name": "Risk Management Division",
+    "slug": "risk-management-division"
+  },
+  {
+    "name": "Risk Management Office",
+    "slug": "risk-management-office"
+  },
+  {
+    "name": "Risk Management Group",
+    "slug": "risk-management-group"
+  },
+  {
+    "name": "Sales Department",
+    "slug": "sales-department"
+  },
+  {
+    "name": "Sales Team",
+    "slug": "sales-team"
+  },
+  {
+    "name": "Sales Division",
+    "slug": "sales-division"
+  },
+  {
+    "name": "Sales Office",
+    "slug": "sales-office"
+  },
+  {
+    "name": "Sales Group",
+    "slug": "sales-group"
+  },
+  {
+    "name": "Sales Enablement Department",
+    "slug": "sales-enablement-department"
+  },
+  {
+    "name": "Sales Enablement Team",
+    "slug": "sales-enablement-team"
+  },
+  {
+    "name": "Sales Enablement Division",
+    "slug": "sales-enablement-division"
+  },
+  {
+    "name": "Sales Enablement Office",
+    "slug": "sales-enablement-office"
+  },
+  {
+    "name": "Sales Enablement Group",
+    "slug": "sales-enablement-group"
+  },
+  {
+    "name": "Security Operations Department",
+    "slug": "security-operations-department"
+  },
+  {
+    "name": "Security Operations Team",
+    "slug": "security-operations-team"
+  },
+  {
+    "name": "Security Operations Division",
+    "slug": "security-operations-division"
+  },
+  {
+    "name": "Security Operations Office",
+    "slug": "security-operations-office"
+  },
+  {
+    "name": "Security Operations Group",
+    "slug": "security-operations-group"
+  },
+  {
+    "name": "Service Delivery Department",
+    "slug": "service-delivery-department"
+  },
+  {
+    "name": "Service Delivery Team",
+    "slug": "service-delivery-team"
+  },
+  {
+    "name": "Service Delivery Division",
+    "slug": "service-delivery-division"
+  },
+  {
+    "name": "Service Delivery Office",
+    "slug": "service-delivery-office"
+  },
+  {
+    "name": "Service Delivery Group",
+    "slug": "service-delivery-group"
+  },
+  {
+    "name": "Site Reliability Engineering Department",
+    "slug": "site-reliability-engineering-department"
+  },
+  {
+    "name": "Site Reliability Engineering Team",
+    "slug": "site-reliability-engineering-team"
+  },
+  {
+    "name": "Site Reliability Engineering Division",
+    "slug": "site-reliability-engineering-division"
+  },
+  {
+    "name": "Site Reliability Engineering Office",
+    "slug": "site-reliability-engineering-office"
+  },
+  {
+    "name": "Site Reliability Engineering Group",
+    "slug": "site-reliability-engineering-group"
+  },
+  {
+    "name": "Software Engineering Department",
+    "slug": "software-engineering-department"
+  },
+  {
+    "name": "Software Engineering Team",
+    "slug": "software-engineering-team"
+  },
+  {
+    "name": "Software Engineering Division",
+    "slug": "software-engineering-division"
+  },
+  {
+    "name": "Software Engineering Office",
+    "slug": "software-engineering-office"
+  },
+  {
+    "name": "Software Engineering Group",
+    "slug": "software-engineering-group"
+  },
+  {
+    "name": "Strategic Partnerships Department",
+    "slug": "strategic-partnerships-department"
+  },
+  {
+    "name": "Strategic Partnerships Team",
+    "slug": "strategic-partnerships-team"
+  },
+  {
+    "name": "Strategic Partnerships Division",
+    "slug": "strategic-partnerships-division"
+  },
+  {
+    "name": "Strategic Partnerships Office",
+    "slug": "strategic-partnerships-office"
+  },
+  {
+    "name": "Strategic Partnerships Group",
+    "slug": "strategic-partnerships-group"
+  },
+  {
+    "name": "Strategy Department",
+    "slug": "strategy-department"
+  },
+  {
+    "name": "Strategy Team",
+    "slug": "strategy-team"
+  },
+  {
+    "name": "Strategy Division",
+    "slug": "strategy-division"
+  },
+  {
+    "name": "Strategy Office",
+    "slug": "strategy-office"
+  },
+  {
+    "name": "Strategy Group",
+    "slug": "strategy-group"
+  },
+  {
+    "name": "Supply Chain Department",
+    "slug": "supply-chain-department"
+  },
+  {
+    "name": "Supply Chain Team",
+    "slug": "supply-chain-team"
+  },
+  {
+    "name": "Supply Chain Division",
+    "slug": "supply-chain-division"
+  },
+  {
+    "name": "Supply Chain Office",
+    "slug": "supply-chain-office"
+  },
+  {
+    "name": "Supply Chain Group",
+    "slug": "supply-chain-group"
+  },
+  {
+    "name": "Sustainability Department",
+    "slug": "sustainability-department"
+  },
+  {
+    "name": "Sustainability Team",
+    "slug": "sustainability-team"
+  },
+  {
+    "name": "Sustainability Division",
+    "slug": "sustainability-division"
+  },
+  {
+    "name": "Sustainability Office",
+    "slug": "sustainability-office"
+  },
+  {
+    "name": "Sustainability Group",
+    "slug": "sustainability-group"
+  },
+  {
+    "name": "Talent Acquisition Department",
+    "slug": "talent-acquisition-department"
+  },
+  {
+    "name": "Talent Acquisition Team",
+    "slug": "talent-acquisition-team"
+  },
+  {
+    "name": "Talent Acquisition Division",
+    "slug": "talent-acquisition-division"
+  },
+  {
+    "name": "Talent Acquisition Office",
+    "slug": "talent-acquisition-office"
+  },
+  {
+    "name": "Talent Acquisition Group",
+    "slug": "talent-acquisition-group"
+  },
+  {
+    "name": "Talent Management Department",
+    "slug": "talent-management-department"
+  },
+  {
+    "name": "Talent Management Team",
+    "slug": "talent-management-team"
+  },
+  {
+    "name": "Talent Management Division",
+    "slug": "talent-management-division"
+  },
+  {
+    "name": "Talent Management Office",
+    "slug": "talent-management-office"
+  },
+  {
+    "name": "Talent Management Group",
+    "slug": "talent-management-group"
+  },
+  {
+    "name": "Tax Department",
+    "slug": "tax-department"
+  },
+  {
+    "name": "Tax Team",
+    "slug": "tax-team"
+  },
+  {
+    "name": "Tax Division",
+    "slug": "tax-division"
+  },
+  {
+    "name": "Tax Office",
+    "slug": "tax-office"
+  },
+  {
+    "name": "Tax Group",
+    "slug": "tax-group"
+  },
+  {
+    "name": "Technical Support Department",
+    "slug": "technical-support-department"
+  },
+  {
+    "name": "Technical Support Team",
+    "slug": "technical-support-team"
+  },
+  {
+    "name": "Technical Support Division",
+    "slug": "technical-support-division"
+  },
+  {
+    "name": "Technical Support Office",
+    "slug": "technical-support-office"
+  },
+  {
+    "name": "Technical Support Group",
+    "slug": "technical-support-group"
+  },
+  {
+    "name": "Training Department",
+    "slug": "training-department"
+  },
+  {
+    "name": "Training Team",
+    "slug": "training-team"
+  },
+  {
+    "name": "Training Division",
+    "slug": "training-division"
+  },
+  {
+    "name": "Training Office",
+    "slug": "training-office"
+  },
+  {
+    "name": "Training Group",
+    "slug": "training-group"
+  },
+  {
+    "name": "Treasury Department",
+    "slug": "treasury-department"
+  },
+  {
+    "name": "Treasury Team",
+    "slug": "treasury-team"
+  },
+  {
+    "name": "Treasury Division",
+    "slug": "treasury-division"
+  },
+  {
+    "name": "Treasury Office",
+    "slug": "treasury-office"
+  },
+  {
+    "name": "Treasury Group",
+    "slug": "treasury-group"
+  },
+  {
+    "name": "User Experience Department",
+    "slug": "user-experience-department"
+  },
+  {
+    "name": "User Experience Team",
+    "slug": "user-experience-team"
+  },
+  {
+    "name": "User Experience Division",
+    "slug": "user-experience-division"
+  },
+  {
+    "name": "User Experience Office",
+    "slug": "user-experience-office"
+  },
+  {
+    "name": "User Experience Group",
+    "slug": "user-experience-group"
+  },
+  {
+    "name": "Vendor Management Department",
+    "slug": "vendor-management-department"
+  },
+  {
+    "name": "Vendor Management Team",
+    "slug": "vendor-management-team"
+  },
+  {
+    "name": "Vendor Management Division",
+    "slug": "vendor-management-division"
+  },
+  {
+    "name": "Vendor Management Office",
+    "slug": "vendor-management-office"
+  },
+  {
+    "name": "Vendor Management Group",
+    "slug": "vendor-management-group"
+  },
+  {
+    "name": "Warehouse Operations Department",
+    "slug": "warehouse-operations-department"
+  },
+  {
+    "name": "Warehouse Operations Team",
+    "slug": "warehouse-operations-team"
+  },
+  {
+    "name": "Warehouse Operations Division",
+    "slug": "warehouse-operations-division"
+  },
+  {
+    "name": "Warehouse Operations Office",
+    "slug": "warehouse-operations-office"
+  },
+  {
+    "name": "Warehouse Operations Group",
+    "slug": "warehouse-operations-group"
+  },
+  {
+    "name": "Web Development Department",
+    "slug": "web-development-department"
+  },
+  {
+    "name": "Web Development Team",
+    "slug": "web-development-team"
+  },
+  {
+    "name": "Web Development Division",
+    "slug": "web-development-division"
+  },
+  {
+    "name": "Web Development Office",
+    "slug": "web-development-office"
+  },
+  {
+    "name": "Web Development Group",
+    "slug": "web-development-group"
+  },
+  {
+    "name": "Workplace Experience Department",
+    "slug": "workplace-experience-department"
+  },
+  {
+    "name": "Workplace Experience Team",
+    "slug": "workplace-experience-team"
+  },
+  {
+    "name": "Workplace Experience Division",
+    "slug": "workplace-experience-division"
+  },
+  {
+    "name": "Workplace Experience Office",
+    "slug": "workplace-experience-office"
+  },
+  {
+    "name": "Workplace Experience Group",
+    "slug": "workplace-experience-group"
+  },
+  {
+    "name": "Workforce Planning Department",
+    "slug": "workforce-planning-department"
+  },
+  {
+    "name": "Workforce Planning Team",
+    "slug": "workforce-planning-team"
+  },
+  {
+    "name": "Workforce Planning Division",
+    "slug": "workforce-planning-division"
+  },
+  {
+    "name": "Workforce Planning Office",
+    "slug": "workforce-planning-office"
+  },
+  {
+    "name": "Workforce Planning Group",
+    "slug": "workforce-planning-group"
+  }
+]
