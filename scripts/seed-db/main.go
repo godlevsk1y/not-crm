@@ -35,12 +35,17 @@ func main() {
 	locations := seeders.SeedLocations(280)
 
 	departmentPositions := seeders.SeedDepartmentPositions(800, departments, positions)
-
-	_ = departmentPositions
-
 	departmentLocations := seeders.SeedDepartmentLocations(800, departments, locations)
 
-	_ = departmentLocations
+	commitCmd := commitSeedDataCommand{
+		departments:         departments,
+		positions:           positions,
+		locations:           locations,
+		departmentPositions: departmentPositions,
+		departmentLocations: departmentLocations,
+	}
+
+	commitSeedData(ctx, conn, commitCmd)
 }
 
 func getConnStr(args []string) string {
