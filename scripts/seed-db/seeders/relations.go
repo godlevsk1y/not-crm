@@ -47,6 +47,7 @@ type DepartmentLocation struct {
 	ID           uuid.UUID
 	DepartmentID uuid.UUID
 	LocationID   uuid.UUID
+	IsPrimary    bool
 }
 
 func SeedDepartmentLocations(count int, departments []*Department, locations []*Location) []*DepartmentLocation {
@@ -69,6 +70,7 @@ func SeedDepartmentLocations(count int, departments []*Department, locations []*
 			ID:           uuid.New(),
 			DepartmentID: d.ID,
 			LocationID:   l.ID,
+			IsPrimary:    false,
 		}
 
 		if _, ok := seen[dl]; ok {

@@ -136,7 +136,7 @@ func commitDepartmentPositions(ctx context.Context, conn *pgx.Conn, departmentPo
 
 func commitDepartmentLocations(ctx context.Context, conn *pgx.Conn, departmentLocations []*seeders.DepartmentLocation) {
 	const sql = `INSERT INTO department_locations (id, department_id, location_id, is_primary) 
-		VALUES ($1, $2, $3, false);`
+		VALUES ($1, $2, $3, $4);`
 
 	batch := &pgx.Batch{}
 
@@ -144,6 +144,7 @@ func commitDepartmentLocations(ctx context.Context, conn *pgx.Conn, departmentLo
 		batch.Queue(
 			sql, dl.ID,
 			dl.DepartmentID, dl.LocationID,
+			dl.IsPrimary,
 		)
 	}
 
