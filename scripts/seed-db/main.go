@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"seed-db/seeders"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
@@ -28,6 +29,16 @@ func main() {
 	defer conn.Close(ctx)
 
 	fmt.Printf("Connected to PostgreSQL database on %s\n", args[0])
+
+	departments := seeders.SeedDepartments(400, 300, 350)
+	positions := seeders.SeedPositions(150)
+	locations := seeders.SeedLocations(280)
+
+	_ = locations
+
+	departmentPositions := seeders.SeedDepartmentPositions(800, departments, positions)
+
+	_ = departmentPositions
 }
 
 func getConnStr(args []string) string {
