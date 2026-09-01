@@ -34,11 +34,13 @@ func main() {
 	positions := seeders.SeedPositions(150)
 	locations := seeders.SeedLocations(280)
 
-	_ = locations
-
 	departmentPositions := seeders.SeedDepartmentPositions(800, departments, positions)
 
 	_ = departmentPositions
+
+	departmentLocations := seeders.SeedDepartmentLocations(800, departments, locations)
+
+	_ = departmentLocations
 }
 
 func getConnStr(args []string) string {
