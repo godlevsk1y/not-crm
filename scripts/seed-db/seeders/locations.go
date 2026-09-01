@@ -1,7 +1,6 @@
 package seeders
 
 import (
-	"fmt"
 	"time"
 	"uuid"
 
@@ -28,18 +27,20 @@ type Location struct {
 func SeedLocations(count int) []*Location {
 	var locations []*Location
 
-	for range count {
+	seen := make(map[string]struct{}, count)
+
+	for len(locations) < count {
 		now := time.Now()
 
 		l := &Location{
 			ID: uuid.New(),
 
-			Name: fmt.Sprintf("%s %s", gofakeit.Company(), gofakeit.CompanySuffix()),
+			Name: gofakeit.AdjectiveDescriptive() + " " + gofakeit.NounConcrete() + " " + gofakeit.CompanySuffix(),
 
 			Country:     gofakeit.Country(),
 			Region:      new(gofakeit.State()),
-			City:        gofakeit.MinecraftVillagerJob(),
-			District:    new(fmt.Sprintf("%s District", gofakeit.Word())),
+			City:        gofakeit.City(),
+			District:    new(gofakeit.Word() + " " + "District"),
 			Street:      gofakeit.Street(),
 			HouseNumber: gofakeit.Unit(),
 			PostalCode:  new(gofakeit.Zip()),
@@ -48,7 +49,12 @@ func SeedLocations(count int) []*Location {
 			UpdatedAt: now.UTC(),
 		}
 
+		if _, ok := seen[l.Name]; ok {
+			continue
+		}
+
 		locations = append(locations, l)
+		seen[l.Name] = struct{}{}
 	}
 
 	return locations
