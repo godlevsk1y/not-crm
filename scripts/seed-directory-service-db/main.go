@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"seed-db/seeders"
+	"strconv"
 	"strings"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -22,30 +25,60 @@ func main() {
 
 	connStr := getConnStr(args)
 
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Failed to load the env variables")
+	}
+
 	conn, err := pgx.Connect(ctx, connStr)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to connect the db: %s", err)
+		log.Fatalf("failed to connect the db: %s", err)
 	}
 	defer conn.Close(ctx)
 
 	fmt.Printf("Connected to PostgreSQL database on %s\n", args[0])
 
-	departments := seeders.SeedDepartments(400, 300, 350)
-	positions := seeders.SeedPositions(150)
-	locations := seeders.SeedLocations(280)
+	commitCmd := seedData()
 
-	departmentPositions := seeders.SeedDepartmentPositions(800, departments, positions)
-	departmentLocations := seeders.SeedDepartmentLocations(800, departments, locations)
+	commitSeedData(ctx, conn, commitCmd)
+}
 
-	commitCmd := commitSeedDataCommand{
+func seedData() commitSeedDataCommand {
+	departmentsCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_COUNT"))
+	departmentsRootMinCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_ROOT_MIN_COUNT"))
+	departmentsRootMaxCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_ROOT_MAX_COUNT"))
+
+	positionsCount, _ := strconv.Atoi(os.Getenv("POSITIONS_COUNT"))
+	locationsCount, _ := strconv.Atoi(os.Getenv("LOCATIONS_COUNT"))
+
+	departmentsPositionsCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_POSITIONS_COUNT"))
+	departmentsLocationsCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_LOCATIONS_COUNT"))
+
+	departments := seeders.SeedDepartments(
+		departmentsCount,
+		departmentsRootMinCount,
+		departmentsRootMaxCount,
+	)
+	positions := seeders.SeedPositions(positionsCount)
+	locations := seeders.SeedLocations(locationsCount)
+
+	departmentPositions := seeders.SeedDepartmentPositions(
+		departmentsPositionsCount,
+		departments,
+		positions,
+	)
+	departmentLocations := seeders.SeedDepartmentLocations(
+		departmentsLocationsCount,
+		departments,
+		locations,
+	)
+
+	return commitSeedDataCommand{
 		departments:         departments,
 		positions:           positions,
 		locations:           locations,
 		departmentPositions: departmentPositions,
 		departmentLocations: departmentLocations,
 	}
-
-	commitSeedData(ctx, conn, commitCmd)
 }
 
 func getConnStr(args []string) string {

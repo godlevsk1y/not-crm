@@ -10,10 +10,19 @@ type DepartmentPosition struct {
 	PositionID   uuid.UUID
 }
 
+type departmentPositionIDPair struct {
+	departmentID uuid.UUID
+	positionID   uuid.UUID
+}
+
 func SeedDepartmentPositions(count int, departments []*Department, positions []*Position) []*DepartmentPosition {
 	var relations []*DepartmentPosition
 
-	seen := make(map[DepartmentPosition]struct{}, count)
+	seen := make(map[departmentPositionIDPair]struct{}, count)
+
+	if count > len(departments)*len(positions) {
+		count = len(departments) * len(positions)
+	}
 
 	for len(relations) < count {
 		d, ok := choice(departments)
@@ -32,12 +41,14 @@ func SeedDepartmentPositions(count int, departments []*Department, positions []*
 			PositionID:   p.ID,
 		}
 
-		if _, ok := seen[dp]; ok {
+		pair := departmentPositionIDPair{dp.DepartmentID, dp.PositionID}
+
+		if _, ok := seen[pair]; ok {
 			continue
 		}
 
 		relations = append(relations, &dp)
-		seen[dp] = struct{}{}
+		seen[pair] = struct{}{}
 	}
 
 	return relations
@@ -50,10 +61,19 @@ type DepartmentLocation struct {
 	IsPrimary    bool
 }
 
+type departmentLocationIDPair struct {
+	departmentID uuid.UUID
+	locationID   uuid.UUID
+}
+
 func SeedDepartmentLocations(count int, departments []*Department, locations []*Location) []*DepartmentLocation {
 	var relations []*DepartmentLocation
 
-	seen := make(map[DepartmentLocation]struct{}, count)
+	seen := make(map[departmentLocationIDPair]struct{}, count)
+
+	if count > len(departments)*len(locations) {
+		count = len(departments) * len(locations)
+	}
 
 	for len(relations) < count {
 		d, ok := choice(departments)
@@ -73,12 +93,14 @@ func SeedDepartmentLocations(count int, departments []*Department, locations []*
 			IsPrimary:    false,
 		}
 
-		if _, ok := seen[dl]; ok {
+		pair := departmentLocationIDPair{dl.DepartmentID, dl.LocationID}
+
+		if _, ok := seen[pair]; ok {
 			continue
 		}
 
 		relations = append(relations, &dl)
-		seen[dl] = struct{}{}
+		seen[pair] = struct{}{}
 	}
 
 	return relations

@@ -19,15 +19,24 @@ type commitSeedDataCommand struct {
 }
 
 func commitSeedData(ctx context.Context, conn *pgx.Conn, cmd commitSeedDataCommand) {
-	commitDepartments(ctx, conn, cmd.departments)
-	commitPositions(ctx, conn, cmd.positions)
-	commitLocations(ctx, conn, cmd.locations)
+	tx, err := conn.Begin(ctx)
+	if err != nil {
+		log.Fatalf("Failed to begin transaction: %s", err)
+	}
 
-	commitDepartmentPositions(ctx, conn, cmd.departmentPositions)
-	commitDepartmentLocations(ctx, conn, cmd.departmentLocations)
+	defer tx.Rollback(ctx)
+
+	commitDepartments(ctx, tx, cmd.departments)
+	commitPositions(ctx, tx, cmd.positions)
+	commitLocations(ctx, tx, cmd.locations)
+
+	commitDepartmentPositions(ctx, tx, cmd.departmentPositions)
+	commitDepartmentLocations(ctx, tx, cmd.departmentLocations)
+
+	tx.Commit(ctx)
 }
 
-func commitDepartments(ctx context.Context, conn *pgx.Conn, departments []*seeders.Department) {
+func commitDepartments(ctx context.Context, tx pgx.Tx, departments []*seeders.Department) {
 	const sql = `INSERT INTO departments (id, name, slug, path, parent_id, created_at, updated_at) 
 		VALUES ($1, $2, $3, $4, $5, $6, $7);`
 
@@ -41,7 +50,7 @@ func commitDepartments(ctx context.Context, conn *pgx.Conn, departments []*seede
 		)
 	}
 
-	br := conn.SendBatch(ctx, batch)
+	br := tx.SendBatch(ctx, batch)
 	defer br.Close()
 
 	for i := range len(departments) {
@@ -54,7 +63,7 @@ func commitDepartments(ctx context.Context, conn *pgx.Conn, departments []*seede
 	}
 }
 
-func commitPositions(ctx context.Context, conn *pgx.Conn, positions []*seeders.Position) {
+func commitPositions(ctx context.Context, tx pgx.Tx, positions []*seeders.Position) {
 	const sql = `INSERT INTO positions (id, name, created_at, updated_at) 
 		VALUES ($1, $2, $3, $4);`
 
@@ -67,7 +76,7 @@ func commitPositions(ctx context.Context, conn *pgx.Conn, positions []*seeders.P
 		)
 	}
 
-	br := conn.SendBatch(ctx, batch)
+	br := tx.SendBatch(ctx, batch)
 	defer br.Close()
 
 	for i := range len(positions) {
@@ -80,7 +89,7 @@ func commitPositions(ctx context.Context, conn *pgx.Conn, positions []*seeders.P
 	}
 }
 
-func commitLocations(ctx context.Context, conn *pgx.Conn, locations []*seeders.Location) {
+func commitLocations(ctx context.Context, tx pgx.Tx, locations []*seeders.Location) {
 	const sql = `INSERT INTO locations (id, name, country, region, city, district, street, house_number, postal_code, created_at, updated_at) 
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);`
 
@@ -95,7 +104,7 @@ func commitLocations(ctx context.Context, conn *pgx.Conn, locations []*seeders.L
 		)
 	}
 
-	br := conn.SendBatch(ctx, batch)
+	br := tx.SendBatch(ctx, batch)
 	defer br.Close()
 
 	for i := range len(locations) {
@@ -108,7 +117,7 @@ func commitLocations(ctx context.Context, conn *pgx.Conn, locations []*seeders.L
 	}
 }
 
-func commitDepartmentPositions(ctx context.Context, conn *pgx.Conn, departmentPositions []*seeders.DepartmentPosition) {
+func commitDepartmentPositions(ctx context.Context, tx pgx.Tx, departmentPositions []*seeders.DepartmentPosition) {
 	const sql = `INSERT INTO department_positions (id, department_id, position_id) 
 		VALUES ($1, $2, $3);`
 
@@ -121,7 +130,7 @@ func commitDepartmentPositions(ctx context.Context, conn *pgx.Conn, departmentPo
 		)
 	}
 
-	br := conn.SendBatch(ctx, batch)
+	br := tx.SendBatch(ctx, batch)
 	defer br.Close()
 
 	for i := range len(departmentPositions) {
@@ -134,7 +143,7 @@ func commitDepartmentPositions(ctx context.Context, conn *pgx.Conn, departmentPo
 	}
 }
 
-func commitDepartmentLocations(ctx context.Context, conn *pgx.Conn, departmentLocations []*seeders.DepartmentLocation) {
+func commitDepartmentLocations(ctx context.Context, tx pgx.Tx, departmentLocations []*seeders.DepartmentLocation) {
 	const sql = `INSERT INTO department_locations (id, department_id, location_id, is_primary) 
 		VALUES ($1, $2, $3, $4);`
 
@@ -148,7 +157,7 @@ func commitDepartmentLocations(ctx context.Context, conn *pgx.Conn, departmentLo
 		)
 	}
 
-	br := conn.SendBatch(ctx, batch)
+	br := tx.SendBatch(ctx, batch)
 	defer br.Close()
 
 	for i := range len(departmentLocations) {
