@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/seed-db",
+            "program": "${workspaceFolder}/seed-directory-service-db",
             "args": [
                 "localhost:45678",
                 "postgres:postgres",

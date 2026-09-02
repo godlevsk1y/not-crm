@@ -7,7 +7,6 @@ import (
 	"os"
 	"seed-db/seeders"
 	"strconv"
-	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
@@ -16,18 +15,11 @@ import (
 func main() {
 	ctx := context.Background()
 
-	args := os.Args[1:]
-
-	if len(args) < 3 {
-		fmt.Println("usage: seed-db <host>:<port> <username>:<password> <db_name>")
-		os.Exit(1)
-	}
-
-	connStr := getConnStr(args)
-
 	if err := godotenv.Load(); err != nil {
 		log.Fatalf("Failed to load the env variables")
 	}
+
+	connStr := getConnStr()
 
 	conn, err := pgx.Connect(ctx, connStr)
 	if err != nil {
@@ -35,7 +27,7 @@ func main() {
 	}
 	defer conn.Close(ctx)
 
-	fmt.Printf("Connected to PostgreSQL database on %s\n", args[0])
+	fmt.Printf("Connected to PostgreSQL database!\n")
 
 	commitCmd := seedData()
 
@@ -81,15 +73,15 @@ func seedData() commitSeedDataCommand {
 	}
 }
 
-func getConnStr(args []string) string {
-	netAddr := strings.Split(args[0], ":")
-	creds := strings.Split(args[1], ":")
-	dbName := args[2]
+func getConnStr() string {
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
 
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s",
-		creds[0], creds[1],
-		netAddr[0], netAddr[1],
-		dbName,
+		user, password, host, port, dbName,
 	)
 }
