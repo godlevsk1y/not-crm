@@ -1,3 +1,3 @@
-namespace DirectoryService.Contracts.WebApi.Positions;
+namespace DirectoryService.Contracts.Positions;
 
 public record UpdatePositionRequest(string Name);

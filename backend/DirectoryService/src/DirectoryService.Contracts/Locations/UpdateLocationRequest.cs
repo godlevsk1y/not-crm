@@ -1,4 +1,4 @@
-namespace DirectoryService.Contracts.WebApi.Locations;
+namespace DirectoryService.Contracts.Locations;
 
 public record UpdateLocationRequest(
     string? Name,

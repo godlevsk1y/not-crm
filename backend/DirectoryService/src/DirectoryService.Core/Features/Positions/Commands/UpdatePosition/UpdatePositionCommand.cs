@@ -1,4 +1,4 @@
-using DirectoryService.Contracts.WebApi.Positions;
+using DirectoryService.Contracts.Positions;
 using DirectoryService.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Positions.Commands.UpdatePosition;

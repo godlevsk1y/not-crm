@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.WebApi.Departments;
+using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
 using DirectoryService.Core.Extensions;

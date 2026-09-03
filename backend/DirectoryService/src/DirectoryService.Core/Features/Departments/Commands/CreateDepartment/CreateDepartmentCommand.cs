@@ -1,4 +1,4 @@
-using DirectoryService.Contracts.WebApi.Departments;
+using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Departments.Commands.CreateDepartment;

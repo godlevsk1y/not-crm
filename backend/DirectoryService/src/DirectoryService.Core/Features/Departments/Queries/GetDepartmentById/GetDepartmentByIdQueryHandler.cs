@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.WebApi.Departments;
+using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Database;
 using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;

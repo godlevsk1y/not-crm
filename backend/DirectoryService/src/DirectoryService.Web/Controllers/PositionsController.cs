@@ -1,4 +1,4 @@
-using DirectoryService.Contracts.WebApi.Positions;
+using DirectoryService.Contracts.Positions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Positions.Commands.CreatePosition;
 using DirectoryService.Core.Features.Positions.Commands.DeletePosition;
