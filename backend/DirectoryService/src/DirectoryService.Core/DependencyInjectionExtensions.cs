@@ -1,4 +1,5 @@
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Features.Locations.Queries.GetTopLocationWithDepartmentsCount;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +20,8 @@ public static class DependencyInjectionExtensions
             .AsSelfWithInterfaces()
             .WithScopedLifetime()
         );
+        
+        services.AddScoped<GetTopLocationsWithDepartmentCountQueryHandler>();
         
         return services;
     }
