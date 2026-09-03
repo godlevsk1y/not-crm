@@ -29,6 +29,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPositionsRepository, PositionsRepository>();
 
         services.AddScoped<ITransactionManager, TransactionManager>();
+
+        services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
         
         return services;
     }

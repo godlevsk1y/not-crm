@@ -1,8 +1,8 @@
-using System.Data.Common;
+using System.Data;
 
 namespace DirectoryService.Core.Database;
 
 public interface IDbConnectionFactory
 {
-    Task<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken);
+    Task<IDbConnection> OpenConnectionAsync(CancellationToken cancellationToken);
 }
