@@ -33,7 +33,7 @@ public class GetTopLocationsWithDepartmentCountQueryHandler
                            FROM locations l
                            LEFT JOIN department_locations dl ON l.id = dl.location_id
                            GROUP BY l.id
-                           ORDER BY department_count DESC
+ORDER BY department_count DESC, l.name ASC
                            LIMIT 5
                            """;
 
