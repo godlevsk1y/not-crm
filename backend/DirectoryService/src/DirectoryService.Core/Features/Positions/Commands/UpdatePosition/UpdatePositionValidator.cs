@@ -1,4 +1,4 @@
-using DirectoryService.Contracts.WebApi.Positions;
+using DirectoryService.Contracts.Positions;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;

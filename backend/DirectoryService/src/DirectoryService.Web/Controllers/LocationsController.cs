@@ -1,10 +1,11 @@
-using DirectoryService.Contracts.WebApi.Locations;
+using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
 using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
 using DirectoryService.Core.Features.Locations.Queries;
 using DirectoryService.Core.Features.Locations.Queries.GetLocationById;
+using DirectoryService.Core.Features.Locations.Queries.GetTopLocationWithDepartmentsCount;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -85,5 +86,15 @@ public class LocationsController : ControllerBase
         }
         
         return EndpointResults.Ok(locationResult.Value);
+    }
+
+    [HttpGet("top")]
+    public async Task<IResult> GetTopLocationsWithDepartmentCount(
+        [FromServices] GetTopLocationsWithDepartmentCountQueryHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var locations = await handler.Handle(cancellationToken);
+        
+        return EndpointResults.Ok(locations);
     }
 }

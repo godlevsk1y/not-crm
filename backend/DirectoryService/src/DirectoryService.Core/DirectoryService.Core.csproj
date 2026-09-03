@@ -7,6 +7,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Dapper" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />

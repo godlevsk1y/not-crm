@@ -1,4 +1,4 @@
-using DirectoryService.Contracts.WebApi.Locations;
+using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Locations.Commands.UpdateLocation;

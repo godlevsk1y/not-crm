@@ -1,3 +1,3 @@
-namespace DirectoryService.Contracts.WebApi.Departments;
+namespace DirectoryService.Contracts.Departments;
 
 public record UpdateDepartmentRequest(string? Name, string? Slug, Guid? ParentId);

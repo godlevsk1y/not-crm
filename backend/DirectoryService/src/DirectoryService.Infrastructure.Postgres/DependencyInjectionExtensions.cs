@@ -29,6 +29,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IPositionsRepository, PositionsRepository>();
 
         services.AddScoped<ITransactionManager, TransactionManager>();
+
+        services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         
         return services;
     }

@@ -1,4 +1,4 @@
-using DirectoryService.Contracts.WebApi.Departments;
+using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Departments.Commands.AddLocation;
 using DirectoryService.Core.Features.Departments.Commands.AddPosition;
