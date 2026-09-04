@@ -1,4 +1,5 @@
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Contracts.Departments.QueryContracts;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Departments.Commands.AddLocation;
 using DirectoryService.Core.Features.Departments.Commands.AddPosition;
@@ -9,6 +10,8 @@ using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
+using DirectoryService.Shared.Errors;
+using DirectoryService.Shared.Results;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -147,7 +150,7 @@ public class DepartmentsController : ControllerBase
 
     [HttpGet("{id:guid}")]
     public async Task<IResult> GetById(
-        [FromServices] GetDepartmentByIdQueryHandler handler,
+        [FromServices] IQueryHandler<GetDepartmentByIdQuery, CSharpFunctionalExtensions.Result<DepartmentDto, Error>> handler,
         [FromRoute] Guid id,
         CancellationToken cancellationToken
     )
@@ -165,7 +168,8 @@ public class DepartmentsController : ControllerBase
 
     [HttpGet]
     public async Task<IResult> GetDepartmentList(
-        [FromServices] GetDepartmentListQueryHandler handler,
+        [FromServices] IQueryHandler<GetDepartmentListQuery,
+            CSharpFunctionalExtensions.Result<PagedResult<DepartmentListItemDto>, Error>> handler,
         [FromQuery] GetDepartmentListQuery query,
         CancellationToken cancellationToken
     )
@@ -179,5 +183,3 @@ public class DepartmentsController : ControllerBase
         return EndpointResults.Ok(getResult.Value);
     }
 }
-
-

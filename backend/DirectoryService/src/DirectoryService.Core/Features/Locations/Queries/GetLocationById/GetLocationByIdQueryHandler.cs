@@ -1,12 +1,13 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations;
+using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
 using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Core.Features.Locations.Queries.GetLocationById;
 
-public class GetLocationByIdQueryHandler
+public class GetLocationByIdQueryHandler : IQueryHandler<GetLocationByIdQuery, Result<LocationDto, Error>>
 {
     private readonly IReadDbContext _readDbContext;
 

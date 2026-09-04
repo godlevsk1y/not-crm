@@ -1,11 +1,12 @@
 using DirectoryService.Contracts.Locations;
+using DirectoryService.Contracts.Locations.QueryContracts;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
 using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
-using DirectoryService.Core.Features.Locations.Queries;
 using DirectoryService.Core.Features.Locations.Queries.GetLocationById;
 using DirectoryService.Core.Features.Locations.Queries.GetTopLocationWithDepartmentsCount;
+using DirectoryService.Shared.Errors;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,7 +73,8 @@ public class LocationsController : ControllerBase
 
     [HttpGet("{id:guid}")]
     public async Task<IResult> GetById(
-        [FromServices] GetLocationByIdQueryHandler handler,
+        [FromServices] IQueryHandler<GetLocationByIdQuery,
+            CSharpFunctionalExtensions.Result<LocationDto, Error>> handler,
         [FromRoute] Guid id,
         CancellationToken cancellationToken
     )
@@ -90,7 +92,7 @@ public class LocationsController : ControllerBase
 
     [HttpGet("top")]
     public async Task<IResult> GetTopLocationsWithDepartmentCount(
-        [FromServices] GetTopLocationsWithDepartmentCountQueryHandler handler,
+        [FromServices] IQueryHandler<IReadOnlyList<LocationWithDepartmentCountDto>> handler,
         CancellationToken cancellationToken)
     {
         var locations = await handler.Handle(cancellationToken);

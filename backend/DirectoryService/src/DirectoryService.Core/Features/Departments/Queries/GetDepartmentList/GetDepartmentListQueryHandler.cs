@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments.QueryContracts;
+using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Shared.Errors;
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
 
-public class GetDepartmentListQueryHandler
+public class GetDepartmentListQueryHandler : IQueryHandler<GetDepartmentListQuery, Result<PagedResult<DepartmentListItemDto>, Error>>
 {
     private readonly IReadDbContext _readContext;
     private readonly IValidator<GetDepartmentListQuery> _validator;

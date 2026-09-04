@@ -1,3 +1,5 @@
+using DirectoryService.Core.Abstractions;
+
 namespace DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
 
 public record GetDepartmentListQuery(
@@ -6,4 +8,4 @@ public record GetDepartmentListQuery(
     string SortDirection = "asc",
     int Page = 1,
     int PageSize = 20
-);
+) : IQuery;

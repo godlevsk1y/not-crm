@@ -1,6 +1,4 @@
 using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
-using DirectoryService.Core.Features.Locations.Queries.GetTopLocationWithDepartmentsCount;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,13 +15,14 @@ public static class DependencyInjectionExtensions
         services.Scan(scan => scan
             .FromAssemblies(assembly)
             .AddClasses(classes => classes
-                .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
+                .AssignableToAny(
+                    typeof(ICommandHandler<,>),
+                    typeof(ICommandHandler<>),
+                    typeof(IQueryHandler<,>),
+                    typeof(IQueryHandler<>)))
             .AsSelfWithInterfaces()
             .WithScopedLifetime()
         );
-        
-        services.AddScoped<GetTopLocationsWithDepartmentCountQueryHandler>();
-        services.AddScoped<GetDepartmentListQueryHandler>();
         
         return services;
     }
