@@ -8,6 +8,7 @@ using DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
 using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
+using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -161,4 +162,22 @@ public class DepartmentsController : ControllerBase
         
         return EndpointResults.Ok(departmentResult.Value);
     }
+
+    [HttpGet]
+    public async Task<IResult> GetDepartmentList(
+        [FromServices] GetDepartmentListQueryHandler handler,
+        [FromQuery] GetDepartmentListQuery query,
+        CancellationToken cancellationToken
+    )
+    {
+        var getResult = await handler.Handle(query, cancellationToken);
+        if (getResult.IsFailure)
+        {
+            return EndpointResults.Error(getResult.Error);
+        }
+        
+        return EndpointResults.Ok(getResult.Value);
+    }
 }
+
+
