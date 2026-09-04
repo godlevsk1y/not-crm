@@ -1,12 +1,13 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
 using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 
-public class GetDepartmentByIdQueryHandler
+public class GetDepartmentByIdQueryHandler : IQueryHandler<GetDepartmentByIdQuery, Result<DepartmentDto, Error>>
 {
     private readonly IReadDbContext _readDbContext;
 

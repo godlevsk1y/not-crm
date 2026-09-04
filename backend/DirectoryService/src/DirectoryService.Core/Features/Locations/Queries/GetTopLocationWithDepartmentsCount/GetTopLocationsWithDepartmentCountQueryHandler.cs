@@ -1,11 +1,12 @@
 using Dapper;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
+using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
 
 namespace DirectoryService.Core.Features.Locations.Queries.GetTopLocationWithDepartmentsCount;
 
-public class GetTopLocationsWithDepartmentCountQueryHandler
+public class GetTopLocationsWithDepartmentCountQueryHandler : IQueryHandler<IReadOnlyList<LocationWithDepartmentCountDto>>
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
