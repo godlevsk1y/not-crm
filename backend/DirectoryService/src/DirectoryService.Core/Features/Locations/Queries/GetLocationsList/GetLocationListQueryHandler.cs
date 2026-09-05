@@ -36,7 +36,7 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
             return validationResult.ToError();
         }
 
-        var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
+        using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
 
         var parameters = new DynamicParameters();
         

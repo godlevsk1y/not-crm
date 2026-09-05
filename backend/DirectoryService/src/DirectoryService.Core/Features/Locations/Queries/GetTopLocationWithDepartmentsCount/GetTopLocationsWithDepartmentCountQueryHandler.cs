@@ -18,7 +18,7 @@ public class GetTopLocationsWithDepartmentCountQueryHandler : IQueryHandler<IRea
 
     public async Task<IReadOnlyList<LocationWithDepartmentCountDto>> Handle(CancellationToken cancellationToken)
     {
-        var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
+        using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
         
         const string sql = """
                            SELECT
