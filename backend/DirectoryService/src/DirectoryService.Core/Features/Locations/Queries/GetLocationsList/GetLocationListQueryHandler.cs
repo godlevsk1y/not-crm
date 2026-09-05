@@ -49,7 +49,7 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
 
         if (query.Search is not null)
         {
-            whereClauses.Add("l.name ILIKE '%' || '@search' || '%'");
+            whereClauses.Add("l.name ILIKE '%' || @search || '%'");
         }
 
         whereClauses.Add("COALESCE(dc.department_count, 0) >= @minDepartmentCount");
