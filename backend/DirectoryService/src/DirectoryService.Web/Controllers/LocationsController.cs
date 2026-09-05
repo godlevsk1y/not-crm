@@ -1,3 +1,4 @@
+using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
 using DirectoryService.Core.Abstractions;
@@ -5,10 +6,12 @@ using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
 using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
 using DirectoryService.Core.Features.Locations.Queries.GetLocationById;
-using DirectoryService.Core.Features.Locations.Queries.GetTopLocationWithDepartmentsCount;
+using DirectoryService.Core.Features.Locations.Queries.GetLocationsList;
 using DirectoryService.Shared.Errors;
+using DirectoryService.Shared.Results;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
+using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Web.Controllers;
 
@@ -73,8 +76,8 @@ public class LocationsController : ControllerBase
 
     [HttpGet("{id:guid}")]
     public async Task<IResult> GetById(
-        [FromServices] IQueryHandler<GetLocationByIdQuery,
-            CSharpFunctionalExtensions.Result<LocationDto, Error>> handler,
+        [FromServices] IQueryHandler<GetLocationByIdQuery, 
+            Result<LocationDto, Error>> handler,
         [FromRoute] Guid id,
         CancellationToken cancellationToken
     )
@@ -98,5 +101,22 @@ public class LocationsController : ControllerBase
         var locations = await handler.Handle(cancellationToken);
         
         return EndpointResults.Ok(locations);
+    }
+
+    [HttpGet]
+    public async Task<IResult> GetLocationList(
+        [FromServices] IQueryHandler<GetLocationListQuery, 
+            Result<PagedResult<LocationListItemDto>, Error>> handler,
+        [FromQuery] GetLocationListQuery query,
+        CancellationToken cancellationToken
+    )
+    {
+        var getResult = await handler.Handle(query, cancellationToken);
+        if (getResult.IsFailure)
+        {
+            return EndpointResults.Error(getResult.Error);
+        }
+        
+        return EndpointResults.Ok(getResult.Value);
     }
 }
