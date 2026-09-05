@@ -1,5 +1,4 @@
 using System.Data;
-using System.Data.Common;
 using DirectoryService.Core.Database;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
