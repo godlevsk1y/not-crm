@@ -1,4 +1,5 @@
 using Dapper;
+using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
 using DirectoryService.Core.Abstractions;
@@ -39,10 +40,11 @@ public class GetTopLocationsWithDepartmentCountQueryHandler : IQueryHandler<IRea
                            """;
 
         var locationsWithDepartmentCount = await connection
-            .QueryAsync<LocationDto, long, LocationWithDepartmentCountDto>(
+            .QueryAsync<Guid, string, AddressDto, long, LocationWithDepartmentCountDto>(
                 sql,
-                map: (dto, count) => new LocationWithDepartmentCountDto(dto, count),
-                splitOn: "department_count"
+                map: (id, name, address, count) => new LocationWithDepartmentCountDto(
+                    new LocationDto(id, name, address), count),
+                splitOn: "name,country,department_count"
             );
         
         return locationsWithDepartmentCount.ToList();

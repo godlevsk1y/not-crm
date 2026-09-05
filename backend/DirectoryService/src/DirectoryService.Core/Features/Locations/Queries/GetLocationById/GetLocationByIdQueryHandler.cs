@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
@@ -27,13 +28,15 @@ public class GetLocationByIdQueryHandler : IQueryHandler<GetLocationByIdQuery, R
         return new LocationDto(
             Id: location.Id,
             Name: location.Name.ToString(),
-            Country: location.Address.Country,
-            Region: location.Address.Region,
-            City: location.Address.City,
-            District: location.Address.District,
-            Street: location.Address.Street,
-            HouseNumber: location.Address.HouseNumber,
-            PostalCode: location.Address.PostalCode
+            Address: new AddressDto(
+                Country: location.Address.Country,
+                Region: location.Address.Region,
+                City: location.Address.City,
+                District: location.Address.District,
+                Street: location.Address.Street,
+                HouseNumber: location.Address.HouseNumber,
+                PostalCode: location.Address.PostalCode
+            )
         );
     }
 }
