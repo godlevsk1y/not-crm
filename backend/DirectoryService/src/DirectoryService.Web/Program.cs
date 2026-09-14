@@ -19,10 +19,6 @@ try
 
     await app.RunAsync();
 }
-catch (Exception ex)
-{
-    Log.Fatal(ex, "Application startup failed");
-}
 finally
 {
     await Log.CloseAndFlushAsync();

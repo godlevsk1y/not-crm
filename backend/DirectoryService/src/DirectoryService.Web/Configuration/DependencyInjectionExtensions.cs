@@ -53,7 +53,8 @@ public static class DependencyInjectionExtensions
             .ReadFrom.Services(sp)
             .Enrich.FromLogContext()
             .Enrich.WithExceptionDetails()
-            .Enrich.WithProperty("ServiceName", "DirectoryService")
+            .Enrich.WithProperty("ServiceName", "DirectoryService"),
+            preserveStaticLogger: true
         );
         
         return services;

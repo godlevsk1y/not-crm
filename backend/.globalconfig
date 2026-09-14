@@ -10,6 +10,12 @@ dotnet_diagnostic.CA2007.severity = none
 # CA1000: static members on generic types
 dotnet_diagnostic.CA1000.severity = none
 
+# CA1707: remove underscores from function name – test functions are allowed to have underscores in the name
+dotnet_diagnostic.CA1707.severity = none
+
+# CA2234: change string to URI - removed for test simplicity
+dotnet_diagnostic.CA2234.severity = none
+
 # MA0018: static members on generic types
 dotnet_diagnostic.MA0018.severity = none
 

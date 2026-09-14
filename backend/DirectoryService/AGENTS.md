@@ -99,6 +99,7 @@ Run commands from `backend/DirectoryService` unless noted otherwise:
 dotnet restore DirectoryService.slnx
 dotnet build DirectoryService.slnx --configuration Debug --disable-build-servers -m:1
 dotnet run --project src/DirectoryService.Web
+dotnet test
 ```
 
 When running under AI agents (such as Codex CLI), always pass `--disable-build-servers` to `dotnet build` because MSBuild/Roslyn build servers may hang in sandboxed environments.
@@ -107,7 +108,6 @@ Codex CLI may hang when MSBuild uses multiple worker nodes.
 Before handing off a change:
 
 - Build the solution; warnings are errors through `backend/Directory.Build.props`.
-- Add or update automated tests when a test project exists or when introducing non-trivial behavior. There is currently no checked-in test project for DirectoryService, so at minimum verify the build and exercise affected endpoints with a local PostgreSQL instance.
 - Check `GET /api/health` and the relevant endpoint responses, including validation, not-found, conflict, and persistence-failure paths where applicable.
 - For migrations, inspect the generated files and confirm the model snapshot is updated.
 - Review `git diff` for accidental changes to `bin/`, `obj/`, IDE metadata, configuration secrets, or generated artifacts.

@@ -36,7 +36,7 @@ public class GetDepartmentListQueryHandler : IQueryHandler<GetDepartmentListQuer
         var query = _readContext.DepartmentsRead;
         
         if (request.Search is not null)
-            query = query.Where(d => EF.Functions.Like(d.Name.Value, $"%{request.Search}%"));
+            query = query.Where(d => EF.Functions.ILike(d.Name.Value, $"%{request.Search}%"));
 
         query = (request.SortBy, request.SortDirection) switch
         {
