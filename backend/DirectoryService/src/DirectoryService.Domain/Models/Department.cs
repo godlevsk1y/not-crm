@@ -82,5 +82,7 @@ public class Department
         return UnitResult.Success<Error>();
     }
     
+    public void SoftDelete() => DeletedAt = DateTime.UtcNow;
+    
     private Path CalculatePath() => Parent is null ? Path.Create(Slug) : Parent.Path.Append(Slug);
 }

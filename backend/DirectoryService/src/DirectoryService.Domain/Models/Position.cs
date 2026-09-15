@@ -40,4 +40,6 @@ public class Position
         Name = name;
         UpdatedAt = DateTime.UtcNow;
     }
+    
+    public void SoftDelete() => DeletedAt = DateTime.UtcNow;
 }

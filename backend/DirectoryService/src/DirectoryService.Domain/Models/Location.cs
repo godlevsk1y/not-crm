@@ -46,4 +46,6 @@ public class Location
         
         UpdatedAt = DateTime.UtcNow;
     }
+    
+    public void SoftDelete() => DeletedAt = DateTime.UtcNow;
 }
