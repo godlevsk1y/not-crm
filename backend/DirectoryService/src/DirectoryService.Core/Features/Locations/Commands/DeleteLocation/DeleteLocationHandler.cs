@@ -35,7 +35,7 @@ public partial class DeleteLocationHandler : ICommandHandler<DeleteLocationComma
             return LocationErrors.NotFound(command.Id);
         }
 
-        _locationsRepository.Delete(location);
+        location.SoftDelete();
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)
