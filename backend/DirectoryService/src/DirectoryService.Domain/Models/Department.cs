@@ -25,6 +25,8 @@ public class Department
     
     public DateTime UpdatedAt { get; private set; }
     
+    public DateTime? DeletedAt { get; set; }
+    
     
     private Department() { } // EF Core
     
