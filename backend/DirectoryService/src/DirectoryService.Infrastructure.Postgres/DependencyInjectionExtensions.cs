@@ -3,6 +3,7 @@ using DirectoryService.Core.Features.Departments;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Core.Features.Positions;
 using DirectoryService.Infrastructure.Postgres.Repositories;
+using DirectoryService.Infrastructure.Postgres.Services.DatabaseCleanup;
 using DirectoryService.Infrastructure.Postgres.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,13 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+        
+        services.Configure<DatabaseCleanupOptions>(
+            configuration.GetSection(nameof(DatabaseCleanupOptions))
+        );
+
+        services.AddScoped<DatabaseCleanupService>();
+        services.AddHostedService<DatabaseCleanupBackgroundService>();
         
         return services;
     }
