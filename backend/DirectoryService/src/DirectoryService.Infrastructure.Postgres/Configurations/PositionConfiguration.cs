@@ -35,5 +35,12 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
             .IsRequired()
             .HasDefaultValueSql("now()")
             .HasColumnName("updated_at");
+        
+        builder.Property(d => d.DeletedAt)
+            .IsRequired(false)
+            .HasDefaultValue(value: null)
+            .HasColumnName("deleted_at");
+        
+        builder.HasQueryFilter(d => !d.DeletedAt.HasValue);
     }
 }
