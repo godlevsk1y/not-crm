@@ -17,6 +17,8 @@ public class Location
     public DateTime CreatedAt { get; private set; }
 
     public DateTime UpdatedAt { get; private set; }
+    
+    public DateTime? DeletedAt { get; set; }
 
     
     private Location() { } // EF Core
@@ -44,4 +46,6 @@ public class Location
         
         UpdatedAt = DateTime.UtcNow;
     }
+    
+    public void SoftDelete() => DeletedAt = DateTime.UtcNow;
 }

@@ -16,6 +16,8 @@ public class Position
     
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; set; }
+
     
     private Position() { } // EF core
     
@@ -38,4 +40,6 @@ public class Position
         Name = name;
         UpdatedAt = DateTime.UtcNow;
     }
+    
+    public void SoftDelete() => DeletedAt = DateTime.UtcNow;
 }

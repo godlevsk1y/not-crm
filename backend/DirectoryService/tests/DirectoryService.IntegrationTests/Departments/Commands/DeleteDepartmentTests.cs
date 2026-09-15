@@ -1,17 +1,23 @@
 using System.Net.Http.Json;
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Domain.Ids;
+using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Web.Results;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.IntegrationTests.Departments.Commands;
 
 public class DeleteDepartmentTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsyncLifetime
 {
     private readonly HttpClient _client;
+    private readonly DirectoryServiceTestWebFactory _factory;
     private readonly Func<Task> _resetDatabase;
 
     public DeleteDepartmentTests(DirectoryServiceTestWebFactory factory)
     {
         _client = factory.CreateClient();
+        _factory = factory;
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
@@ -31,6 +37,16 @@ public class DeleteDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         Assert.NotNull(envelope);
         Assert.True(envelope.IsError);
         Assert.Equal("department.not.found", envelope.Error!.Messages[0].Code);
+
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+
+        var deletedDepartment = await dbContext.Departments
+            .IgnoreQueryFilters()
+            .SingleOrDefaultAsync(d => d.Id == new DepartmentId(department.Id));
+
+        Assert.NotNull(deletedDepartment);
+        Assert.NotNull(deletedDepartment.DeletedAt);
     }
 
     [Fact]

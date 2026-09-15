@@ -35,7 +35,7 @@ public partial class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentC
             return DepartmentErrors.NotFound(command.Id);
         }
 
-        _departmentsRepository.Delete(department);
+        department.SoftDelete();
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)
