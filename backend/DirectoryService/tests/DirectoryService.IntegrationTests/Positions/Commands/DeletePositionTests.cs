@@ -1,17 +1,23 @@
 using System.Net.Http.Json;
 using DirectoryService.Contracts.Positions;
+using DirectoryService.Domain.Ids;
+using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Web.Results;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.IntegrationTests.Positions.Commands;
 
 public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsyncLifetime
 {
     private readonly HttpClient _client;
+    private readonly DirectoryServiceTestWebFactory _factory;
     private readonly Func<Task> _resetDatabase;
 
     public DeletePositionTests(DirectoryServiceTestWebFactory factory)
     {
         _client = factory.CreateClient();
+        _factory = factory;
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
@@ -31,6 +37,16 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
         Assert.NotNull(envelope);
         Assert.True(envelope.IsError);
         Assert.Equal("position.not.found", envelope.Error!.Messages[0].Code);
+
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+
+        var deletedPosition = await dbContext.Positions
+            .IgnoreQueryFilters()
+            .SingleOrDefaultAsync(p => p.Id == new PositionId(position.Id));
+
+        Assert.NotNull(deletedPosition);
+        Assert.NotNull(deletedPosition.DeletedAt);
     }
 
     [Fact]
