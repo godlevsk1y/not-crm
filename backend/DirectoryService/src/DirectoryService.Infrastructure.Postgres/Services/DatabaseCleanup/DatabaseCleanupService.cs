@@ -22,27 +22,43 @@ public class DatabaseCleanupService
 
         var rowsAffected = 0;
         
-        rowsAffected += await _dbContext.Positions
+        rowsAffected += await CleanupPositions(threshold, cancellationToken);
+        
+        rowsAffected += await CleanupLocations(threshold, cancellationToken);
+        
+        rowsAffected += await CleanupDepartments(threshold, cancellationToken);
+            
+        return rowsAffected;
+    }
+
+    private async Task<int> CleanupPositions(DateTime threshold, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Positions
             .IgnoreQueryFilters()
             .Where(p => p.DeletedAt != null && p.DeletedAt < threshold)
             .OrderBy(p => p.DeletedAt)
             .Take(_options.BatchSize)
             .ExecuteDeleteAsync(cancellationToken);
-        
-        rowsAffected += await _dbContext.Locations
+    }
+
+    private async Task<int> CleanupLocations(DateTime threshold, CancellationToken cancellationToken)
+    {
+        return await _dbContext.Locations
             .IgnoreQueryFilters()
             .Where(l => l.DeletedAt != null && l.DeletedAt < threshold)
             .OrderBy(l => l.DeletedAt)
             .Take(_options.BatchSize)
             .ExecuteDeleteAsync(cancellationToken);
-        
-        rowsAffected += await _dbContext.Departments
-            .IgnoreQueryFilters()
+    }
+
+    private async Task<int> CleanupDepartments(DateTime threshold, CancellationToken cancellationToken)
+    {
+        var allDepartments = _dbContext.Departments.IgnoreQueryFilters();
+
+        return await allDepartments
             .Where(d => d.DeletedAt != null && d.DeletedAt < threshold)
             .OrderBy(d => d.DeletedAt)
             .Take(_options.BatchSize)
             .ExecuteDeleteAsync(cancellationToken);
-        
-        return rowsAffected;
     }
 }
