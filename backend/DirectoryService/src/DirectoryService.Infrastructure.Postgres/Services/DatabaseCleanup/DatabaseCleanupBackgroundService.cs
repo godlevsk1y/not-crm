@@ -29,14 +29,27 @@ public partial class DatabaseCleanupBackgroundService : BackgroundService
         {
             while (await timer.WaitForNextTickAsync(stoppingToken))
             {
-                await using var scope = _scopeFactory.CreateAsyncScope();
+                try
+                {
+                    await using var scope = _scopeFactory.CreateAsyncScope();
 
-                var cleanupService = scope.ServiceProvider
-                    .GetRequiredService<DatabaseCleanupService>();
+                    var cleanupService = scope.ServiceProvider
+                        .GetRequiredService<DatabaseCleanupService>();
 
-                var rowsAffected = await cleanupService.CleanupAsync(stoppingToken);
+                    var rowsAffected = await cleanupService.CleanupAsync(stoppingToken);
 
-                LogCleanupSucceed(rowsAffected);
+                    LogCleanupSucceed(rowsAffected);
+                }
+                catch (OperationCanceledException)
+                    when (stoppingToken.IsCancellationRequested)
+                {
+                    LogBackgroundServiceStopped();
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    LogUnhandledCleanupException(ex);
+                }
             }
         }
         catch (OperationCanceledException)
@@ -46,22 +59,22 @@ public partial class DatabaseCleanupBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            LogUnhandledException(ex);
+            LogUnhandledCleanupException(ex);
         }
     }
 
     [LoggerMessage(
         LogLevel.Information, 
-        "Successfully cleaned up {rowsAffected} row(s)")]
+        "Successfully cleaned up {RowsAffected} row(s)")]
     private partial void LogCleanupSucceed(int rowsAffected);
 
     [LoggerMessage(
         LogLevel.Information, 
-        "Background Service is stopped.")]
+        "Background Service is stopped")]
     private partial void LogBackgroundServiceStopped();
 
     [LoggerMessage(
         LogLevel.Error, 
         "Database cleanup failed")]
-    private partial void LogUnhandledException(Exception exception);
+    private partial void LogUnhandledCleanupException(Exception exception);
 }
