@@ -45,7 +45,10 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
         parameters.Add("page", query.Page, DbType.Int32);
         parameters.Add("pageSize", query.PageSize, DbType.Int32);
 
-        var whereClauses = new List<string>();
+        var whereClauses = new List<string>()
+        {
+            "l.deleted_at IS NULL",
+        };
 
         if (query.Search is not null)
         {

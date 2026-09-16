@@ -31,4 +31,6 @@ public interface IDepartmentsRepository
     void RemovePosition(DepartmentPosition departmentPosition);
 
     Task<DepartmentPosition?> GetDepartmentPosition(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken);
+    
+    Task<bool> HasActiveChildrenAsync(DepartmentId parentId, CancellationToken cancellationToken);
 }

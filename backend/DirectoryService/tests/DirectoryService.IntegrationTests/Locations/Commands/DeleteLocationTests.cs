@@ -1,17 +1,23 @@
 using System.Net.Http.Json;
 using DirectoryService.Contracts.Locations;
+using DirectoryService.Domain.Ids;
+using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Web.Results;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.IntegrationTests.Locations.Commands;
 
 public class DeleteLocationTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsyncLifetime
 {
     private readonly HttpClient _client;
+    private readonly DirectoryServiceTestWebFactory _factory;
     private readonly Func<Task> _resetDatabase;
 
     public DeleteLocationTests(DirectoryServiceTestWebFactory factory)
     {
         _client = factory.CreateClient();
+        _factory = factory;
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
@@ -31,6 +37,16 @@ public class DeleteLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
         Assert.NotNull(envelope);
         Assert.True(envelope.IsError);
         Assert.Equal("location.not.found", envelope.Error!.Messages[0].Code);
+
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
+
+        var deletedLocation = await dbContext.Locations
+            .IgnoreQueryFilters()
+            .SingleOrDefaultAsync(l => l.Id == new LocationId(location.Id));
+
+        Assert.NotNull(deletedLocation);
+        Assert.NotNull(deletedLocation.DeletedAt);
     }
 
     [Fact]

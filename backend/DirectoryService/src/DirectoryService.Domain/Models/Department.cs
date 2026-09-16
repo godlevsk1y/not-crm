@@ -25,6 +25,8 @@ public class Department
     
     public DateTime UpdatedAt { get; private set; }
     
+    public DateTime? DeletedAt { get; private set; }
+    
     
     private Department() { } // EF Core
     
@@ -79,6 +81,8 @@ public class Department
         
         return UnitResult.Success<Error>();
     }
+    
+    public void SoftDelete() => DeletedAt = DateTime.UtcNow;
     
     private Path CalculatePath() => Parent is null ? Path.Create(Slug) : Parent.Path.Append(Slug);
 }

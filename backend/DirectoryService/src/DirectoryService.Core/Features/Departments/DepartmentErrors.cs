@@ -24,4 +24,9 @@ public static class DepartmentErrors
     public static Error DepartmentPositionNotFound(Guid departmentId, Guid positionId) =>
         Error.NotFound(new ErrorMessage("department.position.not.found",
             $"Department with id '{departmentId}' does not have Position with id '{positionId}'"));
+    
+    public static Error HasActiveChildren(Guid id) =>
+        Error.Conflict(new ErrorMessage("department.has.active.children", 
+            $"Department with id '{id}' has active children department"));
+
 }

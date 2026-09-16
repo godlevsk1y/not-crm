@@ -105,4 +105,16 @@ public class DepartmentsRepository : IDepartmentsRepository
             cancellationToken
         );
     }
+
+    public async Task<bool> HasActiveChildrenAsync(DepartmentId parentId, 
+        CancellationToken cancellationToken)
+    {
+        return await _context.Departments
+            .IgnoreQueryFilters()
+            .AnyAsync(
+                child => 
+                    child.ParentId == parentId && 
+                    child.DeletedAt == null, 
+            cancellationToken);
+    }
 }

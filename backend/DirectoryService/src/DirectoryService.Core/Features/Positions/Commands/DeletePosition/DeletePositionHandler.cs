@@ -35,7 +35,7 @@ public partial class DeletePositionHandler : ICommandHandler<DeletePositionComma
             return PositionErrors.NotFound(command.Id);
         }
 
-        _positionsRepository.Delete(position);
+        position.SoftDelete();
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)
