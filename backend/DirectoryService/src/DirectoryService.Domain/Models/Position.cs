@@ -16,7 +16,7 @@ public class Position
     
     public DateTime UpdatedAt { get; private set; }
 
-    public DateTime? DeletedAt { get; set; }
+    public DateTime? DeletedAt { get; private set; }
 
     
     private Position() { } // EF core
