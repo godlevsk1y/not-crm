@@ -18,4 +18,6 @@ public interface IDepartmentPositionsRepository
         CancellationToken cancellationToken);
 
     void Remove(DepartmentPosition departmentPosition);
+    
+    Task RemoveAllByPositionIdAsync(PositionId positionId, CancellationToken cancellationToken);
 }

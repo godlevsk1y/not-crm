@@ -1,20 +1,20 @@
 using System.Data;
 using CSharpFunctionalExtensions;
 using DirectoryService.Core.Database;
-using DirectoryService.Core.Features.Locations;
 using DirectoryService.Shared.Errors;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Postgres.Transactions;
 
 public partial class Transaction : ITransaction
 {
-    private readonly IDbTransaction _transaction;
+    private readonly IDbContextTransaction _transaction;
     private readonly ILogger<Transaction> _logger;
     private bool _completed;
 
     public Transaction(
-        IDbTransaction transaction,
+        IDbContextTransaction transaction,
         ILogger<Transaction> logger)
     {
         _transaction = transaction;
