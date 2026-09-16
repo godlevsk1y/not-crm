@@ -12,17 +12,20 @@ namespace DirectoryService.Core.Features.Departments.Commands.AddPosition;
 public partial class AddPositionHandler : ICommandHandler<AddPositionCommand>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly IDepartmentPositionsRepository _departmentPositionsRepository;
     private readonly IPositionsRepository _positionsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<AddPositionHandler> _logger;
 
     public AddPositionHandler(
         IDepartmentsRepository departmentsRepository,
+        IDepartmentPositionsRepository departmentPositionsRepository,
         IPositionsRepository positionsRepository,
         ITransactionManager transactionManager,
         ILogger<AddPositionHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
+        _departmentPositionsRepository = departmentPositionsRepository;
         _positionsRepository = positionsRepository;
         _transactionManager = transactionManager;
         _logger = logger;
@@ -46,12 +49,12 @@ public partial class AddPositionHandler : ICommandHandler<AddPositionCommand>
 
         var departmentPosition = new DepartmentPosition(department.Id, position.Id);
 
-        if (await _departmentsRepository.HasDepartmentPositionAsync(departmentPosition, cancellationToken))
+        if (await _departmentPositionsRepository.ExistsAsync(department.Id, position.Id, cancellationToken))
         {
             return DepartmentErrors.PositionAlreadyAdded(command.DepartmentId, command.PositionId);
         }
 
-        await _departmentsRepository.AddPositionAsync(departmentPosition, cancellationToken);
+        await _departmentPositionsRepository.AddAsync(departmentPosition, cancellationToken);
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)

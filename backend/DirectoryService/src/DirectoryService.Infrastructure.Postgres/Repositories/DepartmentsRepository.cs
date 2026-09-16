@@ -14,12 +14,10 @@ public class DepartmentsRepository : IDepartmentsRepository
         _context = context;
     }
     
-    public async Task<Guid> AddAsync(Department department, IEnumerable<DepartmentLocation> locations, CancellationToken cancellationToken)
+    public async Task<Guid> AddAsync(Department department, CancellationToken cancellationToken)
     {
         await _context.Departments.AddAsync(department, cancellationToken);
-        
-        await _context.DepartmentLocations.AddRangeAsync(locations, cancellationToken);
-        
+
         return department.Id;
     }
 
@@ -40,70 +38,6 @@ public class DepartmentsRepository : IDepartmentsRepository
     public void Delete(Department department)
     {
         _context.Departments.Remove(department);
-    }
-
-    public async Task<bool> HasDepartmentLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
-    {
-        var existing = await _context.DepartmentLocations.FirstOrDefaultAsync(
-            dl => dl.DepartmentId == departmentLocation.DepartmentId 
-                  && 
-                  dl.LocationId == departmentLocation.LocationId, 
-            cancellationToken
-        );
-        
-        return existing is not null;
-    }
-
-    public async Task AddLocationAsync(DepartmentLocation departmentLocation, CancellationToken cancellationToken)
-    {
-        await _context.DepartmentLocations.AddAsync(departmentLocation, cancellationToken);
-    }
-
-    public async Task<bool> HasDepartmentPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
-    {
-        var existing = await _context.DepartmentPositions.FirstOrDefaultAsync(
-            dp => dp.DepartmentId == departmentPosition.DepartmentId
-                  &&
-                  dp.PositionId == departmentPosition.PositionId,
-            cancellationToken
-        );
-
-        return existing is not null;
-    }
-
-    public async Task AddPositionAsync(DepartmentPosition departmentPosition, CancellationToken cancellationToken)
-    {
-        await _context.DepartmentPositions.AddAsync(departmentPosition, cancellationToken);
-    }
-
-    public void RemoveLocation(DepartmentLocation departmentLocation)
-    {
-        _context.DepartmentLocations.Remove(departmentLocation);
-    }
-
-    public async Task<DepartmentLocation?> GetDepartmentLocation(DepartmentId departmentId, LocationId locationId, CancellationToken cancellationToken)
-    {
-        return await _context.DepartmentLocations.FirstOrDefaultAsync(
-            dl => dl.DepartmentId == departmentId 
-                  && 
-                  dl.LocationId == locationId, 
-            cancellationToken
-        );
-    }
-
-    public void RemovePosition(DepartmentPosition departmentPosition)
-    {
-        _context.DepartmentPositions.Remove(departmentPosition);
-    }
-
-    public async Task<DepartmentPosition?> GetDepartmentPosition(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken)
-    {
-        return await _context.DepartmentPositions.FirstOrDefaultAsync(
-            dp => dp.DepartmentId == departmentId
-                  &&
-                  dp.PositionId == positionId,
-            cancellationToken
-        );
     }
 
     public async Task<bool> HasActiveChildrenAsync(DepartmentId parentId, 
