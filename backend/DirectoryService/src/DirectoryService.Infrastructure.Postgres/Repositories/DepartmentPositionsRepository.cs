@@ -49,4 +49,11 @@ public class DepartmentPositionsRepository : IDepartmentPositionsRepository
     {
         _context.DepartmentPositions.Remove(departmentPosition);
     }
+
+    public async Task<int> RemoveAllByPositionIdAsync(PositionId positionId, CancellationToken cancellationToken)
+    {
+        return await  _context.DepartmentPositions
+            .Where(dp => dp.PositionId == positionId)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
 }
