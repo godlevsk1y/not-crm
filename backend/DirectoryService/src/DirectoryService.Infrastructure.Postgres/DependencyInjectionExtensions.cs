@@ -8,6 +8,8 @@ using DirectoryService.Infrastructure.Postgres.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Npgsql;
 
 namespace DirectoryService.Infrastructure.Postgres;
 
@@ -17,12 +19,19 @@ public static class DependencyInjectionExtensions
     {
         var connectionString = configuration.GetConnectionString(nameof(DirectoryServiceDbContext));
 
-        services.AddDbContext<DirectoryServiceDbContext>(options => 
-            options.UseNpgsql(connectionString)
+        services.AddSingleton<NpgsqlDataSource>(sp =>
+        {
+            var builder = new NpgsqlDataSourceBuilder(connectionString);
+            builder.UseLoggerFactory(sp.GetRequiredService<ILoggerFactory>());
+            return builder.Build();
+        });
+        
+        services.AddDbContext<DirectoryServiceDbContext>((sp, options) => 
+            options.UseNpgsql(sp.GetRequiredService<NpgsqlDataSource>())
         );
         
-        services.AddDbContext<IReadDbContext, DirectoryServiceDbContext>(options => 
-            options.UseNpgsql(connectionString)
+        services.AddDbContext<IReadDbContext, DirectoryServiceDbContext>((sp, options) => 
+            options.UseNpgsql(sp.GetRequiredService<NpgsqlDataSource>())
         );
 
         services.AddScoped<ILocationsRepository, LocationsRepository>();
