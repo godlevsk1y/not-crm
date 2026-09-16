@@ -21,11 +21,11 @@ public partial class Transaction : ITransaction
         _logger = logger;
     }
 
-    public UnitResult<Error> Commit()
+    public async Task<UnitResult<Error>> CommitAsync(CancellationToken cancellationToken)
     {
         try
         {
-            _transaction.Commit();
+            await _transaction.CommitAsync(cancellationToken);
             _completed = true;
             return UnitResult.Success<Error>();
         }
@@ -36,11 +36,11 @@ public partial class Transaction : ITransaction
         }
     }
 
-    public UnitResult<Error> Rollback()
+    public async Task<UnitResult<Error>> RollbackAsync(CancellationToken cancellationToken)
     {
         try
         {
-            _transaction.Rollback();
+            await _transaction.RollbackAsync(cancellationToken);
             _completed = true;
             return UnitResult.Success<Error>();
         }
@@ -51,21 +51,19 @@ public partial class Transaction : ITransaction
         }
     }
     
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        Dispose(disposing: true);
+        await DisposeAsyncCore();
         GC.SuppressFinalize(this);
     }
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!disposing)
-            return;
 
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
         if (!_completed)
         {
             try
             {
-                _transaction.Rollback();
+                await _transaction.RollbackAsync();
             }
             catch (Exception ex)
             {
@@ -73,7 +71,7 @@ public partial class Transaction : ITransaction
             }
         }
 
-        _transaction.Dispose();
+        await _transaction.DisposeAsync();
     }
     
     [LoggerMessage(LogLevel.Error, "Failed to commit transaction")]

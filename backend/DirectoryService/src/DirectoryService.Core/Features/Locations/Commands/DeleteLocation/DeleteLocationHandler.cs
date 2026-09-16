@@ -45,7 +45,7 @@ public partial class DeleteLocationHandler : ICommandHandler<DeleteLocationComma
             return beginTransactionResult.Error;
         }
 
-        using var transaction = beginTransactionResult.Value;
+        await using var transaction = beginTransactionResult.Value;
 
         await _departmentLocationsRepository.RemoveAllByLocationIdAsync(location.Id, cancellationToken);
         
@@ -57,7 +57,7 @@ public partial class DeleteLocationHandler : ICommandHandler<DeleteLocationComma
             return saveResult.Error;
         }
 
-        var commitResult = transaction.Commit();
+        var commitResult = await transaction.CommitAsync(cancellationToken);
         if (commitResult.IsFailure)
         {
             return commitResult.Error;
