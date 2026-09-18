@@ -3,9 +3,9 @@ using DirectoryService.Shared.Errors;
 
 namespace DirectoryService.Core.Database;
 
-public interface ITransaction : IDisposable
+public interface ITransaction : IAsyncDisposable
 {
-    UnitResult<Error> Commit();
+    Task<UnitResult<Error>> CommitAsync(CancellationToken cancellationToken);
     
-    UnitResult<Error> Rollback();
+    Task<UnitResult<Error>> RollbackAsync(CancellationToken cancellationToken);
 }

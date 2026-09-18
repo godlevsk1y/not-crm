@@ -16,6 +16,7 @@ namespace DirectoryService.Core.Features.Departments.Commands.CreateDepartment;
 public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, DepartmentDto>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly IDepartmentLocationsRepository _departmentLocationsRepository;
     private readonly ILocationsRepository _locationsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly IValidator<CreateDepartmentRequest> _validator;
@@ -23,12 +24,14 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
 
     public CreateDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
+        IDepartmentLocationsRepository departmentLocationsRepository,
         ILocationsRepository locationsRepository,
         ITransactionManager transactionManager,
         IValidator<CreateDepartmentRequest> validator,
         ILogger<CreateDepartmentHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
+        _departmentLocationsRepository = departmentLocationsRepository;
         _locationsRepository = locationsRepository;
         _transactionManager = transactionManager;
         _validator = validator;
@@ -86,11 +89,8 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
 
         var departmentLocations = locations.Select(l => new DepartmentLocation(department.Id, l.Id));
         
-        await _departmentsRepository.AddAsync(
-            department, 
-            departmentLocations, 
-            cancellationToken
-        );
+        await _departmentsRepository.AddAsync(department, cancellationToken);
+        await _departmentLocationsRepository.AddRangeAsync(departmentLocations, cancellationToken);
         
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)

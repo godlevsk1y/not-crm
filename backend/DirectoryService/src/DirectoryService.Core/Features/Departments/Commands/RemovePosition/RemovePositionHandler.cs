@@ -9,16 +9,16 @@ namespace DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 
 public partial class RemovePositionHandler : ICommandHandler<RemovePositionCommand>
 {
-    private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly IDepartmentPositionsRepository _departmentPositionsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<RemovePositionHandler> _logger;
 
     public RemovePositionHandler(
-        IDepartmentsRepository departmentsRepository,
+        IDepartmentPositionsRepository departmentPositionsRepository,
         ITransactionManager transactionManager,
         ILogger<RemovePositionHandler> logger)
     {
-        _departmentsRepository = departmentsRepository;
+        _departmentPositionsRepository = departmentPositionsRepository;
         _transactionManager = transactionManager;
         _logger = logger;
     }
@@ -26,7 +26,7 @@ public partial class RemovePositionHandler : ICommandHandler<RemovePositionComma
     public async Task<UnitResult<Error>> Handle(RemovePositionCommand command,
         CancellationToken cancellationToken)
     {
-        var departmentPosition = await _departmentsRepository.GetDepartmentPosition(
+        var departmentPosition = await _departmentPositionsRepository.GetAsync(
             new DepartmentId(command.DepartmentId),
             new PositionId(command.PositionId),
             cancellationToken
@@ -37,7 +37,7 @@ public partial class RemovePositionHandler : ICommandHandler<RemovePositionComma
             return DepartmentErrors.DepartmentPositionNotFound(command.DepartmentId, command.PositionId);
         }
 
-        _departmentsRepository.RemovePosition(departmentPosition);
+        _departmentPositionsRepository.Remove(departmentPosition);
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)

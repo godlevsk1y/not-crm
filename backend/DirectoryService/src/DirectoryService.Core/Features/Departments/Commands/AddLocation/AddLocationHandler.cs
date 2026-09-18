@@ -12,17 +12,20 @@ namespace DirectoryService.Core.Features.Departments.Commands.AddLocation;
 public partial class AddLocationHandler : ICommandHandler<AddLocationCommand>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly IDepartmentLocationsRepository _departmentLocationsRepository;
     private readonly ILocationsRepository _locationsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<AddLocationHandler> _logger;
 
     public AddLocationHandler(
         IDepartmentsRepository departmentsRepository,
+        IDepartmentLocationsRepository departmentLocationsRepository,
         ILocationsRepository locationsRepository,
         ITransactionManager transactionManager,
         ILogger<AddLocationHandler> logger)
     {
         _departmentsRepository = departmentsRepository;
+        _departmentLocationsRepository = departmentLocationsRepository;
         _locationsRepository = locationsRepository;
         _transactionManager = transactionManager;
         _logger = logger;
@@ -46,12 +49,12 @@ public partial class AddLocationHandler : ICommandHandler<AddLocationCommand>
 
         var departmentLocation = new DepartmentLocation(department.Id, location.Id);
 
-        if (await _departmentsRepository.HasDepartmentLocationAsync(departmentLocation, cancellationToken))
+        if (await _departmentLocationsRepository.ExistsAsync(department.Id, location.Id, cancellationToken))
         {
             return DepartmentErrors.LocationAlreadyAdded(command.DepartmentId, command.LocationId);
         }
         
-        await _departmentsRepository.AddLocationAsync(departmentLocation, cancellationToken);
+        await _departmentLocationsRepository.AddAsync(departmentLocation, cancellationToken);
         
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)

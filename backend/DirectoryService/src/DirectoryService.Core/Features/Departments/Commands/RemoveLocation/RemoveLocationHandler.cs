@@ -9,16 +9,16 @@ namespace DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
 
 public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationCommand>
 {
-    private readonly IDepartmentsRepository _departmentsRepository;
+    private readonly IDepartmentLocationsRepository _departmentLocationsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<RemoveLocationHandler> _logger;
 
     public RemoveLocationHandler(
-        IDepartmentsRepository departmentsRepository,
+        IDepartmentLocationsRepository departmentLocationsRepository,
         ITransactionManager transactionManager,
         ILogger<RemoveLocationHandler> logger)
     {
-        _departmentsRepository = departmentsRepository;
+        _departmentLocationsRepository = departmentLocationsRepository;
         _transactionManager = transactionManager;
         _logger = logger;
     }
@@ -27,7 +27,7 @@ public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationComma
         CancellationToken cancellationToken)
     {
         
-        var departmentLocation = await _departmentsRepository.GetDepartmentLocation(
+        var departmentLocation = await _departmentLocationsRepository.GetAsync(
             new DepartmentId(command.DepartmentId), 
             new LocationId(command.LocationId), 
             cancellationToken
@@ -38,7 +38,7 @@ public partial class RemoveLocationHandler : ICommandHandler<RemoveLocationComma
             return DepartmentErrors.DepartmentLocationNotFound(command.DepartmentId, command.LocationId);
         }
         
-        _departmentsRepository.RemoveLocation(departmentLocation);
+        _departmentLocationsRepository.Remove(departmentLocation);
         
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
         if (saveResult.IsFailure)

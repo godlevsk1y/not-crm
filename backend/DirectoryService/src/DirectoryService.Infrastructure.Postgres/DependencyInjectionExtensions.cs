@@ -36,6 +36,8 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<ILocationsRepository, LocationsRepository>();
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
+        services.AddScoped<IDepartmentLocationsRepository, DepartmentLocationsRepository>();
+        services.AddScoped<IDepartmentPositionsRepository, DepartmentPositionsRepository>();
         services.AddScoped<IPositionsRepository, PositionsRepository>();
 
         services.AddScoped<ITransactionManager, TransactionManager>();
