@@ -32,12 +32,15 @@ public partial class TransactionManager : ITransactionManager
 
             return transactionScope;
         }
+        catch (OperationCanceledException)
+            when(cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogBeginTransactionFailed(ex);
-            return Error.Internal(
-                new ErrorMessage("transaction.begin.failed", "Failed to begin transaction")
-            );
+            return GeneralErrors.Internal();
         }
     }
 
@@ -48,12 +51,22 @@ public partial class TransactionManager : ITransactionManager
             await _context.SaveChangesAsync(cancellationToken);
             return UnitResult.Success<Error>();
         }
+        catch (OperationCanceledException)
+            when(cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
+            var error = PostgresExceptionMapper.Map(ex);
+            if (error is not null)
+            {
+                return error;
+            }
+            
             LogFailedToSaveChanges(ex);
-            return Error.Internal(
-                new ErrorMessage("transaction.save.failed", "Failed to save changes")
-            );
+            
+            return GeneralErrors.Internal();
         }
     }
 

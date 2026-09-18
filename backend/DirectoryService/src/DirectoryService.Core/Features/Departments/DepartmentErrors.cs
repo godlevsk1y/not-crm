@@ -4,14 +4,27 @@ namespace DirectoryService.Core.Features.Departments;
 
 public static class DepartmentErrors
 {
+    public static Error NotFound() =>
+        Error.NotFound(new ErrorMessage("department.not.found", "Department was not found"));
+    
     public static Error NotFound(Guid id) =>
         Error.NotFound(new ErrorMessage("department.not.found", $"Department with id '{id}' was not found"));
+    
+    public static Error LocationAlreadyAdded() =>
+        Error.Conflict(new ErrorMessage(
+            "department.location.already.added", 
+            "The location has already been added to the department"));
     
     public static Error LocationAlreadyAdded(Guid departmentId, Guid locationId) =>
         Error.Conflict(new ErrorMessage(
             "department.location.already.added", 
             $"Department with id '{departmentId}' already has Location with id '{locationId}' added"));
 
+    public static Error PositionAlreadyAdded() =>
+        Error.Conflict(new ErrorMessage(
+            "department.position.already.added",
+            "The position has already been added to the department"));
+    
     public static Error PositionAlreadyAdded(Guid departmentId, Guid positionId) =>
         Error.Conflict(new ErrorMessage(
             "department.position.already.added",
