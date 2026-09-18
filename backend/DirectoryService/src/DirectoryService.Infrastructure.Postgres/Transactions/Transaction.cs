@@ -35,7 +35,8 @@ public partial class Transaction : ITransaction
         }
         catch (Exception ex)
         {
-            if (PostgresExceptionMapper.TryMap(ex, out var error))
+            var error = PostgresExceptionMapper.Map(ex);
+            if (error is not null)
             {
                 return error;
             }

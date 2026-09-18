@@ -28,17 +28,16 @@ internal static class PostgresExceptionMapper
         "fk_department_positions_positions_position_id";
     
     
-    internal static bool TryMap(Exception exception, out Error error)
+    internal static Error? Map(Exception exception)
     {
         var postgresException = GetPostgresException(exception);
 
         if (postgresException is null)
         {
-            error = null!;
-            return false;
+            return null;
         }
 
-        error = postgresException.SqlState switch
+        return postgresException.SqlState switch
         {
             PostgresErrorCodes.UniqueViolation =>
                 MapUniqueConstraintViolation(postgresException),
@@ -46,13 +45,11 @@ internal static class PostgresExceptionMapper
             PostgresErrorCodes.ForeignKeyViolation =>
                 MapForeignKeyViolation(postgresException),
 
-            _ => GeneralErrors.Internal(),
+            _ => null,
         };
-        
-        return true;
     }
 
-    private static Error MapUniqueConstraintViolation(PostgresException exception) =>
+    private static Error? MapUniqueConstraintViolation(PostgresException exception) =>
         exception.ConstraintName switch
         {
             LocationNameUniqueConstraint => 
@@ -64,10 +61,10 @@ internal static class PostgresExceptionMapper
             DepartmentPositionUniqueConstraint => 
                 DepartmentErrors.PositionAlreadyAdded(),
 
-            _ => GeneralErrors.Internal(),
+            _ => null,
         };
 
-    private static Error MapForeignKeyViolation(PostgresException exception) =>
+    private static Error? MapForeignKeyViolation(PostgresException exception) =>
         exception.ConstraintName switch
         {
             DepartmentParentForeignKeyConstraint => 
@@ -83,7 +80,7 @@ internal static class PostgresExceptionMapper
             DepartmentPositionPositionForeignKeyConstraint =>
                 PositionErrors.NotFound(),
 
-            _ => GeneralErrors.Internal(),
+            _ => null,
         };
     
     
