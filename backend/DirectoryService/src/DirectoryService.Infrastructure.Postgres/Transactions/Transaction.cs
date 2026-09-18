@@ -28,10 +28,20 @@ public partial class Transaction : ITransaction
             _completed = true;
             return UnitResult.Success<Error>();
         }
+        catch (OperationCanceledException)
+            when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
+            if (PostgresExceptionMapper.TryMap(ex, out var error))
+            {
+                return error;
+            }
+            
             LogCommitFailed(ex);
-            return Error.Internal(new ErrorMessage("transaction.commit.failed", "Failed to commit transaction"));
+            return GeneralErrors.Internal();
         }
     }
 
@@ -43,10 +53,15 @@ public partial class Transaction : ITransaction
             _completed = true;
             return UnitResult.Success<Error>();
         }
+        catch (OperationCanceledException)
+            when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogRollbackFailed(ex);
-            return Error.Internal(new ErrorMessage("transaction.rollback.failed", "Failed to rollback transaction"));
+            return GeneralErrors.Internal();
         }
     }
     
