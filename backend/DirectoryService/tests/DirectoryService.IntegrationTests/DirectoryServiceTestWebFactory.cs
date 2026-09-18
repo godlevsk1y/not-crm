@@ -45,9 +45,8 @@ public class DirectoryServiceTestWebFactory : WebApplicationFactory<Program>, IA
 
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
-        
-        await dbContext.Database.EnsureDeletedAsync();
-        await dbContext.Database.EnsureCreatedAsync();
+
+        await dbContext.Database.MigrateAsync();
 
         await InitializeRespawner();
     }
