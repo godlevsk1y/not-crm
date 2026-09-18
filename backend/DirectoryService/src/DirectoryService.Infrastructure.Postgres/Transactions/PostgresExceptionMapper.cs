@@ -26,12 +26,9 @@ internal static class PostgresExceptionMapper
         "fk_department_positions_departments_department_id";
     private const string DepartmentPositionPositionForeignKeyConstraint =
         "fk_department_positions_positions_position_id";
-
-    private static readonly Error InternalError =
-        Error.Internal(new ErrorMessage("internal.server.error", "Internal error"));
     
     
-    internal static bool TryMap(PostgresException exception, out Error error)
+    internal static bool TryMap(Exception exception, out Error error)
     {
         var postgresException = GetPostgresException(exception);
 
@@ -49,7 +46,7 @@ internal static class PostgresExceptionMapper
             PostgresErrorCodes.ForeignKeyViolation =>
                 MapForeignKeyViolation(postgresException),
 
-            _ => InternalError,
+            _ => GeneralErrors.Internal(),
         };
         
         return true;
@@ -67,7 +64,7 @@ internal static class PostgresExceptionMapper
             DepartmentPositionUniqueConstraint => 
                 DepartmentErrors.PositionAlreadyAdded(),
 
-            _ => InternalError,
+            _ => GeneralErrors.Internal(),
         };
 
     private static Error MapForeignKeyViolation(PostgresException exception) =>
@@ -86,7 +83,7 @@ internal static class PostgresExceptionMapper
             DepartmentPositionPositionForeignKeyConstraint =>
                 PositionErrors.NotFound(),
 
-            _ => InternalError,
+            _ => GeneralErrors.Internal(),
         };
     
     
