@@ -1,4 +1,5 @@
 using DirectoryService.Web.Middlewares;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -18,8 +19,23 @@ public static class AppExtensions
         }
 
         app.MapControllers();
-        app.MapHealthChecks("/api/health");
+        app.ConfigureHealthChecks();
         
+        return app;
+    }
+
+    private static WebApplication ConfigureHealthChecks(this WebApplication app)
+    {
+        app.MapHealthChecks("/health/live", new HealthCheckOptions()
+        {
+            Predicate = check => check.Tags.Contains("live"),
+        });
+        
+        app.MapHealthChecks("/health/ready", new HealthCheckOptions()
+        {
+            Predicate = check => check.Tags.Contains("ready"),
+        });
+
         return app;
     }
 }

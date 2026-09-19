@@ -3,6 +3,7 @@ using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Shared.Errors;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Exceptions;
 
@@ -21,7 +22,7 @@ public static class DependencyInjectionExtensions
         services.AddSerilogLogging(configuration);
         
         services.AddOpenApi();
-        services.AddHealthChecks();
+        services.AddHealthCheckEndpoints(configuration);
 
         services.AddControllers();
         services.Configure<RouteOptions>(options => 
@@ -56,6 +57,33 @@ public static class DependencyInjectionExtensions
             .Enrich.WithProperty("ServiceName", "DirectoryService"),
             preserveStaticLogger: true
         );
+        
+        return services;
+    }
+
+    private static IServiceCollection AddHealthCheckEndpoints(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        var seqUrl = configuration["Seq:ServerUrl"] ?? 
+                     throw new InvalidOperationException("Seq:ServerUrl is not configured.");
+        
+        services.AddHealthChecks()
+            .AddCheck(
+                name: "self",
+                check: () => HealthCheckResult.Healthy(),
+                tags: ["live"])
+            .AddDbContextCheck<DirectoryServiceDbContext>(
+                name: "database",
+                tags: ["ready"],
+                customTestQuery: async (context, cancellationToken) =>
+                    await context.Database.CanConnectAsync(cancellationToken)
+            )
+            .AddUrlGroup(
+                uri: new Uri($"{seqUrl.TrimEnd('/')}/health"),
+                name: "seq",
+                tags: ["ready"],
+                timeout: TimeSpan.FromSeconds(5)
+            );
         
         return services;
     }
