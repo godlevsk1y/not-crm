@@ -21,12 +21,14 @@ type Department struct {
 	UpdatedAt time.Time
 }
 
+const pathSeparator string = "."
+
 func NewDepartment(name string, slug string, parent *Department) *Department {
 	path := slug
 	var parentId *uuid.UUID = nil
 
 	if parent != nil {
-		path = parent.Path + "/" + slug
+		path = parent.Path + pathSeparator + slug
 		parentId = &parent.ID
 	}
 
