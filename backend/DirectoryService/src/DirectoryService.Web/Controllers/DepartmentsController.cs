@@ -1,5 +1,7 @@
+using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.QueryContracts;
+using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Departments.Commands.AddLocation;
 using DirectoryService.Core.Features.Departments.Commands.AddPosition;
@@ -10,10 +12,12 @@ using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
+using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
 using DirectoryService.Shared.Errors;
 using DirectoryService.Shared.Results;
 using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
+using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Web.Controllers;
 
@@ -150,7 +154,7 @@ public class DepartmentsController : ControllerBase
 
     [HttpGet("{id:guid}")]
     public async Task<IResult> GetById(
-        [FromServices] IQueryHandler<GetDepartmentByIdQuery, CSharpFunctionalExtensions.Result<DepartmentDto, Error>> handler,
+        [FromServices] IQueryHandler<GetDepartmentByIdQuery, Result<DepartmentDto, Error>> handler,
         [FromRoute] Guid id,
         CancellationToken cancellationToken
     )
@@ -169,7 +173,7 @@ public class DepartmentsController : ControllerBase
     [HttpGet]
     public async Task<IResult> GetDepartmentList(
         [FromServices] IQueryHandler<GetDepartmentListQuery,
-            CSharpFunctionalExtensions.Result<PagedResult<DepartmentListItemDto>, Error>> handler,
+            Result<PagedResult<DepartmentListItemDto>, Error>> handler,
         [FromQuery] GetDepartmentListQuery query,
         CancellationToken cancellationToken
     )
@@ -181,5 +185,24 @@ public class DepartmentsController : ControllerBase
         }
         
         return EndpointResults.Ok(getResult.Value);
+    }
+
+    [HttpGet("tree")]
+    public async Task<IResult> GetDepartmentTree(
+        [FromServices] IQueryHandler<GetDepartmentTreeQuery, 
+            Result<PagedResult<DepartmentTreeRootDto>, Error>> handler,
+        [FromQuery] GetDepartmentTreeRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetDepartmentTreeQuery(request.Page, request.PageSize);
+
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+        
+        return EndpointResults.Ok(result.Value);
     }
 }
