@@ -12,6 +12,9 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:ltree", ",,");
+
             migrationBuilder.CreateTable(
                 name: "departments",
                 columns: table => new
@@ -23,7 +26,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    path = table.Column<string>(type: "character varying(600)", maxLength: 600, nullable: false),
+                    path = table.Column<string>(type: "ltree", maxLength: 600, nullable: false),
                     slug = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false)
                 },
                 constraints: table =>
@@ -183,5 +186,3 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
         }
     }
 }
-
-#pragma warning restore CA1861
