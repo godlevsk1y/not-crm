@@ -42,6 +42,8 @@ namespace DirectoryService.Domain.ValueObjects;
 /// <seealso cref="Department"/>
 public record Path
 {
+    private const char Separator = '.';
+    
     /// <summary>
     /// Gets the string value of the path.
     /// </summary>
@@ -77,7 +79,7 @@ public record Path
     /// </example>
     public Path Append(Slug slug)
     {
-        return new Path($"{Value}/{slug.Value}");
+        return new Path($"{Value}{Separator}{slug.Value}");
     }
     
     public override string ToString() => Value;

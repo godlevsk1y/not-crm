@@ -43,7 +43,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         Assert.NotNull(getEnvelope.Result);
         Assert.Equal("Platform Team", getEnvelope.Result.Name);
         Assert.Equal("platform-team", getEnvelope.Result.Slug);
-        Assert.Equal("engineering/platform-team", getEnvelope.Result.Path);
+        Assert.Equal("engineering.platform-team", getEnvelope.Result.Path);
         Assert.Equal(parent.Id, getEnvelope.Result.ParentId);
     }
 
