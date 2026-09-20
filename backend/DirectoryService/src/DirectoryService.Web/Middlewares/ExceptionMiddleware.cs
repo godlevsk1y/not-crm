@@ -32,11 +32,8 @@ public partial class ExceptionMiddleware
         
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        
-        var error = Error.Internal(new ErrorMessage(
-            "internal.server.error", 
-            "Internal server error."
-        ));
+
+        var error = GeneralErrors.Internal();
         
         await context.Response.WriteAsJsonAsync(error, cancellationToken: context.RequestAborted);
     }
