@@ -190,7 +190,7 @@ public class DepartmentsController : ControllerBase
     [HttpGet("tree")]
     public async Task<IResult> GetDepartmentTree(
         [FromServices] IQueryHandler<GetDepartmentTreeQuery, 
-            Result<PagedResult<DepartmentTreeRootDto>, Error>> handler,
+            Result<PagedResult<DepartmentTreeItemDto>, Error>> handler,
         [FromQuery] GetDepartmentTreeRequest request,
         CancellationToken cancellationToken
     )

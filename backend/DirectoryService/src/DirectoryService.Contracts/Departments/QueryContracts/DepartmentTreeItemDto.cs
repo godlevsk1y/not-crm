@@ -1,6 +1,6 @@
 namespace DirectoryService.Contracts.Departments.QueryContracts;
 
-public record DepartmentTreeRootDto
+public record DepartmentTreeItemDto
 {
     public Guid Id { get; init; }
     

@@ -9,25 +9,25 @@ using DirectoryService.Shared.Errors;
 using DirectoryService.Shared.Results;
 using FluentValidation;
 
-namespace DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
+namespace DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 
-public class GetDepartmentTreeQueryHandler : IQueryHandler<
-    GetDepartmentTreeQuery,
+public class GetChildrenByParentIdQueryHandler : IQueryHandler<
+    GetChildrenByParentIdQuery, 
     Result<PagedResult<DepartmentTreeItemDto>, Error>>
 {
     private readonly IDbConnectionFactory _factory;
-    private readonly IValidator<GetDepartmentTreeQuery> _validator;
+    private readonly IValidator<GetChildrenByParentIdQuery> _validator;
 
-    public GetDepartmentTreeQueryHandler(
+    public GetChildrenByParentIdQueryHandler(
         IDbConnectionFactory factory, 
-        IValidator<GetDepartmentTreeQuery> validator)
+        IValidator<GetChildrenByParentIdQuery> validator)
     {
         _factory = factory;
         _validator = validator;
     }
 
-    public async Task<Result<PagedResult<DepartmentTreeItemDto>, Error>> Handle(GetDepartmentTreeQuery query, 
-        CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<DepartmentTreeItemDto>, Error>> Handle(
+        GetChildrenByParentIdQuery query, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid)
@@ -36,39 +36,40 @@ public class GetDepartmentTreeQueryHandler : IQueryHandler<
         }
         
         using var connection = await _factory.OpenConnectionAsync(cancellationToken);
-
+        
         var parameters = new DynamicParameters();
         
+        parameters.Add("parentId", query.ParentId, DbType.Guid);
         parameters.Add("page", query.Page, DbType.Int32);
         parameters.Add("pageSize", query.PageSize, DbType.Int32);
         
         const string sql = """
-                           SELECT 
-                               r.id,
-                               r.name,
-                               r.slug,
-                               r.path::text AS path,
-                               r.depth,
+                           SELECT
+                               d.id,
+                               d.name,
+                               d.slug,
+                               d.path::text AS path,
+                               d.depth,
                                c.child_count AS child_count,
                                c.child_count > 0 AS has_children,
-                               count(r.id) OVER () AS total_count
-                           FROM departments r
-                           CROSS JOIN LATERAL (
+                               count(d.id) OVER () AS total_count
+                           FROM departments d
+                            CROSS JOIN LATERAL (
                                SELECT count(*) AS child_count
                                FROM departments child
-                               WHERE child.path <@ r.path 
-                                 AND child.depth = r.depth + 1 
+                               WHERE child.path <@ d.path
+                                 AND child.depth = d.depth + 1
                                  AND child.deleted_at IS NULL
-                           ) c
-                           WHERE r.depth = 0
-                             AND r.deleted_at IS NULL
-                           ORDER BY r.name
+                               ) c
+                           WHERE d.parent_id = @parentId
+                             AND d.deleted_at IS NULL
+                           ORDER BY d.name
                            OFFSET @pageSize * (@page - 1) LIMIT @pageSize
                            """;
-
+        
         long? totalCount = null;
         
-        var rootDepartments = await connection
+        var children = await connection
             .QueryAsync<DepartmentTreeItemDto, long, DepartmentTreeItemDto>(
                 sql: sql,
                 map: (dto, total) =>
@@ -80,9 +81,9 @@ public class GetDepartmentTreeQueryHandler : IQueryHandler<
                 param: parameters,
                 splitOn: "total_count"
             );
-
+        
         return new PagedResult<DepartmentTreeItemDto>(
-            rootDepartments, query.Page, query.PageSize, totalCount ?? 0
+            children, query.Page, query.PageSize, totalCount ?? 0
         );
     }
 }
