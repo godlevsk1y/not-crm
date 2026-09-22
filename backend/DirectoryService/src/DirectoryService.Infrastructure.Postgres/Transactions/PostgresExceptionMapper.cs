@@ -10,7 +10,7 @@ namespace DirectoryService.Infrastructure.Postgres.Transactions;
 internal static class PostgresExceptionMapper
 {
     private const string LocationNameUniqueConstraint = 
-        "uq_locations_name";
+        "uq_location_name";
     private const string DepartmentLocationUniqueConstraint = 
         "uq_department_locations_department_id_location_id";
     private const string DepartmentPositionUniqueConstraint = 
