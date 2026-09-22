@@ -10,6 +10,7 @@ using DirectoryService.Core.Features.Departments.Commands.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
 using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
+using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
@@ -196,6 +197,29 @@ public class DepartmentsController : ControllerBase
     )
     {
         var query = new GetDepartmentTreeQuery(request.Page, request.PageSize);
+
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+        
+        return EndpointResults.Ok(result.Value);
+    }
+
+    [HttpGet("{id}/children")]
+    public async Task<IResult> GetChildrenByParentId(
+        [FromServices] IQueryHandler<GetChildrenByParentIdQuery, 
+            Result<PagedResult<DepartmentTreeItemDto>, Error>> handler,
+        [FromRoute] Guid id,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = new GetChildrenByParentIdQuery(
+            id, page, pageSize
+        );
 
         var result = await handler.Handle(query, cancellationToken);
         if (result.IsFailure)
