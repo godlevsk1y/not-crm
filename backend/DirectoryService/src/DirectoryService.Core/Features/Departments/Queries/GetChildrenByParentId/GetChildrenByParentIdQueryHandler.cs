@@ -13,7 +13,7 @@ namespace DirectoryService.Core.Features.Departments.Queries.GetChildrenByParent
 
 public class GetChildrenByParentIdQueryHandler : IQueryHandler<
     GetChildrenByParentIdQuery, 
-    Result<PagedResult<DepartmentTreeItemDto>, Error>>
+    Result<PagedResult<DepartmentNodeDto>, Error>>
 {
     private readonly IDbConnectionFactory _factory;
     private readonly IValidator<GetChildrenByParentIdQuery> _validator;
@@ -26,7 +26,7 @@ public class GetChildrenByParentIdQueryHandler : IQueryHandler<
         _validator = validator;
     }
 
-    public async Task<Result<PagedResult<DepartmentTreeItemDto>, Error>> Handle(
+    public async Task<Result<PagedResult<DepartmentNodeDto>, Error>> Handle(
         GetChildrenByParentIdQuery query, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(query, cancellationToken);
@@ -70,7 +70,7 @@ public class GetChildrenByParentIdQueryHandler : IQueryHandler<
         long? totalCount = null;
         
         var children = await connection
-            .QueryAsync<DepartmentTreeItemDto, long, DepartmentTreeItemDto>(
+            .QueryAsync<DepartmentNodeDto, long, DepartmentNodeDto>(
                 sql: sql,
                 map: (dto, total) =>
                 {
@@ -82,7 +82,7 @@ public class GetChildrenByParentIdQueryHandler : IQueryHandler<
                 splitOn: "total_count"
             );
         
-        return new PagedResult<DepartmentTreeItemDto>(
+        return new PagedResult<DepartmentNodeDto>(
             children, query.Page, query.PageSize, totalCount ?? 0
         );
     }

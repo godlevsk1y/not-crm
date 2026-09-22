@@ -34,7 +34,7 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
         Assert.Equal(200, (int)response.StatusCode);
 
         var envelope = await response.Content
-            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentTreeItemDto>>>();
+            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentNodeDto>>>();
         Assert.NotNull(envelope);
         Assert.False(envelope.IsError);
         Assert.NotNull(envelope.Result);
@@ -75,7 +75,7 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
         Assert.Equal(200, (int)response.StatusCode);
 
         var envelope = await response.Content
-            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentTreeItemDto>>>();
+            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentNodeDto>>>();
         Assert.NotNull(envelope);
         Assert.False(envelope.IsError);
         Assert.NotNull(envelope.Result);
@@ -97,7 +97,7 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
     }
 
     private static void AssertDepartment(
-        DepartmentTreeItemDto department,
+        DepartmentNodeDto department,
         Guid expectedId,
         string expectedName,
         string expectedSlug,

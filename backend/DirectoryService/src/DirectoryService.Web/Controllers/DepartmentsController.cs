@@ -191,7 +191,7 @@ public class DepartmentsController : ControllerBase
     [HttpGet("tree")]
     public async Task<IResult> GetDepartmentTree(
         [FromServices] IQueryHandler<GetDepartmentTreeQuery, 
-            Result<PagedResult<DepartmentTreeItemDto>, Error>> handler,
+            Result<PagedResult<DepartmentNodeDto>, Error>> handler,
         [FromQuery] GetDepartmentTreeRequest request,
         CancellationToken cancellationToken
     )
@@ -210,7 +210,7 @@ public class DepartmentsController : ControllerBase
     [HttpGet("{id}/children")]
     public async Task<IResult> GetChildrenByParentId(
         [FromServices] IQueryHandler<GetChildrenByParentIdQuery, 
-            Result<PagedResult<DepartmentTreeItemDto>, Error>> handler,
+            Result<PagedResult<DepartmentNodeDto>, Error>> handler,
         [FromRoute] Guid id,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
