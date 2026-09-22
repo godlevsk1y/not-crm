@@ -10,6 +10,7 @@ using DirectoryService.Core.Features.Departments.Commands.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
 using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
+using DirectoryService.Core.Features.Departments.Queries.GetAncestorsById;
 using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
@@ -221,6 +222,27 @@ public class DepartmentsController : ControllerBase
             id, page, pageSize
         );
 
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+        
+        return EndpointResults.Ok(result.Value);
+    }
+
+    [HttpGet("{id}/ancestors")]
+    public async Task<IResult> GetAncestorsById(
+        [FromServices] IQueryHandler<GetAncestorsByIdQuery,
+            Result<PagedResult<DepartmentAncestorDto>, Error>> handler,
+        [FromRoute] Guid id,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = new GetAncestorsByIdQuery(id, page, pageSize);
+        
         var result = await handler.Handle(query, cancellationToken);
         if (result.IsFailure)
         {
