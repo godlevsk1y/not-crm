@@ -15,6 +15,7 @@ using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
+using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTreeByName;
 using DirectoryService.Shared.Errors;
 using DirectoryService.Shared.Results;
 using DirectoryService.Web.Results;
@@ -251,4 +252,26 @@ public class DepartmentsController : ControllerBase
         
         return EndpointResults.Ok(result.Value);
     }
+
+    [HttpGet("tree/search")]
+    public async Task<IResult> GetDepartmentTreeByName(
+        IQueryHandler<GetDepartmentTreeByNameQuery, 
+            Result<PagedResult<DepartmentWithAncestorsDto>, Error>> handler,
+        [FromQuery] GetDepartmentTreeByNameRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetDepartmentTreeByNameQuery(
+            request.Q, request.Page, request.PageSize
+        );
+
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+        
+        return EndpointResults.Ok(result.Value);
+    }
+    
 }
