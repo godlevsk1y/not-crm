@@ -16,6 +16,7 @@ type Department struct {
 	Path string
 
 	ParentID *uuid.UUID
+	Depth    int
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -25,11 +26,16 @@ const pathSeparator string = "."
 
 func NewDepartment(name string, slug string, parent *Department) *Department {
 	path := slug
-	var parentId *uuid.UUID = nil
+
+	var parentId *uuid.UUID
+
+	depth := 0
 
 	if parent != nil {
 		path = parent.Path + pathSeparator + slug
 		parentId = &parent.ID
+
+		depth = parent.Depth + 1
 	}
 
 	now := time.Now()
@@ -40,6 +46,7 @@ func NewDepartment(name string, slug string, parent *Department) *Department {
 		Slug:      slug,
 		Path:      path,
 		ParentID:  parentId,
+		Depth:     depth,
 		CreatedAt: now.UTC(),
 		UpdatedAt: now.UTC(),
 	}

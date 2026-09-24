@@ -39,6 +39,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             pb.Property(p => p.Value)
                 .IsRequired()
                 .HasMaxLength(600)
+                .HasColumnType("ltree")
                 .HasColumnName("path");
         });
         
@@ -52,6 +53,9 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 
         builder.Property(d => d.ParentId)
             .HasColumnName("parent_id");
+
+        builder.Property(d => d.Depth)
+            .HasColumnName("depth");
         
         builder.HasIndex(d => d.ParentId)
             .HasDatabaseName("ix_departments_parent_id");

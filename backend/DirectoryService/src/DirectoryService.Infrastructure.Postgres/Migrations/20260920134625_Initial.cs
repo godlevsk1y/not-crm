@@ -1,28 +1,32 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
+#pragma warning disable CA1861
 
 namespace DirectoryService.Infrastructure.Postgres.Migrations
 {
     /// <inheritdoc />
-    [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:ltree", ",,");
+
             migrationBuilder.CreateTable(
                 name: "departments",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     parent_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    depth = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    path = table.Column<string>(type: "character varying(600)", maxLength: 600, nullable: false),
+                    path = table.Column<string>(type: "ltree", maxLength: 600, nullable: false),
                     slug = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false)
                 },
                 constraints: table =>
@@ -32,7 +36,8 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         name: "fk_departments_parent",
                         column: x => x.parent_id,
                         principalTable: "departments",
-                        principalColumn: "id");
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -42,6 +47,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     city = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     country = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
                     district = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: true),
@@ -63,6 +69,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "now()"),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>

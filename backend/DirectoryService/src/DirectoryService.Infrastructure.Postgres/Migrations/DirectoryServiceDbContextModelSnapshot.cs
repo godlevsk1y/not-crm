@@ -21,6 +21,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DirectoryService.Domain.Models.Department", b =>
@@ -38,6 +39,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<int>("Depth")
+                        .HasColumnType("integer")
+                        .HasColumnName("depth");
 
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid")
@@ -67,7 +72,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(600)
-                                .HasColumnType("character varying(600)")
+                                .HasColumnType("ltree")
                                 .HasColumnName("path");
                         });
 

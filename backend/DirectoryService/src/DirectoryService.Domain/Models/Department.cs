@@ -7,7 +7,7 @@ using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Models;
 
-public class Department
+public sealed class Department
 {
     public DepartmentId Id { get; private set; } = null!;
     
@@ -20,6 +20,8 @@ public class Department
     public DepartmentId? ParentId { get; private set; }
     
     public Department? Parent { get ; private set; }
+    
+    public int Depth { get; private set;  }
     
     public DateTime CreatedAt { get; private set; }
     
@@ -37,6 +39,7 @@ public class Department
         Slug = slug;
         Parent = parent;
         ParentId = parent?.Id;
+        Depth = CalculateDepth();
         
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
@@ -76,6 +79,7 @@ public class Department
         ParentId = Parent?.Id;
 
         Path = CalculatePath();
+        Depth = CalculateDepth();
         
         UpdatedAt = DateTime.UtcNow;
         
@@ -85,4 +89,5 @@ public class Department
     public void SoftDelete() => DeletedAt = DateTime.UtcNow;
     
     private Path CalculatePath() => Parent is null ? Path.Create(Slug) : Parent.Path.Append(Slug);
+    private int CalculateDepth() => Parent is null ? 0 : Parent.Depth + 1;
 }

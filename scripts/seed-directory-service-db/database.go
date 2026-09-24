@@ -37,15 +37,15 @@ func commitSeedData(ctx context.Context, conn *pgx.Conn, cmd commitSeedDataComma
 }
 
 func commitDepartments(ctx context.Context, tx pgx.Tx, departments []*seeders.Department) {
-	const sql = `INSERT INTO departments (id, name, slug, path, parent_id, created_at, updated_at) 
-		VALUES ($1, $2, $3, $4, $5, $6, $7);`
+	const sql = `INSERT INTO departments (id, name, slug, path, parent_id, depth, created_at, updated_at) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`
 
 	batch := &pgx.Batch{}
 
 	for _, d := range departments {
 		batch.Queue(
 			sql, d.ID,
-			d.Name, d.Slug, d.Path, d.ParentID,
+			d.Name, d.Slug, d.Path, d.ParentID, d.Depth,
 			d.CreatedAt, d.UpdatedAt,
 		)
 	}

@@ -1,3 +1,5 @@
+name: directory-service-containers
+
 services:
   postgres:
     container_name: postgres

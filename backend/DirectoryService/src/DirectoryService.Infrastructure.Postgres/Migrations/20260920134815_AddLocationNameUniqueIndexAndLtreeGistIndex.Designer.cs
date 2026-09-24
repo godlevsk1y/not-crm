@@ -13,17 +13,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(DirectoryServiceDbContext))]
-    [Migration("20260803202839_Initial")]
-    partial class Initial
+    [Migration("20260920134815_AddLocationNameUniqueIndexAndLtreeGistIndex")]
+    partial class AddLocationNameUniqueIndexAndLtreeGistIndex
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.4")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DirectoryService.Domain.Models.Department", b =>
@@ -37,6 +38,14 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int>("Depth")
+                        .HasColumnType("integer")
+                        .HasColumnName("depth");
 
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid")
@@ -66,7 +75,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(600)
-                                .HasColumnType("character varying(600)")
+                                .HasColumnType("ltree")
                                 .HasColumnName("path");
                         });
 
@@ -168,6 +177,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -247,6 +260,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
                     b.Property<DateTime>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -275,7 +292,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasOne("DirectoryService.Domain.Models.Department", "Parent")
                         .WithMany()
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_departments_parent");
 
                     b.Navigation("Parent");
