@@ -14,7 +14,7 @@ public class GetChildrenByParentIdValidator : AbstractValidator<GetChildrenByPar
             .WithError(Error.Validation(new ErrorMessage(
                 "departments.page.invalid",
                 "The page parameter must be greater than 0.",
-                nameof(GetDepartmentTreeQuery.Page)
+                nameof(GetChildrenByParentIdQuery.Page)
             )));
         
         RuleFor(q => q.PageSize)
@@ -22,7 +22,7 @@ public class GetChildrenByParentIdValidator : AbstractValidator<GetChildrenByPar
             .WithError(Error.Validation(new ErrorMessage(
                 "departments.page.size.invalid",
                 "The page size must be from 5 to 100.",
-                nameof(GetDepartmentTreeQuery.PageSize)
+                nameof(GetChildrenByParentIdQuery.PageSize)
             )));
     }
 }
