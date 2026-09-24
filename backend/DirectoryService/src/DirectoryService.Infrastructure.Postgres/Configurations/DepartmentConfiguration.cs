@@ -22,7 +22,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         {
             nb.Property(n => n.Value)
                 .IsRequired()
-                .HasMaxLength(100)
+                .HasMaxLength(200)
                 .HasColumnName("name");
         });
         
@@ -30,7 +30,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         {
             sb.Property(s => s.Value)
                 .IsRequired()
-                .HasMaxLength(60)
+                .HasMaxLength(200)
                 .HasColumnName("slug");
         });
 
@@ -38,7 +38,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         {
             pb.Property(p => p.Value)
                 .IsRequired()
-                .HasMaxLength(600)
+                .HasMaxLength(800)
                 .HasColumnType("ltree")
                 .HasColumnName("path");
         });
