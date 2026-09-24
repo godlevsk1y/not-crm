@@ -2,58 +2,86 @@ package main
 
 import (
 	"context"
-	_ "embed"
-	"errors"
 	"fmt"
+	"log"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
+	"seed-db/seeders"
+	"strconv"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/joho/godotenv"
 )
 
-//go:embed seed.sql
-var seedSQL string
-
 func main() {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer stop()
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
-	defer cancel()
-	if err := run(ctx); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	ctx := context.Background()
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("Failed to load the env variables")
+	}
+
+	connStr := getConnStr()
+
+	conn, err := pgx.Connect(ctx, connStr)
+	if err != nil {
+		log.Fatalf("failed to connect the db: %s", err)
+	}
+	defer conn.Close(ctx)
+
+	fmt.Printf("Connected to PostgreSQL database!\n")
+
+	commitCmd := seedData()
+
+	commitSeedData(ctx, conn, commitCmd)
+}
+
+func seedData() commitSeedDataCommand {
+	departmentsCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_COUNT"))
+	departmentsRootMinCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_ROOT_MIN_COUNT"))
+	departmentsRootMaxCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_ROOT_MAX_COUNT"))
+
+	positionsCount, _ := strconv.Atoi(os.Getenv("POSITIONS_COUNT"))
+	locationsCount, _ := strconv.Atoi(os.Getenv("LOCATIONS_COUNT"))
+
+	departmentsPositionsCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_POSITIONS_COUNT"))
+	departmentsLocationsCount, _ := strconv.Atoi(os.Getenv("DEPARTMENTS_LOCATIONS_COUNT"))
+
+	departments := seeders.SeedDepartments(
+		departmentsCount,
+		departmentsRootMinCount,
+		departmentsRootMaxCount,
+	)
+	positions := seeders.SeedPositions(positionsCount)
+	locations := seeders.SeedLocations(locationsCount)
+
+	departmentPositions := seeders.SeedDepartmentPositions(
+		departmentsPositionsCount,
+		departments,
+		positions,
+	)
+	departmentLocations := seeders.SeedDepartmentLocations(
+		departmentsLocationsCount,
+		departments,
+		locations,
+	)
+
+	return commitSeedDataCommand{
+		departments:         departments,
+		positions:           positions,
+		locations:           locations,
+		departmentPositions: departmentPositions,
+		departmentLocations: departmentLocations,
 	}
 }
 
-func run(ctx context.Context) error {
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		return errors.New("set DATABASE_URL to the DirectoryService PostgreSQL connection URL")
-	}
-	conn, err := pgx.Connect(ctx, dsn)
-	if err != nil {
-		// Connection errors can contain credentials from the supplied URL.
-		return errors.New("cannot connect to PostgreSQL: check DATABASE_URL and database availability")
-	}
-	defer conn.Close(context.Background())
-	tx, err := conn.Begin(ctx)
-	if err != nil {
-		return fmt.Errorf("begin transaction: %w", err)
-	}
-	defer tx.Rollback(context.Background())
-	if _, err := tx.Exec(ctx, seedSQL); err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) {
-			return fmt.Errorf("seed failed (SQLSTATE %s): %s", pgErr.Code, pgErr.Message)
-		}
-		return fmt.Errorf("seed failed: %w", err)
-	}
-	if err := tx.Commit(ctx); err != nil {
-		return fmt.Errorf("commit seed: %w", err)
-	}
-	fmt.Println("Seed completed: 15000 departments, 2500 locations, 500 positions; existing seed IDs were skipped.")
-	return nil
+func getConnStr() string {
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRES_PORT")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
+
+	return fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s",
+		user, password, host, port, dbName,
+	)
 }
