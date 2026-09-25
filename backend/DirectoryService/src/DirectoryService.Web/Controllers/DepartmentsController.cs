@@ -9,6 +9,7 @@ using DirectoryService.Core.Features.Departments.Commands.CreateDepartment;
 using DirectoryService.Core.Features.Departments.Commands.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
 using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
+using DirectoryService.Core.Features.Departments.Commands.TransferDepartment;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
 using DirectoryService.Core.Features.Departments.Queries.GetAncestorsById;
 using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
@@ -155,6 +156,25 @@ public class DepartmentsController : ControllerBase
         return EndpointResults.NoContent();
     }
 
+    [HttpPut("{id:guid}/parent")]
+    public async Task<IResult> TransferDepartment(
+        [FromServices] ICommandHandler<TransferDepartmentCommand, TransferredDepartmentDto> handler,
+        [FromRoute] Guid id,
+        [FromBody] TransferDepartmentRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        var command = new TransferDepartmentCommand(id, request.NewParentId);
+
+        var result = await handler.Handle(command, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+        
+        return EndpointResults.Ok(result);
+    }
+    
     [HttpGet("{id:guid}")]
     public async Task<IResult> GetById(
         [FromServices] IQueryHandler<GetDepartmentByIdQuery, Result<DepartmentDto, Error>> handler,
@@ -273,5 +293,4 @@ public class DepartmentsController : ControllerBase
         
         return EndpointResults.Ok(result.Value);
     }
-    
 }
