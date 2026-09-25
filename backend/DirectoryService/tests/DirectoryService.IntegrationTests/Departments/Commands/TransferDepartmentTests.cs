@@ -1,6 +1,8 @@
 using System.Net.Http.Json;
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Contracts.Departments.QueryContracts;
 using DirectoryService.Contracts.WebApi.Departments;
+using DirectoryService.Shared.Results;
 using DirectoryService.Web.Results;
 
 namespace DirectoryService.IntegrationTests.Departments.Commands;
@@ -33,6 +35,9 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
         await AssertDepartmentAsync(payments.Id, api.Id, "operations.platform.backend.api.payments");
         await AssertDepartmentAsync(engineering.Id, null, "engineering");
         await AssertDepartmentAsync(platform.Id, operations.Id, "operations.platform");
+        await AssertDepthAsync(backend.Id, platform.Id, 2);
+        await AssertDepthAsync(api.Id, backend.Id, 3);
+        await AssertDepthAsync(payments.Id, api.Id, 4);
 
         Assert.Equal(200, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<TransferredDepartmentDto>>();
@@ -62,6 +67,9 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
         await AssertDepartmentAsync(backend.Id, engineering.Id, "engineering.backend");
         await AssertDepartmentAsync(api.Id, backend.Id, "engineering.backend.api");
         await AssertDepartmentAsync(company.Id, null, "company");
+        await AssertDepthAsync(engineering.Id, null, 0);
+        await AssertDepthAsync(backend.Id, engineering.Id, 1);
+        await AssertDepthAsync(api.Id, backend.Id, 2);
 
         Assert.Equal(200, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<TransferredDepartmentDto>>();
@@ -84,6 +92,8 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
 
         await AssertDepartmentAsync(department.Id, parent.Id, "engineering.backend");
         await AssertDepartmentAsync(child.Id, department.Id, "engineering.backend.api");
+        await AssertDepthAsync(department.Id, parent.Id, 1);
+        await AssertDepthAsync(child.Id, department.Id, 2);
 
         Assert.Equal(200, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<TransferredDepartmentDto>>();
@@ -176,6 +186,21 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
         Assert.Equal(id, envelope.Result.Id);
         Assert.Equal(parentId, envelope.Result.ParentId);
         Assert.Equal(path, envelope.Result.Path);
+    }
+
+    private async Task AssertDepthAsync(Guid id, Guid? parentId, int expectedDepth)
+    {
+        var url = parentId is null
+            ? "api/departments/tree"
+            : $"api/departments/{parentId}/children";
+        var response = await _client.GetAsync(url);
+        Assert.Equal(200, (int)response.StatusCode);
+
+        var envelope = await response.Content
+            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentNodeDto>>>();
+        Assert.NotNull(envelope?.Result);
+        var department = Assert.Single(envelope.Result.Results, department => department.Id == id);
+        Assert.Equal(expectedDepth, department.Depth);
     }
 
     private static async Task AssertErrorAsync(HttpResponseMessage response, int statusCode, string code)
