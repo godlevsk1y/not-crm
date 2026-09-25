@@ -78,9 +78,12 @@ public class DepartmentsRepository : IDepartmentsRepository
         
         const string sql = """
                            UPDATE departments d
-                           SET path = 
-                               @newPath::ltree ||
-                               subpath(d.path, nlevel(@oldPath::ltree))
+                           SET path =
+                                   @newPath::ltree ||
+                                   subpath(d.path, nlevel(@oldPath::ltree)),
+                               depth = nlevel(@newPath::ltree) +
+                                       nlevel(d.path) -
+                                       nlevel(@oldPath::ltree) - 1
                            WHERE d.path <@ @oldPath::ltree
                            """;
 
