@@ -41,5 +41,20 @@ public static class DepartmentErrors
     public static Error HasActiveChildren(Guid id) =>
         Error.Conflict(new ErrorMessage("department.has.active.children", 
             $"Department with id '{id}' has active children department"));
-
+    
+    
+    
+    public static Error ParentNotFound(Guid id) =>
+        Error.NotFound(new ErrorMessage("department.parent.not.found", $"Parent with id '{id}' was not found"));
+    
+    public static Error ParentToSelf() =>
+        Error.Conflict(new ErrorMessage(
+            "department.transfer.parent_to_self", 
+            "Department cannot be a parent to itself"));
+    
+    public static Error Cycle(Guid departmentId, Guid newParentId) =>
+        Error.Conflict(new ErrorMessage(
+            "department.transfer.cycle", 
+            $"Department cannot be transferred, because department with '{newParentId}' " +
+            $"is a descendant of department with id '{departmentId}'"));
 }
