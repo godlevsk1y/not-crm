@@ -172,7 +172,7 @@ public class DepartmentsController : ControllerBase
             return EndpointResults.Error(result.Error);
         }
         
-        return EndpointResults.Ok(result);
+        return EndpointResults.Ok(result.Value);
     }
     
     [HttpGet("{id:guid}")]
