@@ -3,6 +3,7 @@ using DirectoryService.Core.Features.Departments;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
@@ -70,6 +71,8 @@ public class DepartmentsRepository : IDepartmentsRepository
     public async Task<int> RecalculatePathsAsync(Path oldPath, Path newPath, CancellationToken cancellationToken)
     {
         var connection = _context.Database.GetDbConnection();
+
+        var transaction = _context.Database.CurrentTransaction?.GetDbTransaction();
         
         var parameters = new DynamicParameters();
         
@@ -89,7 +92,8 @@ public class DepartmentsRepository : IDepartmentsRepository
 
         return await connection.ExecuteAsync(
             sql: sql, 
-            param: parameters
+            param: parameters,
+            transaction: transaction
         );
     }
 }
