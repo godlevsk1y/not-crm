@@ -113,7 +113,11 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
 
         await _departmentsRepository.RecalculatePathsAsync(oldPath, newPath, cancellationToken);
 
-        await transaction.CommitAsync(cancellationToken);
+        var commitResult = await transaction.CommitAsync(cancellationToken);
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error;
+        }
         
         return new TransferredDepartmentDto(
             department.Id, 
