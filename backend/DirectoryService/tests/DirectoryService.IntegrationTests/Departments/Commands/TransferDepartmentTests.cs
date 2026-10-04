@@ -160,6 +160,116 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
         await AssertDepartmentAsync(api.Id, backend.Id, "engineering.backend.api");
     }
 
+    [Fact]
+    public async Task TransferDepartment_ShouldKeepSubtreeConsistent_WhenSameDepartmentIsMovedConcurrently()
+    {
+        var engineering = await CreateDepartmentAsync("Engineering", "engineering");
+        var operations = await CreateDepartmentAsync("Operations", "operations");
+        var platform = await CreateDepartmentAsync("Platform", "platform", operations.Id);
+        var backend = await CreateDepartmentAsync("Backend", "backend");
+        var api = await CreateDepartmentAsync("API", "api", backend.Id);
+        var payments = await CreateDepartmentAsync("Payments", "payments", api.Id);
+
+        var responses = await Task.WhenAll(
+            TransferAsync(backend.Id, engineering.Id),
+            TransferAsync(backend.Id, platform.Id));
+
+        Assert.All(responses, response => Assert.Equal(200, (int)response.StatusCode));
+
+        var response = await _client.GetAsync($"api/departments/{backend.Id}");
+        Assert.Equal(200, (int)response.StatusCode);
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
+        Assert.NotNull(envelope?.Result);
+        var finalParentId = envelope.Result.ParentId;
+        Assert.True(finalParentId == engineering.Id || finalParentId == platform.Id);
+
+        var expectedPath = finalParentId == engineering.Id
+            ? "engineering.backend"
+            : "operations.platform.backend";
+        var expectedDepth = finalParentId == engineering.Id ? 1 : 2;
+
+        await AssertDepartmentAsync(backend.Id, finalParentId, expectedPath);
+        await AssertDepartmentAsync(api.Id, backend.Id, $"{expectedPath}.api");
+        await AssertDepartmentAsync(payments.Id, api.Id, $"{expectedPath}.api.payments");
+        await AssertDepthAsync(backend.Id, finalParentId, expectedDepth);
+        await AssertDepthAsync(api.Id, backend.Id, expectedDepth + 1);
+        await AssertDepthAsync(payments.Id, api.Id, expectedDepth + 2);
+        await AssertDepartmentAsync(engineering.Id, null, "engineering");
+        await AssertDepartmentAsync(operations.Id, null, "operations");
+        await AssertDepartmentAsync(platform.Id, operations.Id, "operations.platform");
+    }
+
+    [Fact]
+    public async Task TransferDepartment_ShouldRejectCycle_WhenDepartmentsAreMovedUnderEachOtherConcurrently()
+    {
+        var engineering = await CreateDepartmentAsync("Engineering", "engineering");
+        var operations = await CreateDepartmentAsync("Operations", "operations");
+        var backend = await CreateDepartmentAsync("Backend", "backend", engineering.Id);
+        var platform = await CreateDepartmentAsync("Platform", "platform", operations.Id);
+
+        var responses = await Task.WhenAll(
+            TransferAsync(engineering.Id, operations.Id),
+            TransferAsync(operations.Id, engineering.Id));
+
+        Assert.Single(responses, response => (int)response.StatusCode == 200);
+        var conflict = Assert.Single(responses, response => (int)response.StatusCode == 409);
+        await AssertErrorAsync(conflict, 409, "department.transfer.cycle");
+
+        if ((int)responses[0].StatusCode == 200)
+        {
+            await AssertDepartmentAsync(operations.Id, null, "operations");
+            await AssertDepartmentAsync(engineering.Id, operations.Id, "operations.engineering");
+            await AssertDepartmentAsync(backend.Id, engineering.Id, "operations.engineering.backend");
+            await AssertDepartmentAsync(platform.Id, operations.Id, "operations.platform");
+            await AssertDepthAsync(operations.Id, null, 0);
+            await AssertDepthAsync(engineering.Id, operations.Id, 1);
+            await AssertDepthAsync(backend.Id, engineering.Id, 2);
+            await AssertDepthAsync(platform.Id, operations.Id, 1);
+        }
+        else
+        {
+            await AssertDepartmentAsync(engineering.Id, null, "engineering");
+            await AssertDepartmentAsync(operations.Id, engineering.Id, "engineering.operations");
+            await AssertDepartmentAsync(backend.Id, engineering.Id, "engineering.backend");
+            await AssertDepartmentAsync(platform.Id, operations.Id, "engineering.operations.platform");
+            await AssertDepthAsync(engineering.Id, null, 0);
+            await AssertDepthAsync(operations.Id, engineering.Id, 1);
+            await AssertDepthAsync(backend.Id, engineering.Id, 1);
+            await AssertDepthAsync(platform.Id, operations.Id, 2);
+        }
+    }
+
+    [Fact]
+    public async Task TransferDepartment_ShouldKeepSubtreesConsistent_WhenDepartmentAndParentAreMovedConcurrently()
+    {
+        var engineering = await CreateDepartmentAsync("Engineering", "engineering");
+        var operations = await CreateDepartmentAsync("Operations", "operations");
+        var platform = await CreateDepartmentAsync("Platform", "platform", operations.Id);
+        var backend = await CreateDepartmentAsync("Backend", "backend", engineering.Id);
+        var api = await CreateDepartmentAsync("API", "api", backend.Id);
+        var payments = await CreateDepartmentAsync("Payments", "payments", api.Id);
+        var frontend = await CreateDepartmentAsync("Frontend", "frontend", engineering.Id);
+
+        var responses = await Task.WhenAll(
+            TransferAsync(backend.Id, platform.Id),
+            TransferAsync(engineering.Id, operations.Id));
+
+        Assert.All(responses, response => Assert.Equal(200, (int)response.StatusCode));
+
+        await AssertDepartmentAsync(engineering.Id, operations.Id, "operations.engineering");
+        await AssertDepartmentAsync(frontend.Id, engineering.Id, "operations.engineering.frontend");
+        await AssertDepartmentAsync(backend.Id, platform.Id, "operations.platform.backend");
+        await AssertDepartmentAsync(api.Id, backend.Id, "operations.platform.backend.api");
+        await AssertDepartmentAsync(payments.Id, api.Id, "operations.platform.backend.api.payments");
+        await AssertDepthAsync(engineering.Id, operations.Id, 1);
+        await AssertDepthAsync(frontend.Id, engineering.Id, 2);
+        await AssertDepthAsync(backend.Id, platform.Id, 2);
+        await AssertDepthAsync(api.Id, backend.Id, 3);
+        await AssertDepthAsync(payments.Id, api.Id, 4);
+        await AssertDepartmentAsync(operations.Id, null, "operations");
+        await AssertDepartmentAsync(platform.Id, operations.Id, "operations.platform");
+    }
+
     private async Task<DepartmentDto> CreateDepartmentAsync(string name, string slug, Guid? parentId = null)
     {
         var request = new CreateDepartmentRequest(name, slug, [], parentId);
