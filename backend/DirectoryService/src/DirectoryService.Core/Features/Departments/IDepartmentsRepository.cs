@@ -12,7 +12,7 @@ public interface IDepartmentsRepository
     
     Task<Department?> GetByIdWithLockAsync(DepartmentId id, CancellationToken cancellationToken);
     
-    Task<Department?> GetByIdWithAncestorsLockAsync(DepartmentId id, CancellationToken cancellationToken);
+    Task<Department?> GetByIdWithDescendantsLockAsync(DepartmentId id, CancellationToken cancellationToken);
     
     Task<Department?> GetByIdWithParentAsync(DepartmentId id, CancellationToken cancellationToken);
 

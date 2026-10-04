@@ -40,7 +40,7 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
         var result = await _transactionManager.ExecuteAsync(async ct =>
         {
             var departmentId = new DepartmentId(command.DepartmentId);
-            var department = await _departmentsRepository.GetByIdWithAncestorsLockAsync(departmentId, ct);
+            var department = await _departmentsRepository.GetByIdWithDescendantsLockAsync(departmentId, ct);
             if (department is null)
             {
                 return DepartmentErrors.NotFound(departmentId);

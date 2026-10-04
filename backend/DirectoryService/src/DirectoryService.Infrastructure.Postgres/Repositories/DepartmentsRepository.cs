@@ -41,7 +41,7 @@ public class DepartmentsRepository : IDepartmentsRepository
         return await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 
-    public async Task<Department?> GetByIdWithAncestorsLockAsync(DepartmentId id, CancellationToken cancellationToken)
+    public async Task<Department?> GetByIdWithDescendantsLockAsync(DepartmentId id, CancellationToken cancellationToken)
     {
         await _context.Database.ExecuteSqlInterpolatedAsync($"""
                                                              SELECT *
