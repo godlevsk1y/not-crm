@@ -36,9 +36,17 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
         {
             return validationResult.ToError();
         }
+        
+        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+        if (beginTransactionResult.IsFailure)
+        {
+            return beginTransactionResult.Error;
+        }
+        
+        await using var transaction = beginTransactionResult.Value;
 
         var departmentId = new DepartmentId(command.DepartmentId);
-        var department = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
+        var department = await _departmentsRepository.GetByIdWithAncestorsLockAsync(departmentId, cancellationToken);
         if (department is null)
         {
             return DepartmentErrors.NotFound(departmentId);
@@ -58,11 +66,11 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
         
         if (command.NewParentId is null)
         {
-            return await TransferDepartment(department, parent: null, cancellationToken);
+            return await TransferDepartment(department, parent: null, transaction, cancellationToken);
         }
 
         var newParentId = new DepartmentId(command.NewParentId.Value);
-        var newParent = await _departmentsRepository.GetByIdAsync(newParentId, cancellationToken);
+        var newParent = await _departmentsRepository.GetByIdWithLockAsync(newParentId, cancellationToken);
 
         if (newParent is null)
         {
@@ -79,22 +87,15 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
             return DepartmentErrors.Cycle(departmentId, newParentId);
         }
         
-        return await TransferDepartment(department, newParent, cancellationToken);
+        return await TransferDepartment(department, newParent, transaction, cancellationToken);
     }
 
     private async Task<Result<TransferredDepartmentDto, Error>> TransferDepartment(
         Department department, 
         Department? parent,
+        ITransaction transaction,
         CancellationToken cancellationToken)
     {
-        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (beginTransactionResult.IsFailure)
-        {
-            return beginTransactionResult.Error;
-        }
-        
-        await using var transaction = beginTransactionResult.Value;
-
         var oldPath = department.Path;
         
         var setParentResult = department.SetParent(parent);

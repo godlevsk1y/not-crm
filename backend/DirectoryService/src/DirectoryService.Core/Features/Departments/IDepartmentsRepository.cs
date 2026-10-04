@@ -10,6 +10,10 @@ public interface IDepartmentsRepository
     
     Task<Department?> GetByIdAsync(DepartmentId id, CancellationToken cancellationToken);
     
+    Task<Department?> GetByIdWithLockAsync(DepartmentId id, CancellationToken cancellationToken);
+    
+    Task<Department?> GetByIdWithAncestorsLockAsync(DepartmentId id, CancellationToken cancellationToken);
+    
     Task<Department?> GetByIdWithParentAsync(DepartmentId id, CancellationToken cancellationToken);
 
     void Delete(Department department);
