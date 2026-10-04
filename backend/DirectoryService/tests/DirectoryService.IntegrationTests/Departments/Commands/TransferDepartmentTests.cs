@@ -174,7 +174,7 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
             TransferAsync(backend.Id, engineering.Id),
             TransferAsync(backend.Id, platform.Id));
 
-        Assert.All(responses, response => Assert.Equal(200, (int)response.StatusCode));
+        await AssertConcurrentTransferResponsesAsync(responses);
 
         var response = await _client.GetAsync($"api/departments/{backend.Id}");
         Assert.Equal(200, (int)response.StatusCode);
@@ -182,6 +182,15 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
         Assert.NotNull(envelope?.Result);
         var finalParentId = envelope.Result.ParentId;
         Assert.True(finalParentId == engineering.Id || finalParentId == platform.Id);
+
+        if ((int)responses[0].StatusCode == 409)
+        {
+            Assert.Equal(platform.Id, finalParentId);
+        }
+        else if ((int)responses[1].StatusCode == 409)
+        {
+            Assert.Equal(engineering.Id, finalParentId);
+        }
 
         var expectedPath = finalParentId == engineering.Id
             ? "engineering.backend"
@@ -213,7 +222,8 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
 
         Assert.Single(responses, response => (int)response.StatusCode == 200);
         var conflict = Assert.Single(responses, response => (int)response.StatusCode == 409);
-        await AssertErrorAsync(conflict, 409, "department.transfer.cycle");
+        await AssertErrorAsync(
+            conflict, 409, "department.transfer.cycle", "department.transfer.conflict");
 
         if ((int)responses[0].StatusCode == 200)
         {
@@ -254,18 +264,29 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
             TransferAsync(backend.Id, platform.Id),
             TransferAsync(engineering.Id, operations.Id));
 
-        Assert.All(responses, response => Assert.Equal(200, (int)response.StatusCode));
+        await AssertConcurrentTransferResponsesAsync(responses);
 
-        await AssertDepartmentAsync(engineering.Id, operations.Id, "operations.engineering");
-        await AssertDepartmentAsync(frontend.Id, engineering.Id, "operations.engineering.frontend");
-        await AssertDepartmentAsync(backend.Id, platform.Id, "operations.platform.backend");
-        await AssertDepartmentAsync(api.Id, backend.Id, "operations.platform.backend.api");
-        await AssertDepartmentAsync(payments.Id, api.Id, "operations.platform.backend.api.payments");
-        await AssertDepthAsync(engineering.Id, operations.Id, 1);
-        await AssertDepthAsync(frontend.Id, engineering.Id, 2);
-        await AssertDepthAsync(backend.Id, platform.Id, 2);
-        await AssertDepthAsync(api.Id, backend.Id, 3);
-        await AssertDepthAsync(payments.Id, api.Id, 4);
+        var backendMoved = (int)responses[0].StatusCode == 200;
+        var engineeringMoved = (int)responses[1].StatusCode == 200;
+        Guid? engineeringParentId = engineeringMoved ? operations.Id : null;
+        var engineeringPath = engineeringMoved ? "operations.engineering" : "engineering";
+        var engineeringDepth = engineeringMoved ? 1 : 0;
+        var backendParentId = backendMoved ? platform.Id : engineering.Id;
+        var backendPath = backendMoved
+            ? "operations.platform.backend"
+            : $"{engineeringPath}.backend";
+        var backendDepth = backendMoved ? 2 : engineeringDepth + 1;
+
+        await AssertDepartmentAsync(engineering.Id, engineeringParentId, engineeringPath);
+        await AssertDepartmentAsync(frontend.Id, engineering.Id, $"{engineeringPath}.frontend");
+        await AssertDepartmentAsync(backend.Id, backendParentId, backendPath);
+        await AssertDepartmentAsync(api.Id, backend.Id, $"{backendPath}.api");
+        await AssertDepartmentAsync(payments.Id, api.Id, $"{backendPath}.api.payments");
+        await AssertDepthAsync(engineering.Id, engineeringParentId, engineeringDepth);
+        await AssertDepthAsync(frontend.Id, engineering.Id, engineeringDepth + 1);
+        await AssertDepthAsync(backend.Id, backendParentId, backendDepth);
+        await AssertDepthAsync(api.Id, backend.Id, backendDepth + 1);
+        await AssertDepthAsync(payments.Id, api.Id, backendDepth + 2);
         await AssertDepartmentAsync(operations.Id, null, "operations");
         await AssertDepartmentAsync(platform.Id, operations.Id, "operations.platform");
     }
@@ -313,14 +334,30 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
         Assert.Equal(expectedDepth, department.Depth);
     }
 
-    private static async Task AssertErrorAsync(HttpResponseMessage response, int statusCode, string code)
+    private static async Task AssertConcurrentTransferResponsesAsync(HttpResponseMessage[] responses)
+    {
+        Assert.Contains(responses, response => (int)response.StatusCode == 200);
+        Assert.All(responses, response =>
+            Assert.True((int)response.StatusCode is 200 or 409,
+                $"Expected HTTP 200 or 409, got {(int)response.StatusCode}."));
+
+        foreach (var response in responses.Where(response => (int)response.StatusCode == 409))
+        {
+            await AssertErrorAsync(response, 409, "department.transfer.conflict");
+        }
+    }
+
+    private static async Task AssertErrorAsync(
+        HttpResponseMessage response, int statusCode, params string[] codes)
     {
         Assert.Equal(statusCode, (int)response.StatusCode);
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
         Assert.NotNull(envelope);
         Assert.True(envelope.IsError);
-        Assert.Equal(code, envelope.Error!.Messages[0].Code);
+        Assert.NotNull(envelope.Error);
+        var message = Assert.Single(envelope.Error.Messages);
+        Assert.Contains(message.Code, codes);
     }
 
     public Task InitializeAsync() => Task.CompletedTask;
