@@ -29,6 +29,46 @@ public class DepartmentsRepository : IDepartmentsRepository
         return await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
     }
 
+    public async Task<Department?> GetByIdWithLockAsync(DepartmentId id, CancellationToken cancellationToken)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync($"""
+                                                            SELECT *
+                                                            FROM departments
+                                                            WHERE id = {id.Value}
+                                                            FOR UPDATE
+                                                            """, cancellationToken);
+        
+        return await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+    }
+
+    public async Task<Department?> GetByIdWithDescendantsLockAsync(DepartmentId id, CancellationToken cancellationToken)
+    {
+        await _context.Database.ExecuteSqlInterpolatedAsync($"""
+                                                             SELECT *
+                                                             FROM departments
+                                                             WHERE id = {id.Value}
+                                                             FOR UPDATE
+                                                             """, cancellationToken);
+        
+        var department =  await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+        if (department is null)
+        {
+            return department;
+        }
+        
+        LTree departmentPath = department.Path.Value;
+        
+        await _context.Database.ExecuteSqlInterpolatedAsync($"""
+                                                             SELECT *
+                                                             FROM departments
+                                                             WHERE path @> {departmentPath}
+                                                             ORDER BY id ASC
+                                                             FOR UPDATE
+                                                             """, cancellationToken);
+
+        return department;
+    }
+
     public async Task<Department?> GetByIdWithParentAsync(DepartmentId id, CancellationToken cancellationToken)
     {
         var department = await _context.Departments

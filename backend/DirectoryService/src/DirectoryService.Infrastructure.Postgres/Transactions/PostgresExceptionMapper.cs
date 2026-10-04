@@ -44,6 +44,9 @@ internal static class PostgresExceptionMapper
 
             PostgresErrorCodes.ForeignKeyViolation =>
                 MapForeignKeyViolation(postgresException),
+            
+            PostgresErrorCodes.DeadlockDetected =>
+                DepartmentErrors.TransferConflict(),
 
             _ => null,
         };
