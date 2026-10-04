@@ -70,7 +70,48 @@ public partial class TransactionManager : ITransactionManager
         }
     }
 
-    
+    public async Task<Result<T, Error>> ExecuteAsync<T>(Func<CancellationToken, Task<Result<T, Error>>> operation, 
+        CancellationToken cancellationToken)
+    {
+        var beginTransactionResult = await BeginTransactionAsync(cancellationToken);
+        if (beginTransactionResult.IsFailure)
+        {
+            return beginTransactionResult.Error;
+        }
+        
+        await using var transaction = beginTransactionResult.Value;
+
+        try
+        {
+            var result = await operation(cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return result.Error;
+            }
+
+            var commitResult = await transaction.CommitAsync(cancellationToken);
+            if (commitResult.IsFailure)
+            {
+                return commitResult.Error;
+            }
+            
+            return result.Value;
+        }
+        catch (OperationCanceledException)
+            when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var error = PostgresExceptionMapper.Map(ex);
+            
+            return error ?? GeneralErrors.Internal();
+        }
+    }
+
+
     [LoggerMessage(LogLevel.Error, "Failed to begin transaction")]
     private partial void LogBeginTransactionFailed(Exception exception);
 

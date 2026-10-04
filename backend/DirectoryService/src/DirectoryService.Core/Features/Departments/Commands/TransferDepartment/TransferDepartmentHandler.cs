@@ -36,64 +36,60 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
         {
             return validationResult.ToError();
         }
+
+        var result = await _transactionManager.ExecuteAsync(async ct =>
+        {
+            var departmentId = new DepartmentId(command.DepartmentId);
+            var department = await _departmentsRepository.GetByIdWithAncestorsLockAsync(departmentId, ct);
+            if (department is null)
+            {
+                return DepartmentErrors.NotFound(departmentId);
+            }
+
+            if (department.ParentId?.Value == command.NewParentId)
+            {
+                return new TransferredDepartmentDto(
+                    department.Id, 
+                    department.Name.Value, 
+                    department.Slug.Value, 
+                    department.Path.Value, 
+                    department.Depth,
+                    department.ParentId?.ToGuid()
+                );
+            }
         
-        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
-        if (beginTransactionResult.IsFailure)
-        {
-            return beginTransactionResult.Error;
-        }
+            if (command.NewParentId is null)
+            {
+                return await TransferDepartment(department, parent: null, ct);
+            }
+
+            var newParentId = new DepartmentId(command.NewParentId.Value);
+            var newParent = await _departmentsRepository.GetByIdWithLockAsync(newParentId, ct);
+
+            if (newParent is null)
+            {
+                return DepartmentErrors.ParentNotFound(newParentId);
+            }
+
+            if (department.Id == newParent.Id)
+            {
+                return DepartmentErrors.ParentToSelf();
+            }
+
+            if (await _departmentsRepository.IsCycle(department, newParent, ct))
+            {
+                return DepartmentErrors.Cycle(departmentId, newParentId);
+            }
         
-        await using var transaction = beginTransactionResult.Value;
-
-        var departmentId = new DepartmentId(command.DepartmentId);
-        var department = await _departmentsRepository.GetByIdWithAncestorsLockAsync(departmentId, cancellationToken);
-        if (department is null)
-        {
-            return DepartmentErrors.NotFound(departmentId);
-        }
-
-        if (department.ParentId?.Value == command.NewParentId)
-        {
-            return new TransferredDepartmentDto(
-                department.Id, 
-                department.Name.Value, 
-                department.Slug.Value, 
-                department.Path.Value, 
-                department.Depth,
-                department.ParentId?.ToGuid()
-            );
-        }
+            return await TransferDepartment(department, newParent, ct);
+        }, cancellationToken);
         
-        if (command.NewParentId is null)
-        {
-            return await TransferDepartment(department, parent: null, transaction, cancellationToken);
-        }
-
-        var newParentId = new DepartmentId(command.NewParentId.Value);
-        var newParent = await _departmentsRepository.GetByIdWithLockAsync(newParentId, cancellationToken);
-
-        if (newParent is null)
-        {
-            return DepartmentErrors.ParentNotFound(newParentId);
-        }
-
-        if (department.Id == newParent.Id)
-        {
-            return DepartmentErrors.ParentToSelf();
-        }
-
-        if (await _departmentsRepository.IsCycle(department, newParent, cancellationToken))
-        {
-            return DepartmentErrors.Cycle(departmentId, newParentId);
-        }
-        
-        return await TransferDepartment(department, newParent, transaction, cancellationToken);
+        return result;
     }
 
     private async Task<Result<TransferredDepartmentDto, Error>> TransferDepartment(
         Department department, 
         Department? parent,
-        ITransaction transaction,
         CancellationToken cancellationToken)
     {
         var oldPath = department.Path;
@@ -113,12 +109,6 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
         }
 
         await _departmentsRepository.RecalculatePathsAsync(oldPath, newPath, cancellationToken);
-
-        var commitResult = await transaction.CommitAsync(cancellationToken);
-        if (commitResult.IsFailure)
-        {
-            return commitResult.Error;
-        }
         
         return new TransferredDepartmentDto(
             department.Id, 

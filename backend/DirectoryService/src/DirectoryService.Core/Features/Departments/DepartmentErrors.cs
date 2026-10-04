@@ -57,4 +57,9 @@ public static class DepartmentErrors
             "department.transfer.cycle", 
             $"Department cannot be transferred, because department with '{newParentId}' " +
             $"is a descendant of department with id '{departmentId}'"));
+    
+    public static Error TransferConflict() =>
+        Error.Conflict(new ErrorMessage(
+            "department.transfer.conflict", 
+            "A conflict occurred when transferring a department"));
 }
