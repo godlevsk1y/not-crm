@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models.Errors;
 using DirectoryService.Domain.ValueObjects;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 
 namespace DirectoryService.Domain.Models;
 

@@ -2,8 +2,8 @@ using Dapper;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
+using Shared.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Locations.Queries.GetTopLocationWithDepartmentsCount;
 

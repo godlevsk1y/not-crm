@@ -1,5 +1,5 @@
 using DirectoryService.Contracts.Locations;
-using DirectoryService.Core.Abstractions;
+using Shared.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 

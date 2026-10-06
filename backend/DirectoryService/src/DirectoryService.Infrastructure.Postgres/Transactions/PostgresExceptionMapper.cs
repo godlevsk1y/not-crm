@@ -1,9 +1,9 @@
 using DirectoryService.Core.Features.Departments;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Core.Features.Positions;
-using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Shared.Kernel.Errors;
 
 namespace DirectoryService.Infrastructure.Postgres.Transactions;
 

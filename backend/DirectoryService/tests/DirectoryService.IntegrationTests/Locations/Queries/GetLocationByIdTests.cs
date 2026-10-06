@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using DirectoryService.Contracts.Locations;
-using DirectoryService.Web.Results;
+using Shared.Framework.Results;
 
 namespace DirectoryService.IntegrationTests.Locations.Queries;
 

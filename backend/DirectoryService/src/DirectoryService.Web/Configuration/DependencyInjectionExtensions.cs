@@ -1,11 +1,11 @@
 using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
-using DirectoryService.Shared.Errors;
-using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Exceptions;
+using Shared.Framework.Results;
+using Shared.Kernel.Errors;
 
 namespace DirectoryService.Web.Configuration;
 

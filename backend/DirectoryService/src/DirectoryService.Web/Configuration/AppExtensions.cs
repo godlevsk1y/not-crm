@@ -1,7 +1,7 @@
-using DirectoryService.Web.Middlewares;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Scalar.AspNetCore;
 using Serilog;
+using Shared.Framework.Middlewares;
 
 namespace DirectoryService.Web.Configuration;
 

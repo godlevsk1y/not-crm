@@ -3,7 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DirectoryService.Contracts\DirectoryService.Contracts.csproj" />
     <ProjectReference Include="..\DirectoryService.Domain\DirectoryService.Domain.csproj" />
-    <ProjectReference Include="..\DirectoryService.Shared\DirectoryService.Shared.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Shared.Core\Shared.Core.csproj"/>
   </ItemGroup>
   
   <ItemGroup>

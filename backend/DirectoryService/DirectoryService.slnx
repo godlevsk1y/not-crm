@@ -4,7 +4,6 @@
     <Project Path="src/DirectoryService.Core/DirectoryService.Core.csproj" />
     <Project Path="src/DirectoryService.Domain/DirectoryService.Domain.csproj" />
     <Project Path="src/DirectoryService.Infrastructure.Postgres/DirectoryService.Infrastructure.Postgres.csproj" />
-    <Project Path="src/DirectoryService.Shared/DirectoryService.Shared.csproj" />
     <Project Path="src/DirectoryService.Web/DirectoryService.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">

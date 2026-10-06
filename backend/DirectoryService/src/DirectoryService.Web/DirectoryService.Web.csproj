@@ -7,6 +7,7 @@
     <ProjectReference Include="..\DirectoryService.Core\DirectoryService.Core.csproj" />
     <ProjectReference Include="..\DirectoryService.Domain\DirectoryService.Domain.csproj" />
     <ProjectReference Include="..\DirectoryService.Infrastructure.Postgres\DirectoryService.Infrastructure.Postgres.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Shared.Framework\Shared.Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>

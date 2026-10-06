@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using DirectoryService.Contracts.Positions;
-using DirectoryService.Web.Results;
+using Shared.Framework.Results;
 
 namespace DirectoryService.IntegrationTests.Positions.Commands;
 

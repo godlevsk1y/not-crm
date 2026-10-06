@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
-using DirectoryService.Web.Results;
+using Shared.Framework.Results;
 
 namespace DirectoryService.IntegrationTests.Locations.Queries;
 

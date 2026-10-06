@@ -1,10 +1,10 @@
 using DirectoryService.Contracts.Positions;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Positions.Commands.CreatePosition;
 using DirectoryService.Core.Features.Positions.Commands.DeletePosition;
 using DirectoryService.Core.Features.Positions.Commands.UpdatePosition;
-using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Core.Abstractions;
+using Shared.Framework.Results;
 
 namespace DirectoryService.Web.Controllers;
 

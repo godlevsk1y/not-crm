@@ -1,14 +1,14 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Database;
-using DirectoryService.Core.Extensions;
 using DirectoryService.Domain.Models;
 using DirectoryService.Domain.ValueObjects;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using Shared.Core.Abstractions;
+using Shared.Core.Database;
+using Shared.Core.Extensions;
 
 namespace DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 

@@ -1,4 +1,4 @@
-using DirectoryService.Core.Abstractions;
+using Shared.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Departments.Queries.GetAncestorsById;
 

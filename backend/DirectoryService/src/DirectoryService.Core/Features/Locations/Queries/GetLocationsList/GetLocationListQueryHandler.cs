@@ -4,12 +4,12 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations.QueryContracts;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
-using DirectoryService.Core.Extensions;
-using DirectoryService.Shared.Errors;
-using DirectoryService.Shared.Results;
+using Shared.Kernel.Errors;
+using Shared.Kernel.Results;
 using FluentValidation;
+using Shared.Core.Abstractions;
+using Shared.Core.Extensions;
 
 namespace DirectoryService.Core.Features.Locations.Queries.GetLocationsList;
 

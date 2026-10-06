@@ -9,9 +9,7 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddHandlersAndValidators(this IServiceCollection services, params Assembly[] assemblies)
     {
-        var assembly = typeof(DependencyInjectionExtensions).Assembly;
-        
-        services.AddValidatorsFromAssembly(assembly);
+        services.AddValidatorsFromAssemblies(assemblies);
 
         services.Scan(scan => scan
             .FromAssemblies(assemblies)
