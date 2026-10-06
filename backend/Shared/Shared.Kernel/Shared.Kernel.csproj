@@ -1,21 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" />
-    </ItemGroup>
-
     <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
         <PackageId>GodlevskiyDev.Shared.Kernel</PackageId>
         <Version>1.0.0</Version>
 
         <Authors>GodlevskiyDev</Authors>
         <Company>GodlevskiyDev</Company>
         <Description>Shared kernel for backend services.</Description>
-        
+
         <RepositoryUrl>https://github.com/godlevsk1y/not-crm</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
 
         <IsPackable>true</IsPackable>
     </PropertyGroup>
-    
+
+    <ItemGroup>
+      <PackageReference Include="CSharpFunctionalExtensions" />
+    </ItemGroup>
 </Project>
