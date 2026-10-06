@@ -1,6 +1,8 @@
-using DirectoryService.Shared.Errors;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Shared.Kernel.Errors;
 
-namespace DirectoryService.Web.Middlewares;
+namespace Shared.Framework.Middlewares;
 
 public partial class ExceptionMiddleware
 {
@@ -40,6 +42,6 @@ public partial class ExceptionMiddleware
 
     [LoggerMessage(
         Level = LogLevel.Error, 
-        Message = "An exception occurred while processing the request.")]
+        Message = "An exception occurred while processing the request")]
     private partial void LogException(Exception ex);
 }

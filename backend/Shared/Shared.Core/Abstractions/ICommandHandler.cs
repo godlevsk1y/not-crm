@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 
-namespace DirectoryService.Core.Abstractions;
+namespace Shared.Core.Abstractions;
 
 public interface ICommandHandler<in TCommand, TResponse> 
     where TCommand : ICommand

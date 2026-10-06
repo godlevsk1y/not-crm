@@ -1,4 +1,4 @@
-namespace DirectoryService.Core.Abstractions;
+namespace Shared.Core.Abstractions;
 
 public interface IQueryHandler<in TQuery, TResponse>
     where TQuery : IQuery

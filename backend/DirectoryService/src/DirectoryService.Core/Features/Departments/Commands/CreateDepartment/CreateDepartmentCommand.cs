@@ -1,5 +1,5 @@
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
+using Shared.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Departments.Commands.CreateDepartment;
 

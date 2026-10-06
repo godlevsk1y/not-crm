@@ -1,12 +1,12 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Database;
-using DirectoryService.Core.Extensions;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 using FluentValidation;
+using Shared.Core.Abstractions;
+using Shared.Core.Database;
+using Shared.Core.Extensions;
 
 namespace DirectoryService.Core.Features.Departments.Commands.TransferDepartment;
 

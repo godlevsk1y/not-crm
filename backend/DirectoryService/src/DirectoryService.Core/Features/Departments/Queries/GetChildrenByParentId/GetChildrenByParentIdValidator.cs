@@ -1,6 +1,6 @@
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
 using DirectoryService.Core.Validation;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 using FluentValidation;
 
 namespace DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;

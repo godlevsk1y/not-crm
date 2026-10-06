@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 
-namespace DirectoryService.Web.Results;
+namespace Shared.Framework.Results;
 
 public record Envelope
 {

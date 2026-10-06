@@ -1,16 +1,16 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
 using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
 using DirectoryService.Core.Features.Locations.Queries.GetLocationById;
 using DirectoryService.Core.Features.Locations.Queries.GetLocationsList;
-using DirectoryService.Shared.Errors;
-using DirectoryService.Shared.Results;
-using DirectoryService.Web.Results;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Core.Abstractions;
+using Shared.Framework.Results;
+using Shared.Kernel.Errors;
+using Shared.Kernel.Results;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Web.Controllers;

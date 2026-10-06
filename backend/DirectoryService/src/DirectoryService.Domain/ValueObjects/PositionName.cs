@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.ValueObjects.Errors;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 
 namespace DirectoryService.Domain.ValueObjects;
 

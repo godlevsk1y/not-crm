@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
+using Shared.Core.Database;
 
 namespace DirectoryService.Infrastructure.Postgres;
 

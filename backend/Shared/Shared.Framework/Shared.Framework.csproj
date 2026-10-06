@@ -5,9 +5,13 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
+    
     <ItemGroup>
-      <PackageReference Include="CSharpFunctionalExtensions" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="godlevskiydev.shared.kernel" />
     </ItemGroup>
 
 </Project>

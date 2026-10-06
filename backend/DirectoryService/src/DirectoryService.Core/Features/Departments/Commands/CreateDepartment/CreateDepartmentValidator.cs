@@ -1,7 +1,7 @@
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 using FluentValidation;
 
 namespace DirectoryService.Core.Features.Departments.Commands.CreateDepartment;

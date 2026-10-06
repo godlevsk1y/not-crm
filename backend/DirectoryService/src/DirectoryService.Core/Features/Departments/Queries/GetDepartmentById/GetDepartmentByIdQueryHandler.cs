@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Database;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 using Microsoft.EntityFrameworkCore;
+using Shared.Core.Abstractions;
 
 namespace DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 

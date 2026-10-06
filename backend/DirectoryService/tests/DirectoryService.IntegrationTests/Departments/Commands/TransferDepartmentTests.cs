@@ -2,8 +2,8 @@ using System.Net.Http.Json;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.QueryContracts;
 using DirectoryService.Contracts.WebApi.Departments;
-using DirectoryService.Shared.Results;
-using DirectoryService.Web.Results;
+using Shared.Framework.Results;
+using Shared.Kernel.Results;
 
 namespace DirectoryService.IntegrationTests.Departments.Commands;
 

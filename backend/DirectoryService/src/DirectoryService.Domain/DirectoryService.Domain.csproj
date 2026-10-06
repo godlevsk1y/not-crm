@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <ProjectReference Include="..\DirectoryService.Shared\DirectoryService.Shared.csproj" />
+    <PackageReference Include="GodlevskiyDev.Shared.Kernel" />
   </ItemGroup>
 </Project>

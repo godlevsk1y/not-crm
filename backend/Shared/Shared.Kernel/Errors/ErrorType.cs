@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace DirectoryService.Shared.Errors;
+namespace Shared.Kernel.Errors;
 
 /// <summary>
 /// Represents the type of error.

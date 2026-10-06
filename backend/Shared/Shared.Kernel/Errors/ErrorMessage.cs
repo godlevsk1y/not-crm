@@ -1,4 +1,4 @@
-namespace DirectoryService.Shared.Errors;
+namespace Shared.Kernel.Errors;
 
 /// <summary>
 /// Represents a standardized error message.

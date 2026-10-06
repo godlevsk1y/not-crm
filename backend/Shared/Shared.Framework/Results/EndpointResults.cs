@@ -1,7 +1,8 @@
-using DirectoryService.Shared.Errors;
+using Microsoft.AspNetCore.Http;
+using Shared.Kernel.Errors;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
-namespace DirectoryService.Web.Results;
+namespace Shared.Framework.Results;
 
 public static class EndpointResults
 {

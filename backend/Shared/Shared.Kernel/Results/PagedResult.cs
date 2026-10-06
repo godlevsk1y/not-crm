@@ -1,4 +1,4 @@
-namespace DirectoryService.Shared.Results;
+namespace Shared.Kernel.Results;
 
 public sealed record PagedResult<T>(
     IEnumerable<T> Results,

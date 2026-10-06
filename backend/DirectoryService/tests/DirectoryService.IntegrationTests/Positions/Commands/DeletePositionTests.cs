@@ -3,9 +3,9 @@ using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Positions;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Infrastructure.Postgres;
-using DirectoryService.Web.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Framework.Results;
 
 namespace DirectoryService.IntegrationTests.Positions.Commands;
 

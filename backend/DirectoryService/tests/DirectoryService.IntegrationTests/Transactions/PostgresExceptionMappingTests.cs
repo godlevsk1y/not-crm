@@ -1,12 +1,12 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Core.Database;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Infrastructure.Postgres;
-using DirectoryService.Shared.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Core.Database;
+using Shared.Kernel.Errors;
 
 namespace DirectoryService.IntegrationTests.Transactions;
 

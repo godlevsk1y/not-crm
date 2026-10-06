@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Shared.Errors;
+using Shared.Kernel.Errors;
 
-namespace DirectoryService.Core.Database;
+namespace Shared.Core.Database;
 
 public interface ITransactionManager
 {
