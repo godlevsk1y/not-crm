@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
+import { ArrowUpRightIcon, HouseIcon } from "@phosphor-icons/react/ssr";
 import "./globals.css";
+import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/utils";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -36,7 +39,28 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         jetbrainsMono.variable,
       )}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <nav
+          aria-label="Основная навигация"
+          className="absolute top-4 left-4 z-10"
+        >
+          <Link
+            href={ROUTES.HOME}
+            className="group inline-flex items-center gap-3 bg-card p-1 pr-3 text-xs font-medium text-card-foreground shadow-sm ring-1 ring-foreground/10 transition duration-200 outline-none hover:shadow-lg hover:ring-foreground/20 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 motion-safe:hover:-translate-y-1"
+          >
+            <span className="flex size-6 items-center justify-center bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <HouseIcon size={18} weight="duotone" aria-hidden="true" />
+            </span>
+            <span>На главную</span>
+            <ArrowUpRightIcon
+              size={16}
+              aria-hidden="true"
+              className="text-muted-foreground transition-transform group-hover:text-foreground motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5"
+            />
+          </Link>
+        </nav>
+        {children}
+      </body>
     </html>
   );
 }
