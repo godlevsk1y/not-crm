@@ -1,15 +1,17 @@
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Checkbox } from "@/shared/ui/checkbox";
-import { CheckIcon } from "@phosphor-icons/react";
+import { CheckIcon, TrashIcon } from "@phosphor-icons/react";
 import { TodoEntry } from "../page";
 
 type TodoCardProps = {
   todo: TodoEntry;
   onToggle: (id: string, checked: boolean) => void;
+  onDelete: (id: string) => void;
 };
 
-export default function TodoCard({ todo, onToggle }: TodoCardProps) {
+export default function TodoCard({ todo, onToggle, onDelete }: TodoCardProps) {
   return (
     <Card
       className={cn(
@@ -49,6 +51,16 @@ export default function TodoCard({ todo, onToggle }: TodoCardProps) {
             className="mt-1 size-4 shrink-0 text-emerald-600"
           />
         )}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Удалить задачу"
+          className="rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          onClick={() => onDelete(todo.id)}
+        >
+          <TrashIcon aria-hidden="true" />
+        </Button>
       </CardContent>
     </Card>
   );

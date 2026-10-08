@@ -4,10 +4,15 @@ import TodoCard from "./todo-card";
 
 type TodoListProps = {
   todos: TodoEntry[];
-  onToggle: (id: string, checked: boolean) => void;
+  onCardToggle: (id: string, checked: boolean) => void;
+  onCardDelete: (id: string) => void;
 };
 
-export default function TodoList({ todos, onToggle }: TodoListProps) {
+export default function TodoList({
+  todos,
+  onCardToggle,
+  onCardDelete,
+}: TodoListProps) {
   const completedCount = todos.filter((todo) => todo.completed).length;
 
   return (
@@ -38,7 +43,11 @@ export default function TodoList({ todos, onToggle }: TodoListProps) {
           <ul className="space-y-3">
             {todos.map((todo) => (
               <li key={todo.id}>
-                <TodoCard todo={todo} onToggle={onToggle} />
+                <TodoCard
+                  todo={todo}
+                  onToggle={onCardToggle}
+                  onDelete={onCardDelete}
+                />
               </li>
             ))}
           </ul>

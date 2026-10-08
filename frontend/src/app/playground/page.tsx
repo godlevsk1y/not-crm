@@ -33,6 +33,10 @@ export default function Todo() {
     setTodos((prev) => [...prev, newEntry]);
   };
 
+  const handleDelete = (id: string) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  };
+
   return (
     <main className="min-h-screen bg-stone-50/70 px-5 py-12 font-sans sm:px-8 sm:py-20 dark:bg-background">
       <div className="mx-auto max-w-2xl">
@@ -40,7 +44,11 @@ export default function Todo() {
 
         <TodoForm onAdd={handleAdd} />
 
-        <TodoList todos={todos} onToggle={handleToggle} />
+        <TodoList
+          todos={todos}
+          onCardToggle={handleToggle}
+          onCardDelete={handleDelete}
+        />
 
         <TodoNotice />
       </div>
