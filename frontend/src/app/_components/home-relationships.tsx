@@ -19,11 +19,11 @@ export default function HomeRelationships() {
           id="relationships-heading"
           className="font-heading text-lg font-semibold tracking-tight"
         >
-          Как связаны справочники
+          Справочники связаны между собой
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          В основе — подразделение. У него может быть родительское подразделение,
-          а также связанные локации и должности.
+          В основе лежит подразделение. У него может быть родительское
+          подразделение, а также связанные локации и должности.
         </p>
       </div>
       <dl className="grid gap-6">
@@ -32,10 +32,10 @@ export default function HomeRelationships() {
             <MapPinIcon size={20} weight="duotone" aria-hidden="true" />
           </span>
           <div>
-            <dt className="text-sm font-medium">Где работает подразделение</dt>
+            <dt className="text-sm font-medium">Местонахождения офисов</dt>
             <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              С подразделением можно связать несколько локаций и выделить основную.
-              Каждая локация хранит название и адрес.
+              С подразделением можно связать несколько локаций и выделить
+              основную. Каждая локация хранит название и адрес.
             </dd>
           </div>
         </div>
@@ -44,7 +44,7 @@ export default function HomeRelationships() {
             <BriefcaseIcon size={20} weight="duotone" aria-hidden="true" />
           </span>
           <div>
-            <dt className="text-sm font-medium">Какие должности в подразделении</dt>
+            <dt className="text-sm font-medium">Штат компании</dt>
             <dd className="mt-1 text-sm leading-relaxed text-muted-foreground">
               Подразделение может включать несколько должностей. Одна и та же
               должность может относиться к разным подразделениям.
