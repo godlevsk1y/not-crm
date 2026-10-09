@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
-import { ArrowUpRightIcon, HouseIcon } from "@phosphor-icons/react/ssr";
 import "./globals.css";
-import { ROUTES } from "@/shared/config/routes";
 import { cn } from "@/shared/lib/utils";
 import AppHeader from "./_components/app-header";
 
