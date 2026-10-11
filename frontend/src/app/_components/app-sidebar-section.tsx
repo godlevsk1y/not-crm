@@ -31,10 +31,12 @@ export default function AppSidebarSection({
     <SidebarMenuSubItem>
       <SidebarMenuSubButton
         render={<Link href={href} />}
+        aria-label={title}
+        title={title}
         isActive={isActive}
         aria-current={isActive ? "page" : undefined}
         onClick={() => setOpenMobile(false)}
-        className="h-11 gap-3 px-2 transition-colors data-active:bg-background data-active:font-semibold data-active:shadow-sm data-active:ring-1 data-active:ring-border"
+        className="h-11 gap-3 px-2 transition-colors data-active:bg-background data-active:font-semibold data-active:shadow-sm data-active:ring-1 data-active:ring-border group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:translate-x-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
       >
         <span
           className={cn(
@@ -44,7 +46,7 @@ export default function AppSidebarSection({
         >
           <Icon size={17} weight="duotone" aria-hidden="true" />
         </span>
-        <span>{title}</span>
+        <span className="group-data-[collapsible=icon]:hidden">{title}</span>
       </SidebarMenuSubButton>
     </SidebarMenuSubItem>
   );
