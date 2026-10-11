@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/shared/lib/utils";
 import AppHeader from "./_components/app-header";
+import AppSidebar from "./_components/app-sidebar";
+import { SidebarProvider } from "@/shared/ui/sidebar";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -38,9 +40,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <AppHeader />
+        <SidebarProvider
+          style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
+        >
+          <AppSidebar />
 
-        {children}
+          <div className="flex min-w-0 flex-1 flex-col">
+            <AppHeader />
+            {children}
+          </div>
+        </SidebarProvider>
       </body>
     </html>
   );
