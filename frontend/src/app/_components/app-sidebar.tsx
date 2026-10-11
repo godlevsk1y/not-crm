@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import {
   BriefcaseIcon,
   BuildingsIcon,
-  FolderIcon,
   MapPinIcon,
   TreeStructureIcon,
 } from "@phosphor-icons/react";
@@ -97,32 +96,6 @@ export default function AppSidebar() {
                       <AppSidebarSection key={section.href} {...section} />
                     ))}
                   </SidebarMenuSub>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem className="border-t border-border/70 pt-4">
-                  <SidebarMenuButton
-                    disabled
-                    size="lg"
-                    aria-label="FileService — сервис в разработке"
-                    aria-describedby="fileservice-status"
-                    className="h-auto gap-3 p-3 disabled:opacity-60"
-                  >
-                    <span className="flex size-9 shrink-0 items-center justify-center bg-muted text-muted-foreground group-data-[collapsible=icon]:size-8">
-                      <FolderIcon weight="duotone" aria-hidden="true" />
-                    </span>
-                    <span className="text-sm font-medium group-data-[collapsible=icon]:hidden">
-                      FileService
-                    </span>
-                    <span className="ml-auto border px-1.5 py-0.5 text-[10px] text-muted-foreground group-data-[collapsible=icon]:hidden">
-                      Скоро
-                    </span>
-                  </SidebarMenuButton>
-                  <p
-                    id="fileservice-status"
-                    className="mt-1 pl-15 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden"
-                  >
-                    Сервис в разработке
-                  </p>
                 </SidebarMenuItem>
               </SidebarMenu>
             </nav>
