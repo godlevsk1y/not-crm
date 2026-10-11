@@ -9,6 +9,13 @@ public static class AppExtensions
 {
     public static IApplicationBuilder Configure(this WebApplication app)
     {
+        app.UseCors(builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+        
         app.UseExceptionMiddleware();
         app.UseSerilogRequestLogging();
 
