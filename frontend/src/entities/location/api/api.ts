@@ -1,0 +1,21 @@
+import { PagedResult } from "@/shared/api/api-responses";
+import type { LocationListItemDto } from "../model/types";
+import { apiRequest } from "@/shared/api/api-request";
+
+export type GetLocationsListRequest = {
+  search?: string;
+  minDepartmentCount?: number;
+  sortBy: string;
+  sortDirection: string;
+  page: number;
+  pageSize: number;
+};
+
+export const locationsApi = {
+  getLocationsList: (request: GetLocationsListRequest) =>
+    apiRequest<PagedResult<LocationListItemDto>>({
+      method: "GET",
+      url: "locations",
+      params: request,
+    }),
+};
