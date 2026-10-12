@@ -1,8 +1,8 @@
 export type ApiEnvelope<T> = {
-  result?: T;
-  error?: ApiError;
+  result: T | null;
+  error: ApiError | null;
   isError: boolean;
-  timeGenerated: Date;
+  timeGenerated: string;
 };
 
 export type PagedResult<T> = {
@@ -20,7 +20,7 @@ export type ApiError = {
 export type ApiErrorMessage = {
   code: string;
   message: string;
-  invalidField?: string;
+  invalidField: string | null;
 };
 
 export type ApiErrorType =

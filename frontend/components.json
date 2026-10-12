@@ -5,7 +5,7 @@
   "tsx": true,
   "tailwind": {
     "config": "",
-    "css": "src/app/globals.css",
+    "css": "src/_app/globals.css",
     "baseColor": "neutral",
     "cssVariables": true,
     "prefix": ""
@@ -15,8 +15,8 @@
   "aliases": {
     "components": "@/shared/ui",
     "ui": "@/shared/ui",
-    "lib": "@/shared/lib",
     "utils": "@/shared/lib/utils",
+    "lib": "@/shared/lib",
     "hooks": "@/shared/lib/hooks"
   },
   "menuColor": "default",
