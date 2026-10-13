@@ -2,11 +2,14 @@
 
 import { Skeleton } from "@/shared/ui/skeleton";
 
-import { useLocationsList } from "../model/use-location-list";
+import { useLocationList } from "../model/use-location-list";
 import { LocationListContent } from "./location-list-content";
 
 export function LocationListSection() {
-  const { state, retry } = useLocationsList();
+  const { state, retry } = useLocationList({
+    page: 1,
+    pageSize: 10,
+  });
 
   const isLoading = state.status === "loading";
 

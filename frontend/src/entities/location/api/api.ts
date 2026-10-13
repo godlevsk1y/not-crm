@@ -12,7 +12,7 @@ export type GetLocationsListRequest = {
 };
 
 export const locationsApi = {
-  getLocationsList: (request: GetLocationsListRequest) =>
+  getLocationsList: async (request: GetLocationsListRequest) =>
     apiRequest<PagedResult<LocationListItemDto>>({
       method: "GET",
       url: "locations",
