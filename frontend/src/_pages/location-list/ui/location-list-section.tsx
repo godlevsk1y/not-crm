@@ -2,11 +2,20 @@
 
 import { Skeleton } from "@/shared/ui/skeleton";
 
-import { useLocationsList } from "../model/use-location-list";
+import { useLocationList } from "../model/use-location-list";
 import { LocationListContent } from "./location-list-content";
+import { ListPagination } from "@/shared/ui/list-pagination";
+import { useState } from "react";
+
+const PAGE_SIZE = 9;
 
 export function LocationListSection() {
-  const { state, retry } = useLocationsList();
+  const [page, setPage] = useState(1);
+
+  const { state, retry } = useLocationList({
+    page: page,
+    pageSize: PAGE_SIZE,
+  });
 
   const isLoading = state.status === "loading";
 
@@ -37,6 +46,15 @@ export function LocationListSection() {
       </div>
 
       <LocationListContent state={state} onRetry={retry} />
+
+      {state.status === "success" && (
+        <ListPagination
+          page={page}
+          totalCount={state.totalCount}
+          pageSize={PAGE_SIZE}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      )}
     </section>
   );
 }

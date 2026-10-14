@@ -5,6 +5,7 @@ import { cn } from "cn";
 import { SidebarProvider } from "@/shared/ui/sidebar";
 import { AppSidebar } from "@/widgets/sidebar";
 import { Header } from "@/widgets/header";
+import { AppProviders } from "@/_app/providers/";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -40,16 +41,18 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       )}
     >
       <body className="min-h-full flex flex-col">
-        <SidebarProvider
-          style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
-        >
-          <AppSidebar />
+        <AppProviders>
+          <SidebarProvider
+            style={{ "--sidebar-width": "18rem" } as React.CSSProperties}
+          >
+            <AppSidebar />
 
-          <div className="flex min-w-0 flex-1 flex-col">
-            <Header />
-            {children}
-          </div>
-        </SidebarProvider>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <Header />
+              {children}
+            </div>
+          </SidebarProvider>
+        </AppProviders>
       </body>
     </html>
   );
