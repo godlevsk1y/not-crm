@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 export type LocationListState =
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "success"; locations: LocationListItemDto[] };
+  | { status: "success"; locations: LocationListItemDto[]; totalCount: number };
 
 export type UseLocationListProps = {
   page: number;
@@ -19,12 +19,7 @@ export function useLocationList(props: UseLocationListProps) {
     status: "loading",
   };
 
-  const {
-    data: locations,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryFn: () =>
       locationsApi.getLocationsList({
         sortBy: "name",
@@ -32,7 +27,13 @@ export function useLocationList(props: UseLocationListProps) {
         page: props.page,
         pageSize: props.pageSize,
       }),
-    queryKey: ["locations"],
+    queryKey: [
+      "locations",
+      {
+        page: props.page,
+        pageSize: props.pageSize,
+      },
+    ],
   });
 
   if (error) {
@@ -52,7 +53,8 @@ export function useLocationList(props: UseLocationListProps) {
   } else {
     state = {
       status: "success",
-      locations: locations?.results ?? [],
+      locations: data?.results ?? [],
+      totalCount: data?.totalCount ?? 0,
     };
   }
 
