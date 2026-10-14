@@ -1,4 +1,4 @@
-import { PagedResult } from "@/shared/api/api-responses";
+import { PagedResult } from "@/shared/api/types";
 import type { LocationListItemDto } from "../model/types";
 import { apiRequest } from "@/shared/api/api-request";
 

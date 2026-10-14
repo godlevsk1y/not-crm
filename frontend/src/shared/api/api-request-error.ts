@@ -1,4 +1,4 @@
-import { ApiErrorMessage, ApiErrorType } from "./api-responses";
+import { ApiErrorMessage, ApiErrorType } from "./types";
 
 export class ApiRequestError extends Error {
   constructor(

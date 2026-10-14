@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { apiClient } from "./axios-instance";
-import { ApiEnvelope } from "./api-responses";
+import { ApiEnvelope } from "./types";
 import { ApiRequestError } from "./api-request-error";
 
 export async function apiRequest<T>(config: AxiosRequestConfig): Promise<T> {
