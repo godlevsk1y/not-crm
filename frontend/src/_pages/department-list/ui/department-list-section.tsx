@@ -5,17 +5,30 @@ import { useState } from "react";
 import { ListPagination } from "@/shared/ui/list-pagination";
 import { Skeleton } from "@/shared/ui/skeleton";
 
-import { useDepartmentList } from "../model/use-department-list";
+import {
+  useDepartmentList,
+  type UseDepartmentListProps,
+} from "../model/use-department-list";
 import { DepartmentListContent } from "./department-list-content";
 
 const PAGE_SIZE = 9;
 
-export function DepartmentListSection() {
+type DepartmentListSectionProps = Pick<
+  UseDepartmentListProps,
+  "sortBy" | "sortDirection"
+>;
+
+export function DepartmentListSection({
+  sortBy,
+  sortDirection,
+}: DepartmentListSectionProps) {
   const [page, setPage] = useState(1);
 
   const { state, retry } = useDepartmentList({
     page,
     pageSize: PAGE_SIZE,
+    sortBy,
+    sortDirection,
   });
 
   const isLoading = state.status === "loading";

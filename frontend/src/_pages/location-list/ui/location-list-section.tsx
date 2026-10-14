@@ -2,19 +2,32 @@
 
 import { Skeleton } from "@/shared/ui/skeleton";
 
-import { useLocationList } from "../model/use-location-list";
+import {
+  useLocationList,
+  type UseLocationListProps,
+} from "../model/use-location-list";
 import { LocationListContent } from "./location-list-content";
 import { ListPagination } from "@/shared/ui/list-pagination";
 import { useState } from "react";
 
 const PAGE_SIZE = 9;
 
-export function LocationListSection() {
+type LocationListSectionProps = Pick<
+  UseLocationListProps,
+  "sortBy" | "sortDirection"
+>;
+
+export function LocationListSection({
+  sortBy,
+  sortDirection,
+}: LocationListSectionProps) {
   const [page, setPage] = useState(1);
 
   const { state, retry } = useLocationList({
     page: page,
     pageSize: PAGE_SIZE,
+    sortBy,
+    sortDirection,
   });
 
   const isLoading = state.status === "loading";

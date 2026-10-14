@@ -1,67 +1,51 @@
 "use client";
 
-import { type LocationListItemDto, locationsApi } from "@/entities/location";
-import { ApiRequestError } from "@/shared/api/api-request-error";
-import { useQuery } from "@tanstack/react-query";
+import type { LocationListItemDto } from "@/entities/location";
+import {
+  locationsApi,
+  type GetLocationsListRequest,
+} from "@/entities/location/api/api";
+import { usePagedList } from "@/shared/lib/hooks/use-paged-list";
 
 export type LocationListState =
   | { status: "loading" }
   | { status: "error"; message: string }
   | { status: "success"; locations: LocationListItemDto[]; totalCount: number };
 
-export type UseLocationListProps = {
-  page: number;
-  pageSize: number;
-};
+export type UseLocationListProps = Pick<
+  GetLocationsListRequest,
+  "page" | "pageSize"
+> & Partial<Pick<GetLocationsListRequest, "sortBy" | "sortDirection">>;
 
-export function useLocationList(props: UseLocationListProps) {
-  let state: LocationListState = {
-    status: "loading",
+export function useLocationList({
+  page,
+  pageSize,
+  sortBy = "name",
+  sortDirection = "asc",
+}: UseLocationListProps) {
+  const request: GetLocationsListRequest = {
+    page,
+    pageSize,
+    sortBy,
+    sortDirection,
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryFn: () =>
-      locationsApi.getLocationsList({
-        sortBy: "name",
-        sortDirection: "asc",
-        page: props.page,
-        pageSize: props.pageSize,
-      }),
-    queryKey: [
-      "locations",
-      {
-        page: props.page,
-        pageSize: props.pageSize,
-      },
-    ],
+  const { state, retry } = usePagedList({
+    queryKey: "locations",
+    request,
+    queryFn: locationsApi.getLocationsList,
+    errorMessage: "Не удалось загрузить локации",
   });
 
-  if (error) {
-    let message = "Не удалось загрузить локации";
-
-    if (error instanceof ApiRequestError) {
-      if (error.type == "network") {
-        message = "Проверьте подключение к интернету";
-      }
-    }
-
-    state = { status: "error", message: message };
-  } else if (isLoading) {
-    state = {
-      status: "loading",
-    };
-  } else {
-    state = {
-      status: "success",
-      locations: data?.results ?? [],
-      totalCount: data?.totalCount ?? 0,
-    };
-  }
-
   return {
-    state,
-    retry: () => {
-      void refetch();
-    },
+    state:
+      state.status === "success"
+        ? {
+            status: state.status,
+            locations: state.results,
+            totalCount: state.totalCount,
+          }
+        : state,
+    retry,
   };
 }

@@ -12,6 +12,8 @@ export type PagedResult<T> = {
   totalCount: number;
 };
 
+export type SortDirection = "asc" | "desc";
+
 export type ApiError = {
   messages: ApiErrorMessage[];
   type: ApiErrorType;

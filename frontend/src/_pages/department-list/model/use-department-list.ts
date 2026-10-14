@@ -1,9 +1,11 @@
 "use client";
 
 import type { DepartmentListItemDto } from "@/entities/department";
-import { departmentsApi } from "@/entities/department/api/api";
-import { ApiRequestError } from "@/shared/api/api-request-error";
-import { useQuery } from "@tanstack/react-query";
+import {
+  departmentsApi,
+  type GetDepartmentListRequest,
+} from "@/entities/department/api/api";
+import { usePagedList } from "@/shared/lib/hooks/use-paged-list";
 
 export type DepartmentListState =
   | { status: "loading" }
@@ -14,57 +16,40 @@ export type DepartmentListState =
       totalCount: number;
     };
 
-export type UseDepartmentListProps = {
-  page: number;
-  pageSize: number;
-};
+export type UseDepartmentListProps = Pick<
+  GetDepartmentListRequest,
+  "page" | "pageSize"
+> & Partial<Pick<GetDepartmentListRequest, "sortBy" | "sortDirection">>;
 
-export function useDepartmentList(props: UseDepartmentListProps) {
-  let state: DepartmentListState = {
-    status: "loading",
+export function useDepartmentList({
+  page,
+  pageSize,
+  sortBy = "name",
+  sortDirection = "desc",
+}: UseDepartmentListProps) {
+  const request: GetDepartmentListRequest = {
+    page,
+    pageSize,
+    sortBy,
+    sortDirection,
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryFn: () =>
-      departmentsApi.getDepartmentList({
-        sortBy: "name",
-        sortDirection: "desc",
-        page: props.page,
-        pageSize: props.pageSize,
-      }),
-    queryKey: [
-      "departments",
-      {
-        page: props.page,
-        pageSize: props.pageSize,
-      },
-    ],
+  const { state, retry } = usePagedList({
+    queryKey: "departments",
+    request,
+    queryFn: departmentsApi.getDepartmentList,
+    errorMessage: "Не удалось загрузить подразделения",
   });
 
-  if (error) {
-    let message = "Не удалось загрузить подразделения";
-
-    if (error instanceof ApiRequestError) {
-      if (error.type === "network") {
-        message = "Проверьте подключение к интернету";
-      }
-    }
-
-    state = { status: "error", message: message };
-  } else if (isLoading) {
-    state = { status: "loading" };
-  } else {
-    state = {
-      status: "success",
-      departments: data?.results ?? [],
-      totalCount: data?.totalCount ?? 0,
-    };
-  }
-
   return {
-    state,
-    retry: () => {
-      void refetch();
-    },
+    state:
+      state.status === "success"
+        ? {
+            status: state.status,
+            departments: state.results,
+            totalCount: state.totalCount,
+          }
+        : state,
+    retry,
   };
 }

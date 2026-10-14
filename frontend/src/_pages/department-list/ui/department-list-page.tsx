@@ -6,7 +6,7 @@ export function DepartmentListPage() {
     <main className="flex min-h-screen flex-col items-center bg-muted/30 px-6 py-10 sm:py-15">
       <div className="w-full max-w-5xl">
         <DepartmentListHeader />
-        <DepartmentListSection />
+        <DepartmentListSection sortBy="name" sortDirection="desc" />
       </div>
     </main>
   );

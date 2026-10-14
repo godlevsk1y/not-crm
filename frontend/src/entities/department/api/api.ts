@@ -1,11 +1,11 @@
 import { apiRequest } from "@/shared/api/api-request";
-import { PagedResult } from "@/shared/api/types";
+import { PagedResult, SortDirection } from "@/shared/api/types";
 import { DepartmentListItemDto } from "../model/types";
 
 export type GetDepartmentListRequest = {
   search?: string;
-  sortBy: string;
-  sortDirection: string;
+  sortBy: "name" | "createdAt";
+  sortDirection: SortDirection;
   page: number;
   pageSize: number;
 };

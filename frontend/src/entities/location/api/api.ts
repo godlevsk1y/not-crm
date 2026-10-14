@@ -1,12 +1,12 @@
-import { PagedResult } from "@/shared/api/types";
+import { PagedResult, SortDirection } from "@/shared/api/types";
 import type { LocationListItemDto } from "../model/types";
 import { apiRequest } from "@/shared/api/api-request";
 
 export type GetLocationsListRequest = {
   search?: string;
   minDepartmentCount?: number;
-  sortBy: string;
-  sortDirection: string;
+  sortBy: "name" | "createdAt" | "departmentCount";
+  sortDirection: SortDirection;
   page: number;
   pageSize: number;
 };
