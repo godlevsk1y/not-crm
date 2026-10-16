@@ -6,6 +6,7 @@ import { SidebarProvider } from "@/shared/ui/sidebar";
 import { AppSidebar } from "@/widgets/sidebar";
 import { Header } from "@/widgets/header";
 import { AppProviders } from "@/_app/providers/";
+import { Toaster } from "@/shared/ui/sonner";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Header />
               {children}
             </div>
+            <Toaster position="top-center" duration={3000} />
           </SidebarProvider>
         </AppProviders>
       </body>

@@ -15,3 +15,9 @@ export type AddressDto = {
   houseNumber: string;
   postalCode?: string;
 };
+
+export type LocationDto = {
+  id: string;
+  name: string;
+  address: AddressDto;
+};
