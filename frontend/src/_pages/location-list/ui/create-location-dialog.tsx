@@ -34,6 +34,7 @@ export function CreateLocationDialog() {
     formState: { errors, isValid },
   } = useForm<CreateLocationFormValues>({
     resolver: zodResolver(createLocationSchema),
+    mode: "onTouched",
     defaultValues: {
       name: "",
       country: "",
@@ -66,7 +67,13 @@ export function CreateLocationDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+        reset();
+      }}
+    >
       <DialogTrigger render={<Button size="lg" />}>
         <PlusIcon aria-hidden="true" />
         Добавить локацию
@@ -94,12 +101,21 @@ export function CreateLocationDialog() {
               id={`${id}-name`}
               placeholder="Например, Центральный офис"
               {...register("name")}
+              aria-invalid={Boolean(errors.name)}
+              aria-describedby={errors.name ? `${id}-name-error` : undefined}
             />
+            <p
+              id={`${id}-name-error`}
+              role={errors.name ? "alert" : undefined}
+              className="h-4 text-xs leading-4 text-destructive"
+            >
+              {errors.name?.message}
+            </p>
           </div>
 
           <fieldset className="min-w-0 border-t pt-4">
             <legend className="pr-3 text-sm font-medium">Адрес</legend>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid items-start gap-4 sm:grid-cols-2">
               <div className="grid gap-2">
                 <label htmlFor={`${id}-country`} className="font-medium">
                   Страна
@@ -108,7 +124,18 @@ export function CreateLocationDialog() {
                   id={`${id}-country`}
                   placeholder="Россия"
                   {...register("country")}
+                  aria-invalid={Boolean(errors.country)}
+                  aria-describedby={
+                    errors.country ? `${id}-country-error` : undefined
+                  }
                 />
+                <p
+                  id={`${id}-country-error`}
+                  role={errors.country ? "alert" : undefined}
+                  className="h-4 text-xs leading-4 text-destructive"
+                >
+                  {errors.country?.message}
+                </p>
               </div>
               <div className="grid gap-2">
                 <label htmlFor={`${id}-region`} className="font-medium">
@@ -119,7 +146,18 @@ export function CreateLocationDialog() {
                   id={`${id}-region`}
                   placeholder="Московская область"
                   {...register("region")}
+                  aria-invalid={Boolean(errors.region)}
+                  aria-describedby={
+                    errors.region ? `${id}-region-error` : undefined
+                  }
                 />
+                <p
+                  id={`${id}-region-error`}
+                  role={errors.region ? "alert" : undefined}
+                  className="h-4 text-xs leading-4 text-destructive"
+                >
+                  {errors.region?.message}
+                </p>
               </div>
               <div className="grid gap-2">
                 <label htmlFor={`${id}-city`} className="font-medium">
@@ -129,7 +167,18 @@ export function CreateLocationDialog() {
                   id={`${id}-city`}
                   placeholder="Москва"
                   {...register("city")}
+                  aria-invalid={Boolean(errors.city)}
+                  aria-describedby={
+                    errors.city ? `${id}-city-error` : undefined
+                  }
                 />
+                <p
+                  id={`${id}-city-error`}
+                  role={errors.city ? "alert" : undefined}
+                  className="h-4 text-xs leading-4 text-destructive"
+                >
+                  {errors.city?.message}
+                </p>
               </div>
               <div className="grid gap-2">
                 <label htmlFor={`${id}-district`} className="font-medium">
@@ -140,7 +189,18 @@ export function CreateLocationDialog() {
                   id={`${id}-district`}
                   placeholder="Тверской"
                   {...register("district")}
+                  aria-invalid={Boolean(errors.district)}
+                  aria-describedby={
+                    errors.district ? `${id}-district-error` : undefined
+                  }
                 />
+                <p
+                  id={`${id}-district-error`}
+                  role={errors.district ? "alert" : undefined}
+                  className="h-4 text-xs leading-4 text-destructive"
+                >
+                  {errors.district?.message}
+                </p>
               </div>
               <div className="grid gap-2">
                 <label htmlFor={`${id}-street`} className="font-medium">
@@ -150,7 +210,18 @@ export function CreateLocationDialog() {
                   id={`${id}-street`}
                   placeholder="Лесная"
                   {...register("street")}
+                  aria-invalid={Boolean(errors.street)}
+                  aria-describedby={
+                    errors.street ? `${id}-street-error` : undefined
+                  }
                 />
+                <p
+                  id={`${id}-street-error`}
+                  role={errors.street ? "alert" : undefined}
+                  className="h-4 text-xs leading-4 text-destructive"
+                >
+                  {errors.street?.message}
+                </p>
               </div>
               <div className="grid gap-2">
                 <label htmlFor={`${id}-house-number`} className="font-medium">
@@ -160,7 +231,18 @@ export function CreateLocationDialog() {
                   id={`${id}-house-number`}
                   placeholder="7, корпус 1"
                   {...register("houseNumber")}
+                  aria-invalid={Boolean(errors.houseNumber)}
+                  aria-describedby={
+                    errors.houseNumber ? `${id}-house-number-error` : undefined
+                  }
                 />
+                <p
+                  id={`${id}-house-number-error`}
+                  role={errors.houseNumber ? "alert" : undefined}
+                  className="h-4 text-xs leading-4 text-destructive"
+                >
+                  {errors.houseNumber?.message}
+                </p>
               </div>
               <div className="grid gap-2">
                 <label htmlFor={`${id}-postal-code`} className="font-medium">
@@ -172,7 +254,18 @@ export function CreateLocationDialog() {
                   inputMode="numeric"
                   placeholder="125047"
                   {...register("postalCode")}
+                  aria-invalid={Boolean(errors.postalCode)}
+                  aria-describedby={
+                    errors.postalCode ? `${id}-postal-code-error` : undefined
+                  }
                 />
+                <p
+                  id={`${id}-postal-code-error`}
+                  role={errors.postalCode ? "alert" : undefined}
+                  className="h-4 text-xs leading-4 text-destructive"
+                >
+                  {errors.postalCode?.message}
+                </p>
               </div>
             </div>
           </fieldset>
