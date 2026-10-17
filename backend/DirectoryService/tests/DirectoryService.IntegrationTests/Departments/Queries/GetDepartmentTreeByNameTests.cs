@@ -17,6 +17,27 @@ public class GetDepartmentTreeByNameTests : IClassFixture<DirectoryServiceTestWe
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(20)]
+    public async Task GetDepartmentTreeByName_ShouldPreserveTotalCount_WhenPageIsOutOfRange(int page)
+    {
+        var root = await CreateDepartmentAsync("Product", "product");
+        var parent = await CreateDepartmentAsync("Engineering", "engineering", root.Id);
+        await CreateDepartmentAsync("Team One", "team-one", parent.Id);
+        await CreateDepartmentAsync("Team Two", "team-two", parent.Id);
+        var deleted = await CreateDepartmentAsync("Team Deleted", "team-deleted", parent.Id);
+        var deleteResponse = await _client.DeleteAsync($"api/departments/{deleted.Id}");
+        Assert.Equal(204, (int)deleteResponse.StatusCode);
+
+        var result = await GetResultsAsync("team", page: page, pageSize: 5);
+
+        Assert.Equal(2, result.TotalCount);
+        Assert.Equal(page, result.Page);
+        Assert.Equal(5, result.PageSize);
+        Assert.Empty(result.Results);
+    }
+
     [Fact]
     public async Task GetDepartmentTreeByName_ShouldReturnMatchingDepartmentsWithAncestorsFromRootToParent()
     {
@@ -67,15 +88,17 @@ public class GetDepartmentTreeByNameTests : IClassFixture<DirectoryServiceTestWe
         Assert.Empty(department.Ancestors);
     }
 
-    [Fact]
-    public async Task GetDepartmentTreeByName_ShouldReturnEmptyPage_WhenNothingMatches()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public async Task GetDepartmentTreeByName_ShouldReturnEmptyPage_WhenNothingMatches(int page)
     {
         await CreateDepartmentAsync("Product", "product");
 
-        var result = await GetResultsAsync("missing");
+        var result = await GetResultsAsync("missing", page: page);
 
         Assert.Equal(0, result.TotalCount);
-        Assert.Equal(1, result.Page);
+        Assert.Equal(page, result.Page);
         Assert.Equal(20, result.PageSize);
         Assert.Empty(result.Results);
     }

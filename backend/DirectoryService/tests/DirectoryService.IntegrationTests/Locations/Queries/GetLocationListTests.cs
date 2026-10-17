@@ -18,6 +18,39 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(20)]
+    public async Task GetLocationList_ShouldPreserveTotalCount_WhenPageIsOutOfRange(int page)
+    {
+        var berlin = await CreateLocationAsync("Berlin Office", "Berlin");
+        var moscow = await CreateLocationAsync("Moscow Office", "Moscow");
+        var remote = await CreateLocationAsync("Remote Hub", "Lisbon");
+        await CreateLocationAsync("Empty Office", "Paris");
+        await CreateDepartmentAsync("Finance", "finance", berlin);
+        await CreateDepartmentAsync("Product", "product", moscow);
+        await CreateDepartmentAsync("Remote", "remote", remote);
+        var deleted = await CreateLocationAsync("Deleted Office", "Rome");
+        await CreateDepartmentAsync("Deleted", "deleted", deleted);
+        var deleteResponse = await _client.DeleteAsync($"api/locations/{deleted}");
+        Assert.Equal(204, (int)deleteResponse.StatusCode);
+
+        var response = await _client.GetAsync(
+            $"api/locations?search=office&minDepartmentCount=1&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
+
+        Assert.Equal(200, (int)response.StatusCode);
+
+        var envelope = await response.Content
+            .ReadFromJsonAsync<Envelope<PagedResult<LocationListItemDto>>>();
+        Assert.NotNull(envelope);
+        Assert.False(envelope.IsError);
+        Assert.NotNull(envelope.Result);
+        Assert.Equal(2, envelope.Result.TotalCount);
+        Assert.Equal(page, envelope.Result.Page);
+        Assert.Equal(5, envelope.Result.PageSize);
+        Assert.Empty(envelope.Result.Results);
+    }
+
     [Fact]
     public async Task GetLocationList_ShouldReturnSelectedLocations_WhenRequestIsValid()
     {
@@ -61,13 +94,15 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
             });
     }
 
-    [Fact]
-    public async Task GetLocationList_ShouldReturnEmptyList_WhenLocationsNotFound()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public async Task GetLocationList_ShouldReturnEmptyList_WhenLocationsNotFound(int page)
     {
         await CreateLocationAsync("Moscow Office", "Moscow");
 
         var response = await _client.GetAsync(
-            "api/locations?search=missing&sortBy=name&sortDirection=asc&page=1&pageSize=5");
+            $"api/locations?search=missing&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 

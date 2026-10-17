@@ -17,6 +17,37 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(20)]
+    public async Task GetChildrenByParentId_ShouldPreserveTotalCount_WhenPageIsOutOfRange(int page)
+    {
+        var root = await CreateDepartmentAsync("Product", "product");
+        var child = await CreateDepartmentAsync("Engineering", "engineering", root.Id);
+        await CreateDepartmentAsync("Design", "design", root.Id);
+        await CreateDepartmentAsync("Backend", "backend", child.Id);
+        var other = await CreateDepartmentAsync("Business", "business");
+        await CreateDepartmentAsync("Sales", "sales", other.Id);
+        var deleted = await CreateDepartmentAsync("Deleted", "deleted", root.Id);
+        var deleteResponse = await _client.DeleteAsync($"api/departments/{deleted.Id}");
+        Assert.Equal(204, (int)deleteResponse.StatusCode);
+
+        var response = await _client.GetAsync(
+            $"api/departments/{root.Id}/children?page={page}&pageSize=5");
+
+        Assert.Equal(200, (int)response.StatusCode);
+
+        var envelope = await response.Content
+            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentNodeDto>>>();
+        Assert.NotNull(envelope);
+        Assert.False(envelope.IsError);
+        Assert.NotNull(envelope.Result);
+        Assert.Equal(2, envelope.Result.TotalCount);
+        Assert.Equal(page, envelope.Result.Page);
+        Assert.Equal(5, envelope.Result.PageSize);
+        Assert.Empty(envelope.Result.Results);
+    }
+
     [Fact]
     public async Task GetChildrenByParentId_ShouldReturnOnlyDirectChildren_WhenHierarchyExists()
     {
@@ -62,13 +93,15 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
                 childCount: 1));
     }
 
-    [Fact]
-    public async Task GetChildrenByParentId_ShouldReturnEmptyPage_WhenDepartmentHasNoChildren()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public async Task GetChildrenByParentId_ShouldReturnEmptyPage_WhenDepartmentHasNoChildren(int page)
     {
         var department = await CreateDepartmentAsync("Product", "product");
 
         var response = await _client.GetAsync(
-            $"api/departments/{department.Id}/children?page=1&pageSize=5");
+            $"api/departments/{department.Id}/children?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -78,7 +111,7 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
         Assert.False(envelope.IsError);
         Assert.NotNull(envelope.Result);
         Assert.Equal(0, envelope.Result.TotalCount);
-        Assert.Equal(1, envelope.Result.Page);
+        Assert.Equal(page, envelope.Result.Page);
         Assert.Equal(5, envelope.Result.PageSize);
         Assert.Empty(envelope.Result.Results);
     }

@@ -74,7 +74,7 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
             _ => throw new UnreachableException(),
         };
         
-        var sql = $"""
+        var filteredLocationsSql = $"""
                   WITH locations_counted AS (SELECT
                                                  l.id,
                                                  l.name,
@@ -97,6 +97,10 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
                                              ) dc ON dc.location_id = l.id
                                              {whereExpression}
                   )
+                  """;
+
+        var sql = $"""
+                  {filteredLocationsSql}
                   SELECT lc.id,
                          lc.name,
                          lc.country,
@@ -135,6 +139,17 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
                 splitOn: "name, country, created_at, department_count, total_count"
             );
         
+        if (totalCount is null && query.Page > 1)
+        {
+            var countSql = $"""
+                            {filteredLocationsSql}
+                            SELECT count(*) FROM locations_counted
+                            """;
+
+            totalCount = await connection.ExecuteScalarAsync<long>(new CommandDefinition(
+                countSql, parameters, cancellationToken: cancellationToken));
+        }
+
         return new PagedResult<LocationListItemDto>(locations, query.Page, query.PageSize, totalCount ?? 0);
     }
 }

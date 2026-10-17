@@ -86,6 +86,22 @@ public class GetAncestorsByIdQueryHandler : IQueryHandler<
                 splitOn: "total_count"
             );
         
+        if (totalCount is null && query.Page > 1)
+        {
+            const string countSql = """
+                                    SELECT count(*)
+                                    FROM departments d
+                                    JOIN departments a ON a.path @> d.path
+                                      AND a.depth < d.depth
+                                      AND a.deleted_at IS NULL
+                                    WHERE d.id = @id
+                                      AND d.deleted_at IS NULL
+                                    """;
+
+            totalCount = await connection.ExecuteScalarAsync<long>(new CommandDefinition(
+                countSql, parameters, cancellationToken: cancellationToken));
+        }
+
         return new PagedResult<DepartmentAncestorDto>(
             ancestors, query.Page, query.PageSize, totalCount ?? 0
         );
