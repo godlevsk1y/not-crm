@@ -17,6 +17,33 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(20)]
+    public async Task GetAncestorsById_ShouldPreserveTotalCount_WhenPageIsOutOfRange(int page)
+    {
+        var root = await CreateDepartmentAsync("Product", "product");
+        var parent = await CreateDepartmentAsync("Engineering", "engineering", root.Id);
+        var child = await CreateDepartmentAsync("Backend", "backend", parent.Id);
+        await CreateDepartmentAsync("Design", "design", root.Id);
+        await CreateDepartmentAsync("Business", "business");
+
+        var response = await _client.GetAsync(
+            $"api/departments/{child.Id}/ancestors?page={page}&pageSize=5");
+
+        Assert.Equal(200, (int)response.StatusCode);
+
+        var envelope = await response.Content
+            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentAncestorDto>>>();
+        Assert.NotNull(envelope);
+        Assert.False(envelope.IsError);
+        Assert.NotNull(envelope.Result);
+        Assert.Equal(2, envelope.Result.TotalCount);
+        Assert.Equal(page, envelope.Result.Page);
+        Assert.Equal(5, envelope.Result.PageSize);
+        Assert.Empty(envelope.Result.Results);
+    }
+
     [Fact]
     public async Task GetAncestorsById_ShouldReturnAncestorsFromRootToDirectParent_WhenHierarchyExists()
     {
@@ -71,13 +98,15 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
                 engineering.Id));
     }
 
-    [Fact]
-    public async Task GetAncestorsById_ShouldReturnEmptyPage_WhenDepartmentIsRoot()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public async Task GetAncestorsById_ShouldReturnEmptyPage_WhenDepartmentIsRoot(int page)
     {
         var department = await CreateDepartmentAsync("Product", "product");
 
         var response = await _client.GetAsync(
-            $"api/departments/{department.Id}/ancestors?page=1&pageSize=5");
+            $"api/departments/{department.Id}/ancestors?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -87,7 +116,7 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
         Assert.False(envelope.IsError);
         Assert.NotNull(envelope.Result);
         Assert.Equal(0, envelope.Result.TotalCount);
-        Assert.Equal(1, envelope.Result.Page);
+        Assert.Equal(page, envelope.Result.Page);
         Assert.Equal(5, envelope.Result.PageSize);
         Assert.Empty(envelope.Result.Results);
     }

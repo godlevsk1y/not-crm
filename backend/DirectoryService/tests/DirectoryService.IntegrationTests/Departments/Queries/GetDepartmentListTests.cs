@@ -18,6 +18,29 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
     }
 
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(20)]
+    public async Task GetDepartmentList_ShouldPreserveTotalCount_WhenPageIsOutOfRange(int page)
+    {
+        await CreateMockDepartmentsAsync();
+
+        var response = await _client.GetAsync(
+            $"api/departments?search=team&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
+
+        Assert.Equal(200, (int)response.StatusCode);
+
+        var envelope = await response.Content
+            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentListItemDto>>>();
+        Assert.NotNull(envelope);
+        Assert.False(envelope.IsError);
+        Assert.NotNull(envelope.Result);
+        Assert.Equal(2, envelope.Result.TotalCount);
+        Assert.Equal(page, envelope.Result.Page);
+        Assert.Equal(5, envelope.Result.PageSize);
+        Assert.Empty(envelope.Result.Results);
+    }
+
     [Fact] 
     public async Task GetDepartmentList_ShouldReturnSelectedDepartments_WhenRequestIsValid()
     {

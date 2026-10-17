@@ -82,6 +82,19 @@ public class GetChildrenByParentIdQueryHandler : IQueryHandler<
                 splitOn: "total_count"
             );
         
+        if (totalCount is null && query.Page > 1)
+        {
+            const string countSql = """
+                                    SELECT count(*)
+                                    FROM departments d
+                                    WHERE d.parent_id = @parentId
+                                      AND d.deleted_at IS NULL
+                                    """;
+
+            totalCount = await connection.ExecuteScalarAsync<long>(new CommandDefinition(
+                countSql, parameters, cancellationToken: cancellationToken));
+        }
+
         return new PagedResult<DepartmentNodeDto>(
             children, query.Page, query.PageSize, totalCount ?? 0
         );

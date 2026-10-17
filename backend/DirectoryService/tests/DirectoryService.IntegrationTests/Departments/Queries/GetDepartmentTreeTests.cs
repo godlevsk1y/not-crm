@@ -17,6 +17,34 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
         _resetDatabase = factory.ResetDatabaseAsync;
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(20)]
+    public async Task GetDepartmentTree_ShouldPreserveTotalCount_WhenPageIsOutOfRange(int page)
+    {
+        var root = await CreateDepartmentAsync("Product", "product");
+        await CreateDepartmentAsync("Business", "business");
+        await CreateDepartmentAsync("Engineering", "engineering", root.Id);
+        var deleted = await CreateDepartmentAsync("Deleted", "deleted");
+        var deleteResponse = await _client.DeleteAsync($"api/departments/{deleted.Id}");
+        Assert.Equal(204, (int)deleteResponse.StatusCode);
+
+        var response = await _client.GetAsync(
+            $"api/departments/tree?page={page}&pageSize=5");
+
+        Assert.Equal(200, (int)response.StatusCode);
+
+        var envelope = await response.Content
+            .ReadFromJsonAsync<Envelope<PagedResult<DepartmentNodeDto>>>();
+        Assert.NotNull(envelope);
+        Assert.False(envelope.IsError);
+        Assert.NotNull(envelope.Result);
+        Assert.Equal(2, envelope.Result.TotalCount);
+        Assert.Equal(page, envelope.Result.Page);
+        Assert.Equal(5, envelope.Result.PageSize);
+        Assert.Empty(envelope.Result.Results);
+    }
+
     [Fact]
     public async Task GetDepartmentTree_ShouldReturnOnlyRootDepartments_WhenHierarchyExists()
     {
@@ -67,10 +95,12 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
                 childCount: 2));
     }
 
-    [Fact]
-    public async Task GetDepartmentTree_ShouldReturnEmptyPage_WhenDepartmentsDoNotExist()
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    public async Task GetDepartmentTree_ShouldReturnEmptyPage_WhenDepartmentsDoNotExist(int page)
     {
-        var response = await _client.GetAsync("api/departments/tree?page=1&pageSize=5");
+        var response = await _client.GetAsync($"api/departments/tree?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 

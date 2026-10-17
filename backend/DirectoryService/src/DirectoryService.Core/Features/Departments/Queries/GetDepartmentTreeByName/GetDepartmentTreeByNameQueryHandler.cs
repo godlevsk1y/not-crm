@@ -127,6 +127,19 @@ public class GetDepartmentTreeByNameQueryHandler : IQueryHandler<
             }
         }
         
+        if (totalCount is null && query.Page > 1)
+        {
+            const string countSql = """
+                                    SELECT count(*)
+                                    FROM departments
+                                    WHERE name ILIKE '%' || @search || '%'
+                                      AND deleted_at IS NULL
+                                    """;
+
+            totalCount = await connection.ExecuteScalarAsync<long>(new CommandDefinition(
+                countSql, parameters, cancellationToken: cancellationToken));
+        }
+
         return new PagedResult<DepartmentWithAncestorsDto>(
             departmentsDictionary.Values, query.Page, query.PageSize, totalCount ?? 0
         );
