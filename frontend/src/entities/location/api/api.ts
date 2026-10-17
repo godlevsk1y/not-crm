@@ -1,6 +1,5 @@
-import { PagedResult } from "@/shared/api/types";
+import { apiRequest, type PagedResult } from "@/shared/api";
 import type { LocationDto, LocationListItemDto } from "../model/types";
-import { apiRequest } from "@/shared/api/api-request";
 
 export type GetLocationsListRequest = {
   search?: string;

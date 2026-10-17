@@ -1,5 +1,3 @@
-import { ApiErrorMessage, ApiErrorType } from "./types";
-
 export class ApiRequestError extends Error {
   constructor(
     public readonly type: ApiErrorType | "network" | "http" | "protocol",
@@ -11,3 +9,23 @@ export class ApiRequestError extends Error {
     this.name = "ApiRequestError";
   }
 }
+
+export type ApiError = {
+  messages: ApiErrorMessage[];
+  type: ApiErrorType;
+};
+
+export type ApiErrorMessage = {
+  code: string;
+  message: string;
+  invalidField: string | null;
+};
+
+export type ApiErrorType =
+  | "failure"
+  | "validation"
+  | "not_found"
+  | "conflict"
+  | "internal"
+  | "domain"
+  | "bad_request";

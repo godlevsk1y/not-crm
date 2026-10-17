@@ -1,7 +1,7 @@
 "use client";
 
 import { type LocationListItemDto, locationsApi } from "@/entities/location";
-import { ApiRequestError } from "@/shared/api/api-request-error";
+import { ApiRequestError } from "@/shared/api";
 import { useQuery } from "@tanstack/react-query";
 
 export type LocationListState =

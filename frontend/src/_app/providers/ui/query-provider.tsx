@@ -1,6 +1,6 @@
 "use client";
 
-import { queryClient } from "@/shared/api/query-instance";
+import { queryClient } from "@/shared/api";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
