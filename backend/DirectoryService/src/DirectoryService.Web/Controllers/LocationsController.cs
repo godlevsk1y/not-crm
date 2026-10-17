@@ -15,11 +15,17 @@ using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Web.Controllers;
 
+[ProducesResponseType<Envelope>(StatusCodes.Status400BadRequest)]
+[ProducesResponseType<Envelope>(StatusCodes.Status500InternalServerError)]
 [ApiController]
 [Route("api/[controller]")]
 public class LocationsController : ControllerBase
 {
     [HttpPost]
+    [EndpointSummary("Create a location")]
+    [EndpointDescription("Creates a location with a flat address request. Name is trimmed and must be unique. Returns the location with a nested address and a Location header.")]
+    [ProducesResponseType<Envelope<LocationDto>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
     public async Task<IResult> Create(
         [FromServices] ICommandHandler<CreateLocationCommand, LocationDto> handler,
         [FromBody] CreateLocationRequest request, 
@@ -40,6 +46,11 @@ public class LocationsController : ControllerBase
     }
 
     [HttpPatch("{id:guid}")]
+    [EndpointSummary("Update a location")]
+    [EndpointDescription("Null or omitted fields are unchanged. Empty region, district and postalCode also preserve the existing value. Supplied required address components cannot be whitespace. Returns the ID.")]
+    [ProducesResponseType<Envelope<Guid>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
     public async Task<IResult> Update(
         [FromServices] ICommandHandler<UpdateLocationCommand, Guid> handler,
         [FromRoute] Guid id,
@@ -58,6 +69,10 @@ public class LocationsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [EndpointSummary("Delete a location")]
+    [EndpointDescription("Removes all department links and soft-deletes the location in a transaction.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> Delete(
         [FromServices] ICommandHandler<DeleteLocationCommand> handler,
         [FromRoute] Guid id,
@@ -75,6 +90,10 @@ public class LocationsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [EndpointSummary("Get a location by ID")]
+    [EndpointDescription("Returns an active resource; deleted or missing resources return 404.")]
+    [ProducesResponseType<Envelope<LocationDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> GetById(
         [FromServices] IQueryHandler<GetLocationByIdQuery, 
             Result<LocationDto, Error>> handler,
@@ -94,6 +113,9 @@ public class LocationsController : ControllerBase
     }
 
     [HttpGet("top")]
+    [EndpointSummary("Get the top five locations")]
+    [EndpointDescription("Up to five active locations ordered by departmentCount descending, then name ascending. Includes locations with zero links; no query parameters.")]
+    [ProducesResponseType<Envelope<IReadOnlyList<LocationWithDepartmentCountDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetTopLocationsWithDepartmentCount(
         [FromServices] IQueryHandler<IReadOnlyList<LocationWithDepartmentCountDto>> handler,
         CancellationToken cancellationToken)
@@ -104,6 +126,9 @@ public class LocationsController : ControllerBase
     }
 
     [HttpGet]
+    [EndpointSummary("List locations")]
+    [EndpointDescription("Active locations with nested addresses and department link counts. Case-insensitive ILIKE name search (% and _ are wildcards); optional minDepartmentCount >= 0. Sort by name, createdAt or departmentCount, then ID. Page starts at 1; pageSize is 5–100, default 20.")]
+    [ProducesResponseType<Envelope<PagedResult<LocationListItemDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetLocationList(
         [FromServices] IQueryHandler<GetLocationListQuery, 
             Result<PagedResult<LocationListItemDto>, Error>> handler,
