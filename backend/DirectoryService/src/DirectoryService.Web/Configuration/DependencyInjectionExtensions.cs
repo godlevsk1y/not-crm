@@ -22,7 +22,7 @@ public static class DependencyInjectionExtensions
     {
         services.AddSerilogLogging(configuration);
         
-        services.AddOpenApi();
+        services.AddOpenApi(ApiDocumentation.Configure);
         services.AddHealthCheckEndpoints(configuration);
 
         services.AddControllers();

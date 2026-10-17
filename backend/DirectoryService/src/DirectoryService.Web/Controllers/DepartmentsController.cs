@@ -25,11 +25,18 @@ using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Web.Controllers;
 
+[ProducesResponseType<Envelope>(StatusCodes.Status400BadRequest)]
+[ProducesResponseType<Envelope>(StatusCodes.Status500InternalServerError)]
 [ApiController]
 [Route("api/[controller]")]
 public class DepartmentsController : ControllerBase
 {
     [HttpPost]
+    [EndpointSummary("Create a department")]
+    [EndpointDescription("Creates a root when parentId is null. locationIds is required; [] is allowed. Use distinct IDs of existing locations. Returns the department and a Location header.")]
+    [ProducesResponseType<Envelope<DepartmentDto>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
     public async Task<IResult> Create(
         [FromServices] ICommandHandler<CreateDepartmentCommand, DepartmentDto> handler,
         [FromBody] CreateDepartmentRequest request, 
@@ -50,6 +57,10 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpPatch("{id:guid}")]
+    [EndpointSummary("Update a department")]
+    [EndpointDescription("Null or omitted fields are unchanged. parentId = 00000000-0000-0000-0000-000000000000 makes a root. PATCH recalculates only this department path; use PUT /{id}/parent to transfer a subtree. Returns the ID.")]
+    [ProducesResponseType<Envelope<Guid>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> Update(
         [FromServices] ICommandHandler<UpdateDepartmentCommand, Guid> handler,
         [FromRoute] Guid id,
@@ -68,6 +79,10 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [EndpointSummary("Delete a department")]
+    [EndpointDescription("Soft-deletes a department. Active children prevent deletion (409 department.has.active.children).")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> Delete(
         [FromServices] ICommandHandler<DeleteDepartmentCommand> handler,
         [FromRoute] Guid id,
@@ -85,6 +100,11 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpPost("{departmentId:guid}/locations/{locationId:guid}")]
+    [EndpointSummary("Link a location")]
+    [EndpointDescription("No request body. Both resources must exist. A duplicate link returns 409 department.location.already.added.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
     public async Task<IResult> AddLocation(
         [FromServices] ICommandHandler<AddLocationCommand> handler,
         [FromRoute] Guid departmentId, 
@@ -103,6 +123,11 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpPost("{departmentId:guid}/positions/{positionId:guid}")]
+    [EndpointSummary("Link a position")]
+    [EndpointDescription("No request body. Both resources must exist. A duplicate link returns 409 department.position.already.added.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
     public async Task<IResult> AddPosition(
         [FromServices] ICommandHandler<AddPositionCommand> handler,
         [FromRoute] Guid departmentId,
@@ -121,6 +146,10 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpDelete("{departmentId:guid}/locations/{locationId:guid}")]
+    [EndpointSummary("Unlink a location")]
+    [EndpointDescription("No request body. Removes only the relationship. A missing relationship returns 404 department.location.not.found.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> RemoveLocation(
         [FromServices] ICommandHandler<RemoveLocationCommand> handler,
         [FromRoute] Guid departmentId,
@@ -139,6 +168,10 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpDelete("{departmentId:guid}/positions/{positionId:guid}")]
+    [EndpointSummary("Unlink a position")]
+    [EndpointDescription("No request body. Removes only the relationship. A missing relationship returns 404 department.position.not.found.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> RemovePosition(
         [FromServices] ICommandHandler<RemovePositionCommand> handler,
         [FromRoute] Guid departmentId,
@@ -157,6 +190,11 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpPut("{id:guid}/parent")]
+    [EndpointSummary("Transfer a department subtree")]
+    [EndpointDescription("newParentId = null makes a root. Recalculates paths and depths of descendants transactionally. An unchanged parent is a no-op. Self-parenting, cycles and concurrent transfer conflicts return 409; missing parents return 404.")]
+    [ProducesResponseType<Envelope<TransferredDepartmentDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
     public async Task<IResult> TransferDepartment(
         [FromServices] ICommandHandler<TransferDepartmentCommand, TransferredDepartmentDto> handler,
         [FromRoute] Guid id,
@@ -176,6 +214,10 @@ public class DepartmentsController : ControllerBase
     }
     
     [HttpGet("{id:guid}")]
+    [EndpointSummary("Get a department by ID")]
+    [EndpointDescription("Returns an active resource; deleted or missing resources return 404.")]
+    [ProducesResponseType<Envelope<DepartmentDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> GetById(
         [FromServices] IQueryHandler<GetDepartmentByIdQuery, Result<DepartmentDto, Error>> handler,
         [FromRoute] Guid id,
@@ -194,6 +236,9 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpGet]
+    [EndpointSummary("List departments")]
+    [EndpointDescription("Flat active departments. Case-insensitive name search (PostgreSQL ILIKE; % and _ are wildcards). Sort by name or createdAt, then ID. Page starts at 1; pageSize is 5–100, default 20.")]
+    [ProducesResponseType<Envelope<PagedResult<DepartmentListItemDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetDepartmentList(
         [FromServices] IQueryHandler<GetDepartmentListQuery,
             Result<PagedResult<DepartmentListItemDto>, Error>> handler,
@@ -211,6 +256,9 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpGet("tree")]
+    [EndpointSummary("List root departments")]
+    [EndpointDescription("Returns only roots (depth 0), ordered by name, with childCount and hasChildren for active immediate children. Expand with /{id}/children. Page starts at 1; pageSize is 5–100, default 20.")]
+    [ProducesResponseType<Envelope<PagedResult<DepartmentNodeDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetDepartmentTree(
         [FromServices] IQueryHandler<GetDepartmentTreeQuery, 
             Result<PagedResult<DepartmentNodeDto>, Error>> handler,
@@ -230,6 +278,9 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpGet("{id}/children")]
+    [EndpointSummary("List immediate children")]
+    [EndpointDescription("Returns active immediate children ordered by name, with counts of their immediate children. A missing parent returns an empty page. Page starts at 1; pageSize is 5–100, default 20.")]
+    [ProducesResponseType<Envelope<PagedResult<DepartmentNodeDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetChildrenByParentId(
         [FromServices] IQueryHandler<GetChildrenByParentIdQuery, 
             Result<PagedResult<DepartmentNodeDto>, Error>> handler,
@@ -253,6 +304,9 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpGet("{id}/ancestors")]
+    [EndpointSummary("List department ancestors")]
+    [EndpointDescription("Returns active ancestors from root to parent, excluding this department. A root or missing department returns an empty page. Page starts at 1; pageSize is 5–100, default 20.")]
+    [ProducesResponseType<Envelope<PagedResult<DepartmentAncestorDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetAncestorsById(
         [FromServices] IQueryHandler<GetAncestorsByIdQuery,
             Result<PagedResult<DepartmentAncestorDto>, Error>> handler,
@@ -274,6 +328,9 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpGet("tree/search")]
+    [EndpointSummary("Search departments with ancestors")]
+    [EndpointDescription("q is required, at least 2 characters. Case-insensitive ILIKE name search (% and _ are wildcards). Matches are paged and ordered by name/ID; each includes all active ancestors from root to parent. Page starts at 1; pageSize is 5–100, default 20.")]
+    [ProducesResponseType<Envelope<PagedResult<DepartmentWithAncestorsDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetDepartmentTreeByName(
         IQueryHandler<GetDepartmentTreeByNameQuery, 
             Result<PagedResult<DepartmentWithAncestorsDto>, Error>> handler,
