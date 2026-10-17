@@ -1,6 +1,7 @@
 "use client";
 
 import { locationsApi } from "@/entities/location";
+import { ApiRequestError } from "@/shared/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import z from "zod";
@@ -26,6 +27,10 @@ export const createLocationSchema = z.object({
 
 export type CreateLocationFormValues = z.infer<typeof createLocationSchema>;
 
+const errorMessagesByCode = new Map<string, string>([
+  ["location.exists", "Локация с таким именем уже существует"],
+]);
+
 export function useCreateLocation() {
   const queryClient = useQueryClient();
 
@@ -39,7 +44,19 @@ export function useCreateLocation() {
     onSuccess: () => {
       toast.success("Локация была успешно создана!");
     },
-    onError: () => {
+    onError: (error) => {
+      if (error instanceof ApiRequestError && error.messages.length == 1) {
+        const displayMessage = errorMessagesByCode.get(error.messages[0]?.code);
+
+        if (displayMessage === undefined) {
+          toast.error("Не удалось создать локацию");
+          return;
+        }
+
+        toast.error(displayMessage);
+        return;
+      }
+
       toast.error("Не удалось создать локацию");
     },
   });

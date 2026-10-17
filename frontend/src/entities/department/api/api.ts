@@ -1,5 +1,4 @@
-import { apiRequest } from "@/shared/api/api-request";
-import { PagedResult } from "@/shared/api/types";
+import { apiRequest, type PagedResult } from "@/shared/api";
 import { DepartmentListItemDto } from "../model/types";
 
 export type GetDepartmentListRequest = {

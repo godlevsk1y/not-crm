@@ -2,7 +2,7 @@
 
 import type { DepartmentListItemDto } from "@/entities/department";
 import { departmentsApi } from "@/entities/department/api/api";
-import { ApiRequestError } from "@/shared/api/api-request-error";
+import { ApiRequestError } from "@/shared/api";
 import { useQuery } from "@tanstack/react-query";
 
 export type DepartmentListState =
