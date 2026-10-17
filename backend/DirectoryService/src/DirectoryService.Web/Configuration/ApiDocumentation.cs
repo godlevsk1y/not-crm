@@ -21,7 +21,7 @@ internal static class ApiDocumentation
                 "{ result, error, isError, timeGenerated }; 204 has no body. " +
                 "Errors contain type and messages [{ code, message, invalidField }]. " +
                 "Use code for program logic; invalidField is nullable and uses server-side field names. " +
-                "No authentication is configured. See backend/DirectoryService/README.md for setup and examples.";
+                "No authentication is configured.";
             return Task.CompletedTask;
         });
         options.AddOperationTransformer((operation, context, _) =>
