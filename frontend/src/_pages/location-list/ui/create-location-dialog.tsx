@@ -15,13 +15,32 @@ import {
   DialogTrigger,
 } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
-import { useForm } from "react-hook-form";
 import {
   CreateLocationFormValues,
   createLocationSchema,
   useCreateLocation,
 } from "../model/use-create-location";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FieldPath, useForm } from "react-hook-form";
+import { applyServerErrors } from "@/shared/lib/react-hook-form";
+import { ApiRequestError } from "@/shared/api";
+
+const fieldNameMap = new Map<string, FieldPath<CreateLocationFormValues>>([
+  ["LocationName", "name"],
+  ["Country", "country"],
+  ["City", "city"],
+  ["Street", "street"],
+  ["HouseNumber", "houseNumber"],
+]);
+
+const errorCodeMessagesMap = new Map<string, string>([
+  ["location.name.empty", "Укажите название локации"],
+  ["location.name.long", "Название локации слишком длинное"],
+  ["address.country.empty", "Укажите страну"],
+  ["address.city.empty", "Укажите город"],
+  ["address.street.empty", "Укажите улицу"],
+  ["address.housenumber.empty", "Укажите номер дома"],
+]);
 
 export function CreateLocationDialog() {
   const id = useId();
@@ -31,6 +50,7 @@ export function CreateLocationDialog() {
     register,
     handleSubmit,
     reset,
+    setError,
     formState: { errors, isValid },
   } = useForm<CreateLocationFormValues>({
     resolver: zodResolver(createLocationSchema),
@@ -61,6 +81,16 @@ export function CreateLocationDialog() {
         onSuccess: () => {
           reset();
           setOpen(false);
+        },
+        onError: (error) => {
+          if (error instanceof ApiRequestError) {
+            applyServerErrors({
+              setErrors: setError,
+              error: error,
+              fieldNameMap: fieldNameMap,
+              errorCodeMessagesMap: errorCodeMessagesMap,
+            });
+          }
         },
       },
     );
