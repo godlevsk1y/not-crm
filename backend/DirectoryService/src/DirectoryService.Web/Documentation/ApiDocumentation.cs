@@ -6,7 +6,7 @@ using DirectoryService.Contracts.WebApi.Departments;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 
-namespace DirectoryService.Web.Configuration;
+namespace DirectoryService.Web.Documentation;
 
 // Documentation metadata only: do not add MVC validation attributes to transport contracts.
 internal static class ApiDocumentation

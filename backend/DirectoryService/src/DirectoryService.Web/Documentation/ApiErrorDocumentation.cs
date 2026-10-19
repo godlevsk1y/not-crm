@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 using Shared.Kernel.Errors;
 
-namespace DirectoryService.Web.Configuration;
+namespace DirectoryService.Web.Documentation;
 
 // Update this catalogue and OpenApiDocumentationTests when an error or its reachable operations change.
 // Describe the final response type: validators flatten domain errors into Validation.
