@@ -16,6 +16,8 @@ export default function AppError({
   error: unknown;
   retry: () => void;
 }) {
+  console.error(error);
+
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-12 sm:py-20">
       <section aria-labelledby="error-title" className="w-full max-w-lg">
