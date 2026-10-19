@@ -21,7 +21,7 @@ internal static class ApiDocumentation
                 "{ result, error, isError, timeGenerated }; 204 has no body. " +
                 "Errors contain type and messages [{ code, message, invalidField }]. " +
                 "Use code for program logic; invalidField is nullable and uses server-side field names. " +
-                "No authentication is configured.";
+                "No authentication is configured." + ApiErrorDocumentation.DescribeCatalogue();
             return Task.CompletedTask;
         });
         options.AddOperationTransformer((operation, context, _) =>
@@ -36,25 +36,11 @@ internal static class ApiDocumentation
                         "200" => "Success. The result property contains the documented payload.",
                         "201" => "Created. The result property contains the resource; Location contains its URI.",
                         "204" => "Success. No response body.",
-                        "400" => "Validation/domain error, or invalid.model.state for malformed JSON or binding errors.",
-                        "404" => "Resource or relationship not found. Unmatched routes can return an empty 404.",
-                        "409" => "Conflict: duplicate location/link, active children, or invalid/concurrent transfer.",
-                        "500" => "Persistence failure or unexpected exception. Details are not exposed.",
                         _ => response.Description,
                     };
-                    if (response.Content is not null && response.Content.TryGetValue("application/json", out var mediaType))
-                    {
-                        var example = status switch
-                        {
-                            "400" => """{"result":null,"error":{"messages":[{"code":"invalid.model.state","message":"The request is provided in the incorrect format.","invalidField":null}],"type":"BadRequest"},"isError":true,"timeGenerated":"2026-10-17T09:00:00Z"}""",
-                            "500" => """{"result":null,"error":{"messages":[{"code":"internal.server.error","message":"Internal error","invalidField":null}],"type":"Internal"},"isError":true,"timeGenerated":"2026-10-17T09:00:00Z"}""",
-                            _ => null,
-                        };
-                        if (example is not null)
-                            mediaType.Example = JsonNode.Parse(example);
-                    }
                 }
             }
+            ApiErrorDocumentation.DescribeOperation(operation, context);
             return Task.CompletedTask;
         });
         options.AddSchemaTransformer((schema, context, _) =>
@@ -177,7 +163,7 @@ internal static class ApiDocumentation
                 "error" => "Null on success; otherwise contains type and messages.",
                 "isError" => "True when error is non-null.",
                 "timeGenerated" => "UTC time when the response envelope was created.",
-                "code" => "Machine-readable error code. Use this for program logic.",
+                "code" => "Machine-readable error code. Use this for program logic. See the Error code catalogue in the API description and the applicable response descriptions.",
                 "message" => "Human-readable explanation.",
                 "invalidField" => "Nullable server-side field name (for example PageSize or DepartmentName); not necessarily the JSON property name.",
                 "type" => "Error category serialized as a string: Validation, Domain, BadRequest, NotFound, Conflict, Failure or Internal.",
