@@ -16,6 +16,8 @@ export function DepartmentListSection() {
   const { state, retry } = useDepartmentList({
     page,
     pageSize: PAGE_SIZE,
+    sortBy: "name",
+    sortDirection: "asc",
   });
 
   const isLoading = state.status === "loading";

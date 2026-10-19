@@ -15,6 +15,8 @@ export function LocationListSection() {
   const { state, retry } = useLocationList({
     page: page,
     pageSize: PAGE_SIZE,
+    sortBy: "name",
+    sortDirection: "asc",
   });
 
   const isLoading = state.status === "loading";
