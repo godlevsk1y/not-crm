@@ -10,6 +10,7 @@ import {
   ArrowUpRightIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -86,7 +87,7 @@ export default function GlobalError({
                   variant="outline"
                   size="lg"
                   nativeButton={false}
-                  render={<a href={ROUTES.HOME} />}
+                  render={<Link href={ROUTES.HOME} />}
                 >
                   На главную
                   <ArrowUpRightIcon aria-hidden="true" />
