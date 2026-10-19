@@ -17,6 +17,8 @@ export type DepartmentListState =
 export type UseDepartmentListProps = {
   page: number;
   pageSize: number;
+  sortBy: string;
+  sortDirection: string;
 };
 
 export function useDepartmentList(props: UseDepartmentListProps) {
@@ -27,8 +29,8 @@ export function useDepartmentList(props: UseDepartmentListProps) {
   const { data, isLoading, error, refetch } = useQuery({
     queryFn: () =>
       departmentsApi.getDepartmentList({
-        sortBy: "name",
-        sortDirection: "desc",
+        sortBy: props.sortBy,
+        sortDirection: props.sortDirection,
         page: props.page,
         pageSize: props.pageSize,
       }),
