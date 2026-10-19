@@ -21,8 +21,7 @@ export function applyServerErrors<T extends FieldValues>({
 
     setError(formFieldName, {
       type: error.type,
-      message:
-        errorCodeMessagesMap.get(msg.code) ?? "Поле заполнено некорректно",
+      message: errorCodeMessagesMap.get(msg.code) ?? msg.message,
     });
   }
 }
