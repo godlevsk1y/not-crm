@@ -40,7 +40,7 @@ internal static class ApiErrorDocumentation
             "Malformed JSON, missing required body/fields, or model binding failure after a route matches.",
             Departments + "|" + Locations + "|" + Positions + "|" + DepartmentPages + "|GET /api/locations|PUT /api/departments/{id}/parent"),
         new(GeneralErrors.Internal(),
-            "Unexpected exception or unmapped persistence/transaction failure. Includes database length limits and duplicate locationIds on department creation. Internal details are not exposed.", "*"),
+            "Unexpected exception or unmapped failure. Internal details are not exposed.", "*"),
         new(Validation(ValueObjectErrors.DepartmentName.Empty()),
             "Name is empty or whitespace (PATCH validates only supplied non-null names).", Departments),
         new(Validation(ValueObjectErrors.DepartmentName.TooLong()),
@@ -102,9 +102,19 @@ internal static class ApiErrorDocumentation
         new(ModelErrors.Department.ParentToItself(),
             "PATCH parentId equals the department ID.", "PATCH /api/departments/{id}"),
         new(DepartmentErrors.NotFound(ExampleId),
-            "Active department or requested PATCH/create parent is missing; also a parent/department foreign key race while saving a link or transfer.", Departments + "|DELETE /api/departments/{id}|GET /api/departments/{id}|POST /api/departments/{departmentId}/locations/{locationId}|POST /api/departments/{departmentId}/positions/{positionId}|PUT /api/departments/{id}/parent"),
+            "Requested parentId does not identify an active department, or the parent is removed before saving.", "POST /api/departments"),
+        new(DepartmentErrors.NotFound(ExampleId),
+            "Active department or requested parentId is missing, including a parent foreign key race while saving.", "PATCH /api/departments/{id}"),
+        new(DepartmentErrors.NotFound(ExampleId),
+            "Active department with the route ID was not found.", "GET /api/departments/{id}|DELETE /api/departments/{id}|PUT /api/departments/{id}/parent"),
+        new(DepartmentErrors.NotFound(ExampleId),
+            "Active department with departmentId is missing, or is removed before the relationship is saved.", "POST /api/departments/{departmentId}/locations/{locationId}|POST /api/departments/{departmentId}/positions/{positionId}"),
         new(LocationErrors.NotFound(ExampleId),
-            "Active location is missing, including a requested locationIds entry or a location foreign key race while creating/linking.", "PATCH /api/locations/{id}|DELETE /api/locations/{id}|GET /api/locations/{id}|POST /api/departments|POST /api/departments/{departmentId}/locations/{locationId}"),
+            "A locationIds entry does not identify an active location, or a location is removed before saving the relationships.", "POST /api/departments"),
+        new(LocationErrors.NotFound(ExampleId),
+            "Active location with the route ID was not found.", "GET /api/locations/{id}|PATCH /api/locations/{id}|DELETE /api/locations/{id}"),
+        new(LocationErrors.NotFound(ExampleId),
+            "Active location with locationId is missing, or is removed before the relationship is saved.", "POST /api/departments/{departmentId}/locations/{locationId}"),
         new(PositionErrors.NotFound(ExampleId),
             "Active position is missing, or a position foreign key race occurs while linking.", "PATCH /api/positions/{id}|DELETE /api/positions/{id}|POST /api/departments/{departmentId}/positions/{positionId}"),
         new(LocationErrors.AlreadyExists("Moscow Office"),
@@ -129,21 +139,16 @@ internal static class ApiErrorDocumentation
             "PostgreSQL deadlock mapped by SaveChangesAsync or transaction commit; transfer also maps deadlocks from its transactional SQL. Despite its name this code can occur on other writes.", "POST /api/departments|PATCH /api/departments/{id}|DELETE /api/departments/{id}|PUT /api/departments/{id}/parent|POST /api/departments/{departmentId}/locations/{locationId}|POST /api/departments/{departmentId}/positions/{positionId}|DELETE /api/departments/{departmentId}/locations/{locationId}|DELETE /api/departments/{departmentId}/positions/{positionId}|POST /api/locations|PATCH /api/locations/{id}|DELETE /api/locations/{id}|POST /api/positions|PATCH /api/positions/{id}|DELETE /api/positions/{id}"),
     ];
 
-    public static string DescribeCatalogue() =>
-        "\n\n## Error code catalogue\n\n" +
-        "Clients should branch on `code`; `message` is illustrative and may contain dynamic IDs or names. " +
-        "`invalidField` is a nullable server-side name, not necessarily the JSON name (e.g. LocationName versus name, Search versus q). " +
-        "MVC binding runs first: null or omitted required fields return invalid.model.state before handler validation. " +
-        "Validators aggregate all messages as Validation, even when the underlying value object returns Domain. " +
-        "The same code can therefore have different types on different operations. " +
-        "Operations marked All mean all documented REST controller operations. " +
-        "Unmatched routes (including failed UUID route constraints), health checks and responses without ErrorMessage are outside this catalogue.\n\n" +
-        Table(Catalogue, includeOperations: true);
-
     public static void DescribeOperation(OpenApiOperation operation, OpenApiOperationTransformerContext context)
     {
         var key = context.Description.HttpMethod + " /" + context.Description.RelativePath;
         var entries = Catalogue.Where(e => string.Equals(e.Operations, "*", StringComparison.Ordinal) || e.Operations.Split('|').Contains(key, StringComparer.OrdinalIgnoreCase)).ToArray();
+        operation.Description += "\n\n### Error codes\n\n" +
+            "Clients should branch on `code`; `message` is illustrative and may contain dynamic IDs or names. " +
+            "`invalidField` is a nullable server-side name, not necessarily the JSON name (e.g. LocationName versus name, Search versus q). " +
+            "\n\n" +
+            Table(entries);
+
         if (operation.Responses is null)
             return;
 
@@ -163,8 +168,7 @@ internal static class ApiErrorDocumentation
                 };
                 operation.Responses.Add(group.Key, response);
             }
-            response.Description = "Applicable error codes. See the [Error code catalogue](#error-code-catalogue) in the API description.\n\n" +
-                Table(group, includeOperations: false);
+            response.Description = "Applicable error codes for this operation.\n\n" + Table(group);
             if (response.Content is null || !response.Content.TryGetValue("application/json", out var mediaType))
                 continue;
 
@@ -186,21 +190,13 @@ internal static class ApiErrorDocumentation
         }
     }
 
-    private static string Table(IEnumerable<Entry> entries, bool includeOperations)
+    private static string Table(IEnumerable<Entry> entries)
     {
-        var header = "| code | HTTP | error.type | Condition | invalidField | Example message |" +
-            (includeOperations ? " Operations |" : "") + "\n| --- | --- | --- | --- | --- | --- |" +
-            (includeOperations ? " --- |" : "") + "\n";
-        return header + string.Join("\n", entries.SelectMany(entry =>
-        {
-            var operations = string.Equals(entry.Operations, "*", StringComparison.Ordinal)
-                ? "All"
-                : entry.Operations.Replace("|", "<br>", StringComparison.Ordinal);
-            var suffix = includeOperations ? " " + operations + " |" : "";
-            return entry.Error.Messages.Select(message =>
-                $"| `{message.Code}` | {entry.Status} | {entry.Error.Type} | {entry.Condition} | " +
-                $"{(message.InvalidField is null ? "`null`" : $"`{message.InvalidField}`")} | {message.Message} |" + suffix);
-        }));
+        const string header = "| code | HTTP | error.type | Condition | invalidField | Example message |\n" +
+            "| --- | --- | --- | --- | --- | --- |\n";
+        return header + string.Join("\n", entries.SelectMany(entry => entry.Error.Messages.Select(message =>
+            $"| `{message.Code}` | {entry.Status} | {entry.Error.Type} | {entry.Condition} | " +
+            $"{(message.InvalidField is null ? "`null`" : $"`{message.InvalidField}`")} | {message.Message} |")));
     }
 
     private static JsonObject Example(ErrorType type, IEnumerable<ErrorMessage> messages) => new()

@@ -21,7 +21,10 @@ internal static class ApiDocumentation
                 "{ result, error, isError, timeGenerated }; 204 has no body. " +
                 "Errors contain type and messages [{ code, message, invalidField }]. " +
                 "Use code for program logic; invalidField is nullable and uses server-side field names. " +
-                "No authentication is configured." + ApiErrorDocumentation.DescribeCatalogue();
+                "Error codes and their conditions are documented under each operation. " +
+                "Model binding runs before handler validation; validators aggregate value object errors as Validation. " +
+                "Unmatched routes (including failed UUID route constraints) and responses without ErrorMessage are outside these error tables. " +
+                "No authentication is configured.";
             return Task.CompletedTask;
         });
         options.AddOperationTransformer((operation, context, _) =>
@@ -163,7 +166,7 @@ internal static class ApiDocumentation
                 "error" => "Null on success; otherwise contains type and messages.",
                 "isError" => "True when error is non-null.",
                 "timeGenerated" => "UTC time when the response envelope was created.",
-                "code" => "Machine-readable error code. Use this for program logic. See the Error code catalogue in the API description and the applicable response descriptions.",
+                "code" => "Machine-readable error code. Use this for program logic. See Error codes under this operation and the applicable response descriptions.",
                 "message" => "Human-readable explanation.",
                 "invalidField" => "Nullable server-side field name (for example PageSize or DepartmentName); not necessarily the JSON property name.",
                 "type" => "Error category serialized as a string: Validation, Domain, BadRequest, NotFound, Conflict, Failure or Internal.",

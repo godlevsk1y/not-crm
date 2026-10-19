@@ -76,11 +76,11 @@ public class OpenApiDocumentationTests : IClassFixture<DirectoryServiceTestWebFa
         response.EnsureSuccessStatusCode();
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         var paths = document.RootElement.GetProperty("paths");
-        var catalogue = document.RootElement.GetProperty("info").GetProperty("description").GetString()!;
-        Assert.Contains("## Error code catalogue", catalogue, StringComparison.Ordinal);
-        Assert.Contains("server-side name", catalogue, StringComparison.Ordinal);
-        Assert.Contains("Unmatched routes", catalogue, StringComparison.Ordinal);
-        Assert.DoesNotContain("`department.locations.null`", catalogue, StringComparison.Ordinal);
+        var apiDescription = document.RootElement.GetProperty("info").GetProperty("description").GetString()!;
+        Assert.DoesNotContain("Error code catalogue", apiDescription, StringComparison.Ordinal);
+        Assert.DoesNotContain("| code |", apiDescription, StringComparison.Ordinal);
+        Assert.DoesNotContain("`internal.server.error`", apiDescription, StringComparison.Ordinal);
+        Assert.Contains("Unmatched routes", apiDescription, StringComparison.Ordinal);
 
         const string departmentInput = "department.name.empty department.name.long slug.empty slug.invalid";
         const string locationInput = "location.name.empty location.name.long address.country.empty address.city.empty address.street.empty address.housenumber.empty";
@@ -120,6 +120,14 @@ public class OpenApiDocumentationTests : IClassFixture<DirectoryServiceTestWebFa
             {
                 count++;
                 var key = operation.Name + " " + path.Name;
+                var operationDescription = operation.Value.GetProperty("description").GetString()!;
+                Assert.Contains("### Error codes", operationDescription, StringComparison.Ordinal);
+                Assert.Contains("server-side name", operationDescription, StringComparison.Ordinal);
+                Assert.DoesNotContain("`department.locations.null`", operationDescription, StringComparison.Ordinal);
+                Assert.DoesNotContain("#error-code-catalogue", operationDescription, StringComparison.Ordinal);
+                var operationRows = operationDescription.Split('\n')
+                    .Where(line => line.StartsWith("| `", StringComparison.Ordinal)).ToArray();
+                var responseRows = new List<string>();
                 // There are no business errors on the top-locations query.
                 var codes = expected.TryGetValue(key, out var specific) ? specific : "";
                 Assert.True(expected.ContainsKey(key) || string.Equals(key, "get /api/locations/top", StringComparison.Ordinal));
@@ -137,6 +145,7 @@ public class OpenApiDocumentationTests : IClassFixture<DirectoryServiceTestWebFa
                     if (result.Name is not ("400" or "404" or "409" or "500"))
                         continue;
                     var description = result.Value.GetProperty("description").GetString()!;
+                    Assert.DoesNotContain("#error-code-catalogue", description, StringComparison.Ordinal);
                     foreach (var row in description.Split('\n').Where(line => line.StartsWith("| `", StringComparison.Ordinal)))
                     {
                         var cells = row.Split('|');
@@ -184,10 +193,14 @@ public class OpenApiDocumentationTests : IClassFixture<DirectoryServiceTestWebFa
                         };
                         Assert.Equal($"`{expectedField}`", cells[5].Trim());
                         Assert.False(string.IsNullOrWhiteSpace(cells[6]));
-                        Assert.Contains(row, catalogue, StringComparison.Ordinal);
+                        Assert.Contains(row, operationRows);
+                        responseRows.Add(row);
                         actualCodes.Add(code);
                     }
                 }
+                var operationCodes = operationRows.Select(row => row.Split('|')[1].Trim().Trim('`'));
+                Assert.Equal(expectedCodes.Order(StringComparer.Ordinal), operationCodes.Order(StringComparer.Ordinal));
+                Assert.Equal(responseRows.Order(StringComparer.Ordinal), operationRows.Order(StringComparer.Ordinal));
                 Assert.Equal(expectedCodes.Order(StringComparer.Ordinal), actualCodes.Order(StringComparer.Ordinal));
                 allCodes.UnionWith(actualCodes);
             }
