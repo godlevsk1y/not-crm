@@ -15,13 +15,36 @@ namespace DirectoryService.Web.Configuration;
 // MVC rejects null LocationIds before the validator, so department.locations.null is unreachable over REST.
 internal static class ApiErrorDocumentation
 {
-    private const string Departments = "POST /api/departments|PATCH /api/departments/{id}";
-    private const string Locations = "POST /api/locations|PATCH /api/locations/{id}";
-    private const string Positions = "POST /api/positions|PATCH /api/positions/{id}";
-    private const string DepartmentPages = "GET /api/departments|GET /api/departments/tree|GET /api/departments/{id}/children|GET /api/departments/{id}/ancestors|GET /api/departments/tree/search";
+    private static readonly string[] Departments =
+    [
+        "POST /api/departments",
+        "PATCH /api/departments/{id}",
+    ];
+
+    private static readonly string[] Locations =
+    [
+        "POST /api/locations",
+        "PATCH /api/locations/{id}",
+    ];
+
+    private static readonly string[] Positions =
+    [
+        "POST /api/positions",
+        "PATCH /api/positions/{id}",
+    ];
+
+    private static readonly string[] DepartmentPages =
+    [
+        "GET /api/departments",
+        "GET /api/departments/tree",
+        "GET /api/departments/{id}/children",
+        "GET /api/departments/{id}/ancestors",
+        "GET /api/departments/tree/search",
+    ];
+
     private static readonly Guid ExampleId = Guid.Parse("11111111-1111-1111-1111-111111111111");
 
-    private sealed record Entry(Error Error, string Condition, string Operations)
+    private sealed record Entry(Error Error, string Condition, IReadOnlyCollection<string> Operations)
     {
         public string Status => Error.Type switch
         {
@@ -38,9 +61,16 @@ internal static class ApiErrorDocumentation
     [
         new(Error.BadRequest(new ErrorMessage("invalid.model.state", "The request is provided in the incorrect format.")),
             "Malformed JSON, missing required body/fields, or model binding failure after a route matches.",
-            Departments + "|" + Locations + "|" + Positions + "|" + DepartmentPages + "|GET /api/locations|PUT /api/departments/{id}/parent"),
+            [
+                ..Departments,
+                ..Locations,
+                ..Positions,
+                ..DepartmentPages,
+                "GET /api/locations",
+                "PUT /api/departments/{id}/parent",
+            ]),
         new(GeneralErrors.Internal(),
-            "Unexpected exception or unmapped failure. Internal details are not exposed.", "*"),
+            "Unexpected exception or unmapped failure. Internal details are not exposed.", ["*"]),
         new(Validation(ValueObjectErrors.DepartmentName.Empty()),
             "Name is empty or whitespace (PATCH validates only supplied non-null names).", Departments),
         new(Validation(ValueObjectErrors.DepartmentName.TooLong()),
@@ -58,91 +88,125 @@ internal static class ApiErrorDocumentation
         new(Validation(ValueObjectErrors.Slug.Invalid()),
             "Slug does not match ^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$; no trimming is performed.", Departments),
         new(Error.Validation(ValueObjectErrors.Address.CountryEmptyMessage),
-            "Country is empty or whitespace on creation.", "POST /api/locations"),
+            "Country is empty or whitespace on creation.", ["POST /api/locations"]),
         new(Error.Domain(ValueObjectErrors.Address.CountryEmptyMessage),
-            "Supplied Country is empty or whitespace on update; null preserves its stored value.", "PATCH /api/locations/{id}"),
+            "Supplied Country is empty or whitespace on update; null preserves its stored value.", ["PATCH /api/locations/{id}"]),
         new(Error.Validation(ValueObjectErrors.Address.CityEmptyMessage),
-            "City is empty or whitespace on creation.", "POST /api/locations"),
+            "City is empty or whitespace on creation.", ["POST /api/locations"]),
         new(Error.Domain(ValueObjectErrors.Address.CityEmptyMessage),
-            "Supplied City is empty or whitespace on update; null preserves its stored value.", "PATCH /api/locations/{id}"),
+            "Supplied City is empty or whitespace on update; null preserves its stored value.", ["PATCH /api/locations/{id}"]),
         new(Error.Validation(ValueObjectErrors.Address.StreetEmptyMessage),
-            "Street is empty or whitespace on creation.", "POST /api/locations"),
+            "Street is empty or whitespace on creation.", ["POST /api/locations"]),
         new(Error.Domain(ValueObjectErrors.Address.StreetEmptyMessage),
-            "Supplied Street is empty or whitespace on update; null preserves its stored value.", "PATCH /api/locations/{id}"),
+            "Supplied Street is empty or whitespace on update; null preserves its stored value.", ["PATCH /api/locations/{id}"]),
         new(Error.Validation(ValueObjectErrors.Address.HouseNumberEmptyMessage),
-            "HouseNumber is empty or whitespace on creation.", "POST /api/locations"),
+            "HouseNumber is empty or whitespace on creation.", ["POST /api/locations"]),
         new(Error.Domain(ValueObjectErrors.Address.HouseNumberEmptyMessage),
-            "Supplied HouseNumber is empty or whitespace on update; null preserves its stored value.", "PATCH /api/locations/{id}"),
+            "Supplied HouseNumber is empty or whitespace on update; null preserves its stored value.", ["PATCH /api/locations/{id}"]),
         new(Error.Validation(new ErrorMessage("department.id.empty", "Department Id cannot be empty", "DepartmentId")),
-            "Department route ID is the empty UUID.", "PUT /api/departments/{id}/parent"),
+            "Department route ID is the empty UUID.", ["PUT /api/departments/{id}/parent"]),
         new(Error.Validation(new ErrorMessage("departments.page.invalid", "The page parameter must be greater than 0.", "Page")),
             "Page is less than 1.", DepartmentPages),
         new(Error.Validation(new ErrorMessage("departments.page.size.invalid", "The page size must be from 5 to 100.", "PageSize")),
             "PageSize is outside 5–100.", DepartmentPages),
         new(Error.Validation(new ErrorMessage("departments.search.too.long", "The search string must not exceed 100 characters.", "Search")),
-            "Search exceeds 100 characters.", "GET /api/departments"),
+            "Search exceeds 100 characters.", ["GET /api/departments"]),
         new(Error.Validation(new ErrorMessage("departments.sort.by.invalid", "The sortBy parameter only allows 'name' or 'createdAt' values.", "SortBy")),
-            "SortBy is not name or createdAt (case-sensitive).", "GET /api/departments"),
+            "SortBy is not name or createdAt (case-sensitive).", ["GET /api/departments"]),
         new(Error.Validation(new ErrorMessage("departments.sort.direction.invalid", "The sortBy parameter only allows 'asc' or 'desc' values.", "SortDirection")),
-            "SortDirection is not asc or desc (case-sensitive).", "GET /api/departments"),
+            "SortDirection is not asc or desc (case-sensitive).", ["GET /api/departments"]),
         new(Error.Validation(new ErrorMessage("departments.search.query.invalid", "Search query must be at least 2 characters long.", "Search")),
-            "Search (query parameter q) has fewer than 2 characters. Omitted q can instead fail model binding.", "GET /api/departments/tree/search"),
+            "Search (query parameter q) has fewer than 2 characters. Omitted q can instead fail model binding.", ["GET /api/departments/tree/search"]),
         new(Error.Validation(new ErrorMessage("location.search.too.long", "The search string must not exceed 100 characters.", "Search")),
-            "Search exceeds 100 characters.", "GET /api/locations"),
+            "Search exceeds 100 characters.", ["GET /api/locations"]),
         new(Error.Validation(new ErrorMessage("location.department.count.invalid", "The minimum number of departments must be greater than or equal to zero.", "MinDepartmentCount")),
-            "Supplied MinDepartmentCount is negative.", "GET /api/locations"),
+            "Supplied MinDepartmentCount is negative.", ["GET /api/locations"]),
         new(Error.Validation(new ErrorMessage("locations.sort.by.invalid", "The sortBy parameter only allows 'name', 'createdAt' or 'departmentCount' values.", "SortBy")),
-            "SortBy is not name, createdAt or departmentCount (case-sensitive).", "GET /api/locations"),
+            "SortBy is not name, createdAt or departmentCount (case-sensitive).", ["GET /api/locations"]),
         new(Error.Validation(new ErrorMessage("locations.sort.direction.invalid", "The sortBy parameter only allows 'asc' or 'desc' values.", "SortDirection")),
-            "SortDirection is not asc or desc (case-sensitive).", "GET /api/locations"),
+            "SortDirection is not asc or desc (case-sensitive).", ["GET /api/locations"]),
         new(Error.Validation(new ErrorMessage("locations.page.invalid", "The page parameter must be greater than 0.", "Page")),
-            "Page is less than 1.", "GET /api/locations"),
+            "Page is less than 1.", ["GET /api/locations"]),
         new(Error.Validation(new ErrorMessage("locations.page.size.invalid", "The page size must be from 5 to 100.", "PageSize")),
-            "PageSize is outside 5–100.", "GET /api/locations"),
+            "PageSize is outside 5–100.", ["GET /api/locations"]),
         new(ModelErrors.Department.ParentToItself(),
-            "PATCH parentId equals the department ID.", "PATCH /api/departments/{id}"),
+            "PATCH parentId equals the department ID.", ["PATCH /api/departments/{id}"]),
         new(DepartmentErrors.NotFound(ExampleId),
-            "Requested parentId does not identify an active department, or the parent is removed before saving.", "POST /api/departments"),
+            "Requested parentId does not identify an active department, or the parent is removed before saving.", ["POST /api/departments"]),
         new(DepartmentErrors.NotFound(ExampleId),
-            "Active department or requested parentId is missing, including a parent foreign key race while saving.", "PATCH /api/departments/{id}"),
+            "Active department or requested parentId is missing, including a parent foreign key race while saving.", ["PATCH /api/departments/{id}"]),
         new(DepartmentErrors.NotFound(ExampleId),
-            "Active department with the route ID was not found.", "GET /api/departments/{id}|DELETE /api/departments/{id}|PUT /api/departments/{id}/parent"),
+            "Active department with the route ID was not found.",
+            [
+                "GET /api/departments/{id}",
+                "DELETE /api/departments/{id}",
+                "PUT /api/departments/{id}/parent",
+            ]),
         new(DepartmentErrors.NotFound(ExampleId),
-            "Active department with departmentId is missing, or is removed before the relationship is saved.", "POST /api/departments/{departmentId}/locations/{locationId}|POST /api/departments/{departmentId}/positions/{positionId}"),
+            "Active department with departmentId is missing, or is removed before the relationship is saved.",
+            [
+                "POST /api/departments/{departmentId}/locations/{locationId}",
+                "POST /api/departments/{departmentId}/positions/{positionId}",
+            ]),
         new(LocationErrors.NotFound(ExampleId),
-            "A locationIds entry does not identify an active location, or a location is removed before saving the relationships.", "POST /api/departments"),
+            "A locationIds entry does not identify an active location, or a location is removed before saving the relationships.", ["POST /api/departments"]),
         new(LocationErrors.NotFound(ExampleId),
-            "Active location with the route ID was not found.", "GET /api/locations/{id}|PATCH /api/locations/{id}|DELETE /api/locations/{id}"),
+            "Active location with the route ID was not found.",
+            [
+                "GET /api/locations/{id}",
+                "PATCH /api/locations/{id}",
+                "DELETE /api/locations/{id}",
+            ]),
         new(LocationErrors.NotFound(ExampleId),
-            "Active location with locationId is missing, or is removed before the relationship is saved.", "POST /api/departments/{departmentId}/locations/{locationId}"),
+            "Active location with locationId is missing, or is removed before the relationship is saved.", ["POST /api/departments/{departmentId}/locations/{locationId}"]),
         new(PositionErrors.NotFound(ExampleId),
-            "Active position is missing, or a position foreign key race occurs while linking.", "PATCH /api/positions/{id}|DELETE /api/positions/{id}|POST /api/departments/{departmentId}/positions/{positionId}"),
+            "Active position is missing, or a position foreign key race occurs while linking.",
+            [
+                "PATCH /api/positions/{id}",
+                "DELETE /api/positions/{id}",
+                "POST /api/departments/{departmentId}/positions/{positionId}",
+            ]),
         new(LocationErrors.AlreadyExists("Moscow Office"),
             "Name duplicates an existing stored location, including a unique-constraint race; PATCH detects this on save.", Locations),
         new(DepartmentErrors.LocationAlreadyAdded(ExampleId, ExampleId),
-            "The relationship already exists, including a concurrent insert detected by the unique constraint.", "POST /api/departments/{departmentId}/locations/{locationId}"),
+            "The relationship already exists, including a concurrent insert detected by the unique constraint.", ["POST /api/departments/{departmentId}/locations/{locationId}"]),
         new(DepartmentErrors.DepartmentLocationNotFound(ExampleId, ExampleId),
-            "The relationship does not exist; resource existence is not checked separately.", "DELETE /api/departments/{departmentId}/locations/{locationId}"),
+            "The relationship does not exist; resource existence is not checked separately.", ["DELETE /api/departments/{departmentId}/locations/{locationId}"]),
         new(DepartmentErrors.PositionAlreadyAdded(ExampleId, ExampleId),
-            "The relationship already exists, including a concurrent insert detected by the unique constraint.", "POST /api/departments/{departmentId}/positions/{positionId}"),
+            "The relationship already exists, including a concurrent insert detected by the unique constraint.", ["POST /api/departments/{departmentId}/positions/{positionId}"]),
         new(DepartmentErrors.DepartmentPositionNotFound(ExampleId, ExampleId),
-            "The relationship does not exist; resource existence is not checked separately.", "DELETE /api/departments/{departmentId}/positions/{positionId}"),
+            "The relationship does not exist; resource existence is not checked separately.", ["DELETE /api/departments/{departmentId}/positions/{positionId}"]),
         new(DepartmentErrors.HasActiveChildren(ExampleId),
-            "Department has at least one active immediate child.", "DELETE /api/departments/{id}"),
+            "Department has at least one active immediate child.", ["DELETE /api/departments/{id}"]),
         new(DepartmentErrors.ParentNotFound(ExampleId),
-            "Requested new parent is missing (including the empty UUID).", "PUT /api/departments/{id}/parent"),
+            "Requested new parent is missing (including the empty UUID).", ["PUT /api/departments/{id}/parent"]),
         new(DepartmentErrors.ParentToSelf(),
-            "newParentId equals the department ID.", "PUT /api/departments/{id}/parent"),
+            "newParentId equals the department ID.", ["PUT /api/departments/{id}/parent"]),
         new(DepartmentErrors.Cycle(ExampleId, ExampleId),
-            "Requested parent is a descendant of the department.", "PUT /api/departments/{id}/parent"),
+            "Requested parent is a descendant of the department.", ["PUT /api/departments/{id}/parent"]),
         new(DepartmentErrors.TransferConflict(),
-            "PostgreSQL deadlock mapped by SaveChangesAsync or transaction commit; transfer also maps deadlocks from its transactional SQL. Despite its name this code can occur on other writes.", "POST /api/departments|PATCH /api/departments/{id}|DELETE /api/departments/{id}|PUT /api/departments/{id}/parent|POST /api/departments/{departmentId}/locations/{locationId}|POST /api/departments/{departmentId}/positions/{positionId}|DELETE /api/departments/{departmentId}/locations/{locationId}|DELETE /api/departments/{departmentId}/positions/{positionId}|POST /api/locations|PATCH /api/locations/{id}|DELETE /api/locations/{id}|POST /api/positions|PATCH /api/positions/{id}|DELETE /api/positions/{id}"),
+            "PostgreSQL deadlock mapped by SaveChangesAsync or transaction commit; transfer also maps deadlocks from its transactional SQL. Despite its name this code can occur on other writes.",
+            [
+                ..Departments,
+                ..Locations,
+                ..Positions,
+                "DELETE /api/departments/{id}",
+                "PUT /api/departments/{id}/parent",
+                "POST /api/departments/{departmentId}/locations/{locationId}",
+                "POST /api/departments/{departmentId}/positions/{positionId}",
+                "DELETE /api/departments/{departmentId}/locations/{locationId}",
+                "DELETE /api/departments/{departmentId}/positions/{positionId}",
+                "DELETE /api/locations/{id}",
+                "DELETE /api/positions/{id}",
+            ]),
     ];
 
     public static void DescribeOperation(OpenApiOperation operation, OpenApiOperationTransformerContext context)
     {
         var key = context.Description.HttpMethod + " /" + context.Description.RelativePath;
-        var entries = Catalogue.Where(e => string.Equals(e.Operations, "*", StringComparison.Ordinal) || e.Operations.Split('|').Contains(key, StringComparer.OrdinalIgnoreCase)).ToArray();
+        var entries = Catalogue.Where(e =>
+            e.Operations.Contains("*", StringComparer.Ordinal) ||
+            e.Operations.Contains(key, StringComparer.OrdinalIgnoreCase)).ToArray();
         operation.Description += "\n\n### Error codes\n\n" +
             "Clients should branch on `code`; `message` is illustrative and may contain dynamic IDs or names. " +
             "`invalidField` is a nullable server-side name, not necessarily the JSON name (e.g. LocationName versus name, Search versus q). " +
