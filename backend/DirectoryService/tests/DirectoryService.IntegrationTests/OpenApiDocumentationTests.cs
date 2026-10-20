@@ -43,17 +43,19 @@ public class OpenApiDocumentationTests : IClassFixture<DirectoryServiceTestWebFa
                 }
             }
         }
-        Assert.Equal(23, count);
+        Assert.Equal(24, count);
     }
 
-    [Fact]
-    public async Task OpenApi_ShouldDescribeQueryConstraintsAndRequestExamples()
+    [Theory]
+    [InlineData("/api/locations")]
+    [InlineData("/api/positions")]
+    public async Task OpenApi_ShouldDescribeQueryConstraintsAndRequestExamples(string path)
     {
         using var response = await _client.GetAsync("/openapi/v1.json");
         response.EnsureSuccessStatusCode();
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         var paths = document.RootElement.GetProperty("paths");
-        var parameters = paths.GetProperty("/api/locations").GetProperty("get").GetProperty("parameters");
+        var parameters = paths.GetProperty(path).GetProperty("get").GetProperty("parameters");
         var pageSize = parameters.EnumerateArray().Single(p =>
             string.Equals(p.GetProperty("name").GetString(), "PageSize", StringComparison.OrdinalIgnoreCase));
         Assert.Equal(5, pageSize.GetProperty("schema").GetProperty("minimum").GetInt32());
@@ -107,6 +109,7 @@ public class OpenApiDocumentationTests : IClassFixture<DirectoryServiceTestWebFa
             ["delete /api/locations/{id}"] = "location.not.found",
             ["get /api/locations/{id}"] = "location.not.found",
             ["get /api/locations"] = "location.search.too.long location.department.count.invalid locations.sort.by.invalid locations.sort.direction.invalid locations.page.invalid locations.page.size.invalid",
+            ["get /api/positions"] = "positions.search.too.long positions.sort.by.invalid positions.sort.direction.invalid positions.page.invalid positions.page.size.invalid",
             ["post /api/positions"] = positionInput,
             ["patch /api/positions/{id}"] = positionInput + " position.not.found",
             ["delete /api/positions/{id}"] = "position.not.found",
@@ -205,8 +208,8 @@ public class OpenApiDocumentationTests : IClassFixture<DirectoryServiceTestWebFa
                 allCodes.UnionWith(actualCodes);
             }
         }
-        Assert.Equal(23, count);
-        Assert.Equal(41, allCodes.Count);
+        Assert.Equal(24, count);
+        Assert.Equal(46, allCodes.Count);
     }
 
     [Theory]
