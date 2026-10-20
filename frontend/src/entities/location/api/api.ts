@@ -1,5 +1,6 @@
 import { apiRequest, type PagedResult } from "@/shared/api";
 import type { LocationDto, LocationListItemDto } from "../model/types";
+import { queryOptions } from "@tanstack/react-query";
 
 export type GetLocationsListRequest = {
   search?: string;
@@ -35,4 +36,39 @@ export const locationsApi = {
       url: "locations",
       data: request,
     }),
+};
+
+export const locationsQueryOptions = {
+  baseKey: "locations",
+
+  getLocationOptions: ({
+    sortBy,
+    sortDirection,
+    page,
+    pageSize,
+  }: {
+    sortBy: string;
+    sortDirection: string;
+    page: number;
+    pageSize: number;
+  }) => {
+    return queryOptions({
+      queryFn: () =>
+        locationsApi.getLocationsList({
+          sortBy: sortBy,
+          sortDirection: sortDirection,
+          page: page,
+          pageSize: pageSize,
+        }),
+      queryKey: [
+        locationsQueryOptions.baseKey,
+        {
+          sortBy: sortBy,
+          sortDirection: sortDirection,
+          page: page,
+          pageSize: pageSize,
+        },
+      ],
+    });
+  },
 };
