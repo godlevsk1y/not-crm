@@ -54,6 +54,34 @@ public sealed class OpenApiTests(OpenApiWebFactory factory) : IClassFixture<Open
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     [Fact]
+    public async Task Document_UsesCamelCaseForEveryParameter()
+    {
+        var document = await Document();
+        foreach (var path in document["paths"]!.AsObject())
+        {
+            foreach (var operation in path.Value!.AsObject())
+            {
+                foreach (var parameter in operation.Value!["parameters"]?.AsArray() ?? [])
+                {
+                    var name = parameter!["name"]!.GetValue<string>();
+                    Assert.True(char.IsLower(name[0]), $"{path.Key}: {name}");
+                    if (string.Equals(parameter["in"]!.GetValue<string>(), "path", StringComparison.Ordinal))
+                        Assert.Contains("{" + name + "}", path.Key, StringComparison.Ordinal);
+                }
+            }
+        }
+
+        var locationNames = document["paths"]!["/api/locations"]!["get"]!["parameters"]!.AsArray()
+            .Select(p => p!["name"]!.GetValue<string>()).ToArray();
+        Assert.Contains("pageSize", locationNames);
+        Assert.Contains("sortBy", locationNames);
+        Assert.Contains("sortDirection", locationNames);
+        Assert.Contains("minDepartmentCount", locationNames);
+        Assert.Contains(document["paths"]!["/api/departments/tree/search"]!["get"]!["parameters"]!.AsArray(),
+            p => string.Equals(p!["name"]!.GetValue<string>(), "q", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task Document_DescribesAllBusinessOperationsAndExamples()
     {
         var document = await Document();

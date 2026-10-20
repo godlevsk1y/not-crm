@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using DirectoryService.Core.Features.Departments;
 using DirectoryService.Web.Controllers;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -14,6 +15,15 @@ internal sealed class OperationDocumentation : IOpenApiOperationTransformer
 {
     public async Task TransformAsync(OpenApiOperation operation, OpenApiOperationTransformerContext context, CancellationToken cancellationToken)
     {
+        if (operation.Parameters is not null)
+        {
+            foreach (var parameter in operation.Parameters.OfType<OpenApiParameter>())
+            {
+                if (parameter.Name is { } name)
+                    parameter.Name = JsonNamingPolicy.CamelCase.ConvertName(name);
+            }
+        }
+
         if (context.Description.ActionDescriptor is not ControllerActionDescriptor action || operation.Responses is null)
             return;
 
