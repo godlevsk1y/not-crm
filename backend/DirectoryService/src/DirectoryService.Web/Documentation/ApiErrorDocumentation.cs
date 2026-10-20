@@ -10,7 +10,7 @@ using Shared.Kernel.Errors;
 
 namespace DirectoryService.Web.Documentation;
 
-// Update this catalogue and OpenApiDocumentationTests when an error or its reachable operations change.
+// Update this catalogue when an error or its reachable operations change.
 // Describe the final response type: validators flatten domain errors into Validation.
 // MVC rejects null LocationIds before the validator, so department.locations.null is unreachable over REST.
 internal static class ApiErrorDocumentation
