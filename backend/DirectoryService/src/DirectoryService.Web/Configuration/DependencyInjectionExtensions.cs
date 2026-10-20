@@ -1,6 +1,5 @@
 using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
-using DirectoryService.Web.Documentation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
@@ -23,7 +22,7 @@ public static class DependencyInjectionExtensions
     {
         services.AddSerilogLogging(configuration);
         
-        services.AddOpenApi(ApiDocumentation.Configure);
+        services.AddOpenApi();
         services.AddHealthCheckEndpoints(configuration);
 
         services.AddControllers();
