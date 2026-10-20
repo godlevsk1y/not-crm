@@ -17,3 +17,5 @@ export const positionsApi = {
       params: request,
     }),
 };
+
+// TODO: add locationQueryOptions
