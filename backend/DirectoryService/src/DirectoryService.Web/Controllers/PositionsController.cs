@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Positions;
 using DirectoryService.Contracts.Positions.QueryContracts;
+using DirectoryService.Contracts.WebApi.Positions;
 using DirectoryService.Core.Features.Positions.Commands.CreatePosition;
 using DirectoryService.Core.Features.Positions.Commands.DeletePosition;
 using DirectoryService.Core.Features.Positions.Commands.UpdatePosition;
@@ -27,9 +28,16 @@ public class PositionsController : ControllerBase
     public async Task<IResult> GetPositionList(
         [FromServices] IQueryHandler<GetPositionListQuery,
             Result<PagedResult<PositionListItemDto>, Error>> handler,
-        [FromQuery] GetPositionListQuery query,
+        [FromQuery] GetPositionListRequest request,
         CancellationToken cancellationToken)
     {
+        var query = new GetPositionListQuery(
+            request.Search,
+            request.SortBy,
+            request.SortDirection,
+            request.Page,
+            request.PageSize);
+
         var getResult = await handler.Handle(query, cancellationToken);
         if (getResult.IsFailure)
         {
