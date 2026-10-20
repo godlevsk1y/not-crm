@@ -6,6 +6,8 @@ import { PositionListContent } from "./position-list-content";
 
 const PAGE_SIZE = 9;
 
+// Нет, для этого проекта замечание неверно: в [package.json (line 21)](/Users/godlevskiy/Personal/Development/Dotnet/not-crm/frontend/package.json:21) указан React 19.3.0.
+// Начиная с React 19, ref-колбэк может возвращать функцию очистки. React вызывает её при удалении DOM-элемента и перед подключением нового ref-колбэка, если его ссылка изменилась. Это описано в документации React.
 export function PositionListSection() {
   const {
     items: positions,
