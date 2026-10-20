@@ -21,10 +21,6 @@ public sealed class DirectoryServiceDbContext : DbContext, IReadDbContext
         .AsQueryable()
         .AsNoTracking();
     
-    public IQueryable<Position> PositionsRead => Set<Position>()
-        .AsQueryable()
-        .AsNoTracking();
-
     public DirectoryServiceDbContext(DbContextOptions<DirectoryServiceDbContext> options)
         : base(options) { }
 
