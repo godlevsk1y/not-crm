@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Locations;
@@ -61,6 +62,9 @@ internal static class ApiDocumentation
         var isLocation = context.Description.RelativePath?.StartsWith("api/Locations", StringComparison.OrdinalIgnoreCase) == true;
         foreach (var parameter in operation.Parameters.OfType<OpenApiParameter>())
         {
+            if (parameter.In == ParameterLocation.Query && parameter.Name is { } name)
+                parameter.Name = JsonNamingPolicy.CamelCase.ConvertName(name);
+
             if (parameter.Schema is not OpenApiSchema schema)
                 continue;
 

@@ -51,8 +51,10 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         Assert.Empty(envelope.Result.Results);
     }
 
-    [Fact]
-    public async Task GetLocationList_ShouldReturnSelectedLocations_WhenRequestIsValid()
+    [Theory]
+    [InlineData("search=office&minDepartmentCount=1&sortBy=departmentCount&sortDirection=desc&page=1&pageSize=5")]
+    [InlineData("Search=office&MinDepartmentCount=1&SortBy=departmentCount&SortDirection=desc&Page=1&PageSize=5")]
+    public async Task GetLocationList_ShouldReturnSelectedLocations_WhenRequestIsValid(string queryString)
     {
         var berlinId = await CreateLocationAsync("Berlin Office", "Berlin");
         var moscowId = await CreateLocationAsync("Moscow Office", "Moscow");
@@ -62,9 +64,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         await CreateDepartmentAsync("Product Team", "product-team", berlinId);
         await CreateDepartmentAsync("Support Team", "support-team", moscowId);
 
-        var response = await _client.GetAsync(
-            "api/locations?search=office&minDepartmentCount=1" +
-            "&sortBy=departmentCount&sortDirection=desc&page=1&pageSize=5");
+        var response = await _client.GetAsync($"api/locations?{queryString}");
 
         Assert.Equal(200, (int)response.StatusCode);
 
