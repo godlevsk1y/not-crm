@@ -1,10 +1,17 @@
+using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Positions;
+using DirectoryService.Contracts.Positions.QueryContracts;
+using DirectoryService.Contracts.WebApi.Positions;
 using DirectoryService.Core.Features.Positions.Commands.CreatePosition;
 using DirectoryService.Core.Features.Positions.Commands.DeletePosition;
 using DirectoryService.Core.Features.Positions.Commands.UpdatePosition;
+using DirectoryService.Core.Features.Positions.Queries.GetPositionList;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Core.Abstractions;
 using Shared.Framework.Results;
+using Shared.Kernel.Errors;
+using Shared.Kernel.Results;
+using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Web.Controllers;
 
@@ -14,9 +21,35 @@ namespace DirectoryService.Web.Controllers;
 [Route("api/[controller]")]
 public class PositionsController : ControllerBase
 {
+    [HttpGet]
+    [EndpointSummary("List positions")]
+    [EndpointDescription("Active positions with id, name and createdAt. Optional case-insensitive name search, at most 100 characters (PostgreSQL ILIKE; % and _ are wildcards). Sort by name or createdAt (default name), asc or desc (default asc), then ID ascending. Page starts at 1 (default 1); pageSize is 5–100 (default 20). totalCount is the matching count before pagination, including empty pages. No matches return 200 with an empty list.")]
+    [ProducesResponseType<Envelope<PagedResult<PositionListItemDto>>>(StatusCodes.Status200OK)]
+    public async Task<IResult> GetPositionList(
+        [FromServices] IQueryHandler<GetPositionListQuery,
+            Result<PagedResult<PositionListItemDto>, Error>> handler,
+        [FromQuery] GetPositionListRequest request,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetPositionListQuery(
+            request.Search,
+            request.SortBy,
+            request.SortDirection,
+            request.Page,
+            request.PageSize);
+
+        var getResult = await handler.Handle(query, cancellationToken);
+        if (getResult.IsFailure)
+        {
+            return EndpointResults.Error(getResult.Error);
+        }
+
+        return EndpointResults.Ok(getResult.Value);
+    }
+
     [HttpPost]
     [EndpointSummary("Create a position")]
-    [EndpointDescription("Creates a position. Name is trimmed; duplicate names are allowed. Location is /positions/{id}; there is currently no GET position endpoint.")]
+    [EndpointDescription("Creates a position. Name is trimmed; duplicate names are allowed. Location is /positions/{id}; there is currently no GET position-by-ID endpoint.")]
     [ProducesResponseType<Envelope<PositionDto>>(StatusCodes.Status201Created)]
     public async Task<IResult> Create(
         [FromServices] ICommandHandler<CreatePositionCommand, PositionDto> handler,
