@@ -50,4 +50,4 @@ dotnet build DirectoryService.slnx --configuration Debug --disable-build-servers
 dotnet test DirectoryService.slnx --no-build
 ```
 
-`Documentation/OpenApiTests` generates the document through an HTTP test host without a database. It checks operation coverage, typed response envelopes and nested addresses, nullable/required PATCH fields, real-validator acceptance of request examples, operation-specific errors, both actual 500 formats, model-state 400s, bodyless 204s and liveness. The existing integration suite covers persistence and successful/failed business operations with PostgreSQL Testcontainers.
+The integration suite covers persistence and successful/failed business operations with PostgreSQL Testcontainers.
