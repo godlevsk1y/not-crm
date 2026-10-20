@@ -43,12 +43,9 @@ export const positionsQueryOptions = {
       },
       initialPageParam: 1,
       getNextPageParam: (response) => {
-        const totalPages =
-          response.totalCount % response.pageSize === 0
-            ? Math.ceil(response.totalCount / response.pageSize)
-            : Math.ceil(response.totalCount / response.pageSize) + 1;
+        const totalPages = Math.ceil(response.totalCount / response.pageSize);
 
-        if (!response || response.page > totalPages) return undefined;
+        if (response.page >= totalPages) return undefined;
 
         return response.page + 1;
       },
