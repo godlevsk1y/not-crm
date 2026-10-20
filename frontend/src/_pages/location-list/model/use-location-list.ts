@@ -2,7 +2,6 @@
 
 import {
   type LocationListItemDto,
-  locationsApi,
   locationsQueryOptions,
 } from "@/entities/location";
 import { ApiRequestError } from "@/shared/api";
