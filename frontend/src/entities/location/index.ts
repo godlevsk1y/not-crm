@@ -1,4 +1,8 @@
-export { type GetLocationsListRequest, locationsApi } from "./api/api";
+export {
+  type GetLocationsListRequest,
+  locationsApi,
+  locationsQueryOptions,
+} from "./api/api";
 
 export type { LocationListItemDto, AddressDto } from "./model/types";
 

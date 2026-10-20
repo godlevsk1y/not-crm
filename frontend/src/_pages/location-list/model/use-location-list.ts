@@ -1,6 +1,9 @@
 "use client";
 
-import { type LocationListItemDto, locationsApi } from "@/entities/location";
+import {
+  type LocationListItemDto,
+  locationsQueryOptions,
+} from "@/entities/location";
 import { ApiRequestError } from "@/shared/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -21,22 +24,14 @@ export function useLocationList(props: UseLocationListProps) {
     status: "loading",
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryFn: () =>
-      locationsApi.getLocationsList({
-        sortBy: props.sortBy,
-        sortDirection: props.sortDirection,
-        page: props.page,
-        pageSize: props.pageSize,
-      }),
-    queryKey: [
-      "locations",
-      {
-        page: props.page,
-        pageSize: props.pageSize,
-      },
-    ],
-  });
+  const { data, isLoading, error, refetch } = useQuery(
+    locationsQueryOptions.getLocationOptions({
+      sortBy: props.sortBy,
+      sortDirection: props.sortDirection,
+      page: props.page,
+      pageSize: props.pageSize,
+    }),
+  );
 
   if (error) {
     let message = "Не удалось загрузить локации";
