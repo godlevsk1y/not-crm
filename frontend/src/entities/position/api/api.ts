@@ -52,6 +52,12 @@ export const positionsQueryOptions = {
 
         return response.page + 1;
       },
+      select: (data): PagedResult<PositionListItemDto> => ({
+        results: data.pages.flatMap((page) => page.results),
+        page: data.pages[0].page,
+        pageSize: data.pages[0].pageSize,
+        totalCount: data.pages[0].totalCount,
+      }),
     });
   },
 };
