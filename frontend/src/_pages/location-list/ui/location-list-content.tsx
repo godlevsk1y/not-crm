@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { LocationListState } from "../model/use-location-list";
 
 import { LocationList } from "./location-list";
@@ -7,6 +8,9 @@ import {
   LocationListError,
   LocationListEmpty,
 } from "./location-list-states";
+import { LocationListItemDto } from "@/entities/location";
+import { UpdateLocationDialog } from "./update-location-dialog";
+import { DeleteLocationDialog } from "./delete-location-dialog";
 
 interface LocationListContentProps {
   state: LocationListState;
@@ -17,6 +21,11 @@ export function LocationListContent({
   state,
   onRetry,
 }: LocationListContentProps) {
+  const [updatingLocation, setUpdatingLocation] =
+    useState<LocationListItemDto | null>(null);
+  const [deletingLocation, setDeletingLocation] =
+    useState<LocationListItemDto | null>(null);
+
   switch (state.status) {
     case "loading":
       return <LocationListLoading />;
@@ -29,6 +38,26 @@ export function LocationListContent({
         return <LocationListEmpty />;
       }
 
-      return <LocationList locations={state.locations} />;
+      return (
+        <>
+          <LocationList
+            locations={state.locations}
+            onCardUpdate={setUpdatingLocation}
+            onCardDelete={setDeletingLocation}
+          />
+          {updatingLocation && (
+            <UpdateLocationDialog
+              location={updatingLocation}
+              onClose={() => setUpdatingLocation(null)}
+            />
+          )}
+          {deletingLocation && (
+            <DeleteLocationDialog
+              location={deletingLocation}
+              onClose={() => setDeletingLocation(null)}
+            />
+          )}
+        </>
+      );
   }
 }

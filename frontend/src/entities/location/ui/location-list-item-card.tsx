@@ -1,4 +1,10 @@
-import { MapPinIcon, TreeStructureIcon } from "@phosphor-icons/react/ssr";
+import {
+  MapPinIcon,
+  PencilSimpleIcon,
+  TrashIcon,
+  TreeStructureIcon,
+} from "@phosphor-icons/react/ssr";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
@@ -25,8 +31,12 @@ const departmentLabels: Record<string, string> = {
 
 export function LocationListItemCard({
   location,
+  onUpdate,
+  onDelete,
 }: {
   location: LocationListItemDto;
+  onUpdate: () => void;
+  onDelete: () => void;
 }) {
   const { name, address, departmentCount, createdAt } = location;
   const createdAtDate = new Date(createdAt);
@@ -85,6 +95,21 @@ export function LocationListItemCard({
             {dateFormatter.format(createdAtDate)}
           </time>
         </p>
+        <div className="flex w-full flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
+            <PencilSimpleIcon aria-hidden="true" />
+            Редактировать
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            onClick={onDelete}
+          >
+            <TrashIcon aria-hidden="true" />
+            Удалить
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

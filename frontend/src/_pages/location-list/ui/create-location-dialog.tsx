@@ -15,17 +15,14 @@ import {
   DialogTrigger,
 } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
-import {
-  CreateLocationFormValues,
-  createLocationSchema,
-  useCreateLocation,
-} from "../model/use-create-location";
+import { useCreateLocation } from "../model/use-create-location";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldPath, useForm } from "react-hook-form";
 import { applyServerErrors } from "@/shared/lib/react-hook-form";
 import { ApiRequestError } from "@/shared/api";
+import { LocationFormValues, locationSchema } from "@/entities/location";
 
-const fieldNameMap = new Map<string, FieldPath<CreateLocationFormValues>>([
+const fieldNameMap = new Map<string, FieldPath<LocationFormValues>>([
   ["LocationName", "name"],
   ["Country", "country"],
   ["City", "city"],
@@ -52,8 +49,8 @@ export function CreateLocationDialog() {
     reset,
     setError,
     formState: { errors, isValid },
-  } = useForm<CreateLocationFormValues>({
-    resolver: zodResolver(createLocationSchema),
+  } = useForm<LocationFormValues>({
+    resolver: zodResolver(locationSchema),
     mode: "onTouched",
     defaultValues: {
       name: "",
@@ -69,7 +66,7 @@ export function CreateLocationDialog() {
 
   const { createLocationFunc, isPending } = useCreateLocation();
 
-  const onSubmit = (values: CreateLocationFormValues) => {
+  const onSubmit = (values: LocationFormValues) => {
     createLocationFunc(
       {
         ...values,

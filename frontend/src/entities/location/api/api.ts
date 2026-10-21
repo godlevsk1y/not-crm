@@ -22,6 +22,22 @@ export type CreateLocationRequest = {
   postalCode?: string;
 };
 
+export type UpdateLocationRequest = {
+  id: string;
+  name?: string;
+  country?: string;
+  region?: string;
+  city?: string;
+  district?: string;
+  street?: string;
+  houseNumber?: string;
+  postalCode?: string;
+};
+
+export type DeleteLocationRequest = {
+  id: string;
+};
+
 export const locationsApi = {
   getLocationsList: async (request: GetLocationsListRequest) =>
     apiRequest<PagedResult<LocationListItemDto>>({
@@ -35,6 +51,20 @@ export const locationsApi = {
       method: "POST",
       url: "locations",
       data: request,
+    }),
+
+  updateLocationAsync: async ({ id, ...body }: UpdateLocationRequest) => {
+    return apiRequest<string>({
+      method: "PATCH",
+      url: `locations/${id}`,
+      data: body,
+    });
+  },
+
+  deleteLocationAsync: async (request: DeleteLocationRequest) =>
+    apiRequest<void>({
+      method: "DELETE",
+      url: `locations/${request.id}`,
     }),
 };
 

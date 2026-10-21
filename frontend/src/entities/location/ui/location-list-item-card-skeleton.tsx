@@ -19,6 +19,10 @@ export function LocationListItemCardSkeleton() {
       <CardFooter className="mt-auto flex-col items-start gap-3">
         <Skeleton className="h-5 w-2/3" />
         <Skeleton className="h-4 w-1/2" />
+        <div className="flex w-full flex-wrap gap-2">
+          <Skeleton className="h-7 w-32" />
+          <Skeleton className="h-7 w-24" />
+        </div>
       </CardFooter>
     </Card>
   );
