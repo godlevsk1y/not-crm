@@ -3,7 +3,7 @@ import { LocationListItemCard, LocationListItemDto } from "@/entities/location";
 type LocationListProps = {
   locations: LocationListItemDto[];
   onCardUpdate: (location: LocationListItemDto) => void;
-  onCardDelete: () => void;
+  onCardDelete: (location: LocationListItemDto) => void;
 };
 
 export function LocationList({
@@ -18,7 +18,7 @@ export function LocationList({
           <LocationListItemCard
             location={location}
             onUpdate={() => onCardUpdate(location)}
-            onDelete={onCardDelete}
+            onDelete={() => onCardDelete(location)}
           />
         </li>
       ))}

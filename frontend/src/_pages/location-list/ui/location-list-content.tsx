@@ -10,6 +10,7 @@ import {
 } from "./location-list-states";
 import { LocationListItemDto } from "@/entities/location";
 import { UpdateLocationDialog } from "./update-location-dialog";
+import { DeleteLocationDialog } from "./delete-location-dialog";
 
 interface LocationListContentProps {
   state: LocationListState;
@@ -21,6 +22,8 @@ export function LocationListContent({
   onRetry,
 }: LocationListContentProps) {
   const [updatingLocation, setUpdatingLocation] =
+    useState<LocationListItemDto | null>(null);
+  const [deletingLocation, setDeletingLocation] =
     useState<LocationListItemDto | null>(null);
 
   switch (state.status) {
@@ -40,12 +43,18 @@ export function LocationListContent({
           <LocationList
             locations={state.locations}
             onCardUpdate={setUpdatingLocation}
-            onCardDelete={() => console.log("потом сделаем")}
+            onCardDelete={setDeletingLocation}
           />
           {updatingLocation && (
             <UpdateLocationDialog
               location={updatingLocation}
               onClose={() => setUpdatingLocation(null)}
+            />
+          )}
+          {deletingLocation && (
+            <DeleteLocationDialog
+              location={deletingLocation}
+              onClose={() => setDeletingLocation(null)}
             />
           )}
         </>
