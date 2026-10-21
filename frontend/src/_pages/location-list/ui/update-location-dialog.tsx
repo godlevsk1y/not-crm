@@ -18,7 +18,7 @@ import {
 import { Input } from "@/shared/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MapPinIcon } from "@phosphor-icons/react";
-import { useId, useState } from "react";
+import { useId } from "react";
 import { FieldPath, useForm } from "react-hook-form";
 import { useUpdateLocation } from "../model/use-update-location";
 import { ApiRequestError } from "@/shared/api";
