@@ -20,20 +20,22 @@ export function useUpdateLocation() {
       });
     },
     onSuccess: () => {
-      toast.success("Локация была успешно создана!");
+      toast.success("Локация была успешно обновлена!");
     },
     onError: (error) => {
       if (error instanceof ApiRequestError && error.messages.length == 1) {
         const displayMessage = errorMessagesByCode.get(error.messages[0]?.code);
 
         if (displayMessage === undefined) {
-          toast.error("Не удалось создать локацию");
+          toast.error("Не удалось обновить локацию");
           return;
         }
 
         toast.error(displayMessage);
         return;
       }
+
+      toast.error("Не удалось обновить локацию");
     },
   });
 

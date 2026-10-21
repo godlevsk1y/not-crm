@@ -21,7 +21,7 @@ export function DeleteLocationDialog({
   location: LocationListItemDto;
   onClose: () => void;
 }) {
-  const { deleteLocationFunc, isPending } = useDeleteLocation();
+  const { deleteLocationFunc } = useDeleteLocation();
 
   const handleDelete = () => {
     deleteLocationFunc(
