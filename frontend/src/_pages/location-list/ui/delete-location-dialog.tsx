@@ -69,18 +69,10 @@ export function DeleteLocationDialog({
           <DialogClose render={<Button type="button" variant="outline" />}>
             Отмена
           </DialogClose>
-          <DialogClose
-            render={
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={handleDelete}
-              />
-            }
-          >
+          <Button type="button" variant="destructive" onClick={handleDelete}>
             <TrashIcon aria-hidden="true" />
             Удалить
-          </DialogClose>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

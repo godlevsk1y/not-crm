@@ -53,13 +53,11 @@ export const locationsApi = {
       data: request,
     }),
 
-  updateLocationAsync: async (request: UpdateLocationRequest) => {
-    const requestBody: Omit<UpdateLocationRequest, "id"> = request;
-
+  updateLocationAsync: async ({ id, ...body }: UpdateLocationRequest) => {
     return apiRequest<string>({
       method: "PATCH",
-      url: `locations/${request.id}`,
-      data: requestBody,
+      url: `locations/${id}`,
+      data: body,
     });
   },
 
