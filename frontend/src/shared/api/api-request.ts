@@ -7,6 +7,10 @@ export async function apiRequest<T>(config: AxiosRequestConfig): Promise<T> {
   try {
     const response = await apiClient.request<ApiEnvelope<T>>(config);
 
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
     const { data } = response;
 
     if (data.isError) {

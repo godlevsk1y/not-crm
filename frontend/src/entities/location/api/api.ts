@@ -34,6 +34,10 @@ export type UpdateLocationRequest = {
   postalCode?: string;
 };
 
+export type DeleteLocationRequest = {
+  id: string;
+};
+
 export const locationsApi = {
   getLocationsList: async (request: GetLocationsListRequest) =>
     apiRequest<PagedResult<LocationListItemDto>>({
@@ -58,6 +62,12 @@ export const locationsApi = {
       data: requestBody,
     });
   },
+
+  deleteLocationAsync: async (request: DeleteLocationRequest) =>
+    apiRequest<void>({
+      method: "DELETE",
+      url: `locations/${request.id}`,
+    }),
 };
 
 export const locationsQueryOptions = {

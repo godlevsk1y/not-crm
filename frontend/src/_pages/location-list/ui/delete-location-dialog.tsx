@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { TrashIcon } from "@phosphor-icons/react";
+import { useDeleteLocation } from "../model/use-delete-location";
 
 export function DeleteLocationDialog({
   location,
@@ -20,6 +21,17 @@ export function DeleteLocationDialog({
   location: LocationListItemDto;
   onClose: () => void;
 }) {
+  const { deleteLocationFunc, isPending } = useDeleteLocation();
+
+  const handleDelete = () => {
+    deleteLocationFunc(
+      {
+        id: location.id,
+      },
+      { onSuccess: () => onClose() },
+    );
+  };
+
   return (
     <Dialog
       open
@@ -57,7 +69,15 @@ export function DeleteLocationDialog({
           <DialogClose render={<Button type="button" variant="outline" />}>
             Отмена
           </DialogClose>
-          <DialogClose render={<Button type="button" variant="destructive" />}>
+          <DialogClose
+            render={
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDelete}
+              />
+            }
+          >
             <TrashIcon aria-hidden="true" />
             Удалить
           </DialogClose>
