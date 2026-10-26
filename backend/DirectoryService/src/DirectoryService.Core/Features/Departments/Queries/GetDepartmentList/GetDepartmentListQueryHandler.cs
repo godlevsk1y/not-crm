@@ -33,10 +33,25 @@ public class GetDepartmentListQueryHandler : IQueryHandler<GetDepartmentListQuer
             return validationResult.ToError();
         }
         
-        var query = _readContext.DepartmentsRead;
+        var query = _readContext.DepartmentsRead.IgnoreQueryFilters();
+
+        if (request.LocationIds is not null)
+        {
+            query = query.Where(d => 
+                _readContext.DepartmentLocationsRead.Any(dl => 
+                    dl.DepartmentId == d.Id && 
+                    request.LocationIds.Contains(dl.LocationId))
+            );
+        }
+        
+        if (request.ExcludeIds is not null)
+            query = query.Where(d => !request.ExcludeIds.Contains(d.Id));
         
         if (request.Search is not null)
             query = query.Where(d => EF.Functions.ILike(d.Name.Value, $"%{request.Search}%"));
+
+        if (request.IsActive is not null)
+            query = query.Where(d => d.DeletedAt == null == request.IsActive.Value);
 
         query = (request.SortBy, request.SortDirection) switch
         {
@@ -70,7 +85,10 @@ public class GetDepartmentListQueryHandler : IQueryHandler<GetDepartmentListQuer
             d.Name.Value,
             d.Slug.Value,
             d.Path.Value,
-            d.CreatedAt
+            d.DeletedAt == null,
+            d.CreatedAt, 
+            d.UpdatedAt,
+            d.DeletedAt
         )).ToListAsync(cancellationToken);
         
         return new PagedResult<DepartmentListItemDto>(
