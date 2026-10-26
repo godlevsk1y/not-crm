@@ -5,8 +5,8 @@ import { useState } from "react";
 import { ListPagination } from "@/shared/ui/list-pagination";
 import { Skeleton } from "@/shared/ui/skeleton";
 
-import { useDepartmentList } from "../model/use-department-list";
 import { DepartmentListContent } from "./department-list-content";
+import { useDepartmentList } from "@/entities/department";
 
 const PAGE_SIZE = 9;
 
