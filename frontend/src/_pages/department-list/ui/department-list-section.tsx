@@ -18,6 +18,7 @@ export function DepartmentListSection() {
     pageSize: PAGE_SIZE,
     sortBy: "name",
     sortDirection: "asc",
+    isActive: true,
   });
 
   const isLoading = state.status === "loading";
