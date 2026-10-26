@@ -7,16 +7,12 @@ export type DepartmentSelectOption = Pick<
   isActive: boolean;
 };
 
-export type DepartmentSelectStatus = "ready" | "loading" | "error";
-
 export type DepartmentSelectProps = {
   id?: string;
   label?: string;
   placeholder?: string;
   disabled?: boolean;
   excludeIds?: string[];
-  status?: DepartmentSelectStatus;
-  onRetry?: () => void;
 } & (
   | {
       mode: "single";

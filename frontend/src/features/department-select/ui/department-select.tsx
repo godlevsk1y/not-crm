@@ -30,6 +30,9 @@ import type {
   DepartmentSelectOption,
   DepartmentSelectProps,
 } from "../model/types";
+import { useDepartmentList } from "@/entities/department";
+
+const PAGE_SIZE = 10;
 
 const activityFilters = [
   { value: "all", label: "Все" },
@@ -44,8 +47,6 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     label = "Подразделения",
     placeholder = "Выберите подразделение",
     disabled = false,
-    status = "ready",
-    onRetry,
   } = props;
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -53,13 +54,15 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     "all",
   );
 
-  const departments: DepartmentSelectOption[] = [
-    {
-      id: "some",
-      isActive: true,
-      name: "Отдел продаж",
-    },
-  ];
+  const { state, retry } = useDepartmentList({
+    search: search,
+    sortBy: "name",
+    sortDirection: "asc",
+    isActive: activity === "all" ? undefined : activity === "active",
+    excludeIds: props.excludeIds,
+    page: 1,
+    pageSize: PAGE_SIZE,
+  });
 
   let selected: DepartmentSelectOption[] = [];
 
@@ -161,7 +164,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
               ))}
             </div>
             <CommandList aria-label="Подразделения" className="max-h-64">
-              {status === "loading" ? (
+              {state.status === "loading" ? (
                 <div
                   role="status"
                   className="flex min-h-40 items-center justify-center gap-2 p-4 text-muted-foreground"
@@ -169,7 +172,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   <Spinner />
                   Загрузка подразделений…
                 </div>
-              ) : status === "error" ? (
+              ) : state.status === "error" ? (
                 <div
                   role="alert"
                   className="flex min-h-40 flex-col items-center justify-center gap-3 p-4 text-center"
@@ -185,13 +188,13 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={onRetry}
+                    onClick={retry}
                   >
                     <ArrowClockwiseIcon aria-hidden="true" />
                     Повторить
                   </Button>
                 </div>
-              ) : departments.length === 0 ? (
+              ) : state.departments.length === 0 ? (
                 <div
                   role="status"
                   className="flex min-h-40 flex-col items-center justify-center gap-2 p-4 text-center"
@@ -208,7 +211,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   </p>
                 </div>
               ) : (
-                departments.map((department) => {
+                state.departments.map((department) => {
                   const isSelected = selected.some(
                     (item) => item.id === department.id,
                   );
