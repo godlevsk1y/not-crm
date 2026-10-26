@@ -26,13 +26,11 @@ import {
   PopoverTrigger,
 } from "@/shared/ui/popover";
 import { Spinner } from "@/shared/ui/spinner";
-import { mockDepartments } from "../model/mock-departments";
 import type {
   DepartmentSelectOption,
   DepartmentSelectProps,
 } from "../model/types";
 
-const pageSize = 6;
 const activityFilters = [
   { value: "all", label: "Все" },
   { value: "active", label: "Активные" },
@@ -46,8 +44,6 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     label = "Подразделения",
     placeholder = "Выберите подразделение",
     disabled = false,
-    excludeIds = [],
-    departments = mockDepartments,
     status = "ready",
     onRetry,
   } = props;
@@ -56,26 +52,21 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
   const [activity, setActivity] = useState<"all" | "active" | "inactive">(
     "all",
   );
-  const [visibleCount, setVisibleCount] = useState(pageSize);
 
-  const selected =
-    props.mode === "multiple" ? props.value : props.value ? [props.value] : [];
-  const filteredDepartments = departments.filter((department) => {
-    return (
-      !excludeIds.includes(department.id) &&
-      department.name
-        .toLocaleLowerCase("ru")
-        .includes(search.trim().toLocaleLowerCase("ru")) &&
-      (activity === "all" || department.isActive === (activity === "active"))
-    );
-  });
+  const departments: DepartmentSelectOption[] = [
+    {
+      id: "some",
+      isActive: true,
+      name: "Отдел продаж",
+    },
+  ];
 
-  function removeDepartment(id: string) {
-    if (props.mode === "multiple") {
-      props.onChange(props.value.filter((department) => department.id !== id));
-    } else {
-      props.onChange(null);
-    }
+  let selected: DepartmentSelectOption[] = [];
+
+  if (props.mode === "multiple") {
+    selected = props.value;
+  } else if (props.value !== null) {
+    selected = [props.value];
   }
 
   function selectDepartment(department: DepartmentSelectOption) {
@@ -88,6 +79,14 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     } else {
       props.onChange(department);
       setOpen(false);
+    }
+  }
+
+  function removeDepartment(id: string) {
+    if (props.mode === "multiple") {
+      props.onChange(props.value.filter((department) => department.id !== id));
+    } else {
+      props.onChange(null);
     }
   }
 
@@ -141,10 +140,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
               aria-label="Поиск подразделений"
               placeholder="Найти подразделение…"
               value={search}
-              onValueChange={(value) => {
-                setSearch(value);
-                setVisibleCount(pageSize);
-              }}
+              onValueChange={setSearch}
             />
             <div
               className="flex gap-1 border-b p-2"
@@ -158,10 +154,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   size="xs"
                   variant={activity === filter.value ? "secondary" : "ghost"}
                   aria-pressed={activity === filter.value}
-                  onClick={() => {
-                    setActivity(filter.value);
-                    setVisibleCount(pageSize);
-                  }}
+                  onClick={() => setActivity(filter.value)}
                 >
                   {filter.label}
                 </Button>
@@ -198,7 +191,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                     Повторить
                   </Button>
                 </div>
-              ) : filteredDepartments.length === 0 ? (
+              ) : departments.length === 0 ? (
                 <div
                   role="status"
                   className="flex min-h-40 flex-col items-center justify-center gap-2 p-4 text-center"
@@ -215,7 +208,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   </p>
                 </div>
               ) : (
-                filteredDepartments.slice(0, visibleCount).map((department) => {
+                departments.map((department) => {
                   const isSelected = selected.some(
                     (item) => item.id === department.id,
                   );
@@ -253,20 +246,6 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                 })
               )}
             </CommandList>
-            {status === "ready" &&
-              filteredDepartments.length > visibleCount && (
-                <div className="border-t p-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => setVisibleCount((count) => count + pageSize)}
-                  >
-                    Показать ещё
-                  </Button>
-                </div>
-              )}
           </Command>
           <div className="border-t px-3 py-2 text-xs text-muted-foreground">
             {props.mode === "multiple"

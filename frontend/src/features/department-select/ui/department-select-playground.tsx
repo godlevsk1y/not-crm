@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
-import { mockDepartments } from "../model/mock-departments";
 import type {
   DepartmentSelectOption,
   DepartmentSelectStatus,
@@ -25,13 +24,8 @@ const previewStates = [
 ] as const;
 
 export function DepartmentSelectPlayground() {
-  const [single, setSingle] = useState<DepartmentSelectOption | null>(
-    mockDepartments[0],
-  );
-  const [multiple, setMultiple] = useState<DepartmentSelectOption[]>([
-    mockDepartments[1],
-    mockDepartments[2],
-  ]);
+  const [single, setSingle] = useState<DepartmentSelectOption | null>(null);
+  const [multiple, setMultiple] = useState<DepartmentSelectOption[]>([]);
   const [status, setStatus] = useState<DepartmentSelectStatus>("ready");
   const [resetKey, setResetKey] = useState(0);
 
@@ -55,8 +49,8 @@ export function DepartmentSelectPlayground() {
             </h1>
           </div>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Одиночный и множественный выбор на демонстрационных данных. Поиск и
-            фильтры каждого поля работают независимо.
+            Одиночный и множественный выбор подразделений. Поиск и фильтры каждого
+            поля работают независимо.
           </p>
         </header>
 
@@ -112,13 +106,11 @@ export function DepartmentSelectPlayground() {
                 label="Родительское подразделение"
                 value={single}
                 onChange={setSingle}
-                excludeIds={["archive", "legacy"]}
                 status={status}
                 onRetry={() => setStatus("ready")}
               />
               <p className="text-xs leading-relaxed text-muted-foreground">
-                Новый выбор заменяет предыдущий. Неактивные подразделения
-                исключены из этого примера.
+                Новый выбор заменяет предыдущий.
               </p>
             </CardContent>
           </Card>

@@ -15,7 +15,6 @@ export type DepartmentSelectProps = {
   placeholder?: string;
   disabled?: boolean;
   excludeIds?: string[];
-  departments?: DepartmentSelectOption[];
   status?: DepartmentSelectStatus;
   onRetry?: () => void;
 } & (
