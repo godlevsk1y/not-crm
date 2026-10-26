@@ -6,5 +6,5 @@ export type DepartmentListItemDto = {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  deletedAt: string | null;
+  deletedAt?: string;
 };

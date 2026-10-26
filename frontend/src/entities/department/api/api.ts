@@ -2,12 +2,12 @@ import { apiRequest, type PagedResult } from "@/shared/api";
 import { DepartmentListItemDto } from "../model/types";
 
 export type GetDepartmentListRequest = {
-  search?: string | null;
+  search?: string;
   sortBy?: "name" | "createdAt";
   sortDirection?: "asc" | "desc";
-  isActive?: boolean | null;
-  locationIds?: string[] | null;
-  excludeIds?: string[] | null;
+  isActive?: boolean;
+  locationIds?: string[];
+  excludeIds?: string[];
   page?: number;
   pageSize?: number;
 };
