@@ -1,7 +1,10 @@
 "use client";
 
 import type { DepartmentListItemDto } from "@/entities/department";
-import { departmentsApi } from "@/entities/department/api/api";
+import {
+  departmentsApi,
+  type GetDepartmentListRequest,
+} from "@/entities/department/api/api";
 import { ApiRequestError } from "@/shared/api";
 import { useQuery } from "@tanstack/react-query";
 
@@ -14,12 +17,7 @@ export type DepartmentListState =
       totalCount: number;
     };
 
-export type UseDepartmentListProps = {
-  page: number;
-  pageSize: number;
-  sortBy: string;
-  sortDirection: string;
-};
+export type UseDepartmentListProps = GetDepartmentListRequest;
 
 export function useDepartmentList(props: UseDepartmentListProps) {
   let state: DepartmentListState = {
@@ -27,20 +25,8 @@ export function useDepartmentList(props: UseDepartmentListProps) {
   };
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryFn: () =>
-      departmentsApi.getDepartmentList({
-        sortBy: props.sortBy,
-        sortDirection: props.sortDirection,
-        page: props.page,
-        pageSize: props.pageSize,
-      }),
-    queryKey: [
-      "departments",
-      {
-        page: props.page,
-        pageSize: props.pageSize,
-      },
-    ],
+    queryFn: () => departmentsApi.getDepartmentList(props),
+    queryKey: ["departments", props],
   });
 
   if (error) {

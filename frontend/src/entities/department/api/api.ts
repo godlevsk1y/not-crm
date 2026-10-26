@@ -2,11 +2,14 @@ import { apiRequest, type PagedResult } from "@/shared/api";
 import { DepartmentListItemDto } from "../model/types";
 
 export type GetDepartmentListRequest = {
-  search?: string;
-  sortBy: string;
-  sortDirection: string;
-  page: number;
-  pageSize: number;
+  search?: string | null;
+  sortBy?: "name" | "createdAt";
+  sortDirection?: "asc" | "desc";
+  isActive?: boolean | null;
+  locationIds?: string[] | null;
+  excludeIds?: string[] | null;
+  page?: number;
+  pageSize?: number;
 };
 
 export const departmentsApi = {
@@ -15,5 +18,6 @@ export const departmentsApi = {
       method: "GET",
       url: "departments",
       params: request,
+      paramsSerializer: { indexes: null },
     }),
 };

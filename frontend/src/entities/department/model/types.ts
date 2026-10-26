@@ -3,5 +3,8 @@ export type DepartmentListItemDto = {
   name: string;
   slug: string;
   path: string;
+  isActive: boolean;
   createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 };
