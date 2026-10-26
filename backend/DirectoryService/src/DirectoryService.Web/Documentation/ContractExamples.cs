@@ -42,7 +42,7 @@ internal static class ContractExamples
         [typeof(PagedResult<PositionListItemDto>)] = new PagedResult<PositionListItemDto>([new(Id, "Engineer", Timestamp)], 1, 20, 1),
         [typeof(PagedResult<LocationListItemDto>)] = new PagedResult<LocationListItemDto>([new(Id, "Moscow Office", Address, Timestamp, 0)], 1, 20, 1),
         [typeof(IReadOnlyList<LocationWithDepartmentCountDto>)] = new LocationWithDepartmentCountDto[] { new(new(Id, "Moscow Office", Address), 0) },
-        [typeof(PagedResult<DepartmentListItemDto>)] = new PagedResult<DepartmentListItemDto>([new(Id, "Engineering", "engineering", "engineering", Timestamp)], 1, 20, 1),
+        [typeof(PagedResult<DepartmentListItemDto>)] = new PagedResult<DepartmentListItemDto>([new(Id, "Engineering", "engineering", "engineering", true, Timestamp, Timestamp, null)], 1, 20, 1),
         [typeof(PagedResult<DepartmentNodeDto>)] = new PagedResult<DepartmentNodeDto>([new() { Id = Id, Name = "Engineering", Slug = "engineering", Path = "engineering", Depth = 0, CreatedAt = default, HasChildren = false, ChildCount = 0 }], 1, 20, 1),
         [typeof(PagedResult<DepartmentAncestorDto>)] = new PagedResult<DepartmentAncestorDto>([new(Id, "Company", "company", "company", 0, null)], 1, 20, 1),
         [typeof(PagedResult<DepartmentWithAncestorsDto>)] = new PagedResult<DepartmentWithAncestorsDto>([new() { Id = Id, Name = "Engineering", Slug = "engineering", Path = "engineering", Depth = 0, ParentId = null, Ancestors = [] }], 1, 20, 1),

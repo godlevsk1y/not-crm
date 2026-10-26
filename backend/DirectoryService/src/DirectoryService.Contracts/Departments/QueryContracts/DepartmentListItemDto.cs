@@ -11,6 +11,12 @@ public record DepartmentListItemDto(
     string Slug,
     [property: Description("Dot-separated hierarchy path.")]
     string Path,
+    [property: Description("Flag indicating whether the department exists or was deleted.")]
+    bool IsActive,
     [property: Description("Creation timestamp in UTC.")]
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    [property: Description("Updating timestamp in UTC.")]
+    DateTime UpdatedAt,
+    [property: Description("Deletion timestamp in UTC.")]
+    DateTime? DeletedAt
 );
