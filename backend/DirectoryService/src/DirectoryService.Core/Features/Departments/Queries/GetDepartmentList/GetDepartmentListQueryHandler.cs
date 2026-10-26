@@ -37,12 +37,11 @@ public class GetDepartmentListQueryHandler : IQueryHandler<GetDepartmentListQuer
 
         if (request.LocationIds is not null)
         {
-            query = 
-                from d in query
-                join dl in _readContext.DepartmentLocationsRead
-                    on d.Id equals dl.DepartmentId
-                where request.LocationIds.Contains(dl.LocationId)
-                select d;
+            query = query.Where(d => 
+                _readContext.DepartmentLocationsRead.Any(dl => 
+                    dl.DepartmentId == d.Id && 
+                    request.LocationIds.Contains(dl.LocationId))
+            );
         }
         
         if (request.ExcludeIds is not null)
