@@ -147,10 +147,10 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
     
     
     [Theory]
-    [InlineData("", true)]
+    [InlineData("?isActive=", null)]
     [InlineData("?isActive=true", true)]
     [InlineData("?isActive=false", false)]
-    public async Task GetDepartmentList_ShouldFilterByActiveStatus(string queryString, bool isActive)
+    public async Task GetDepartmentList_ShouldFilterByActiveStatus(string queryString, bool? isActive)
     {
         var activeId = await CreateDepartmentAsync("Active Team", "active-team");
         var deletedId = await CreateDepartmentAsync("Deleted Team", "deleted-team");
@@ -159,11 +159,18 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
 
         var result = await GetDepartmentListAsync(queryString);
 
-        Assert.Equal(1, result.TotalCount);
-        var department = Assert.Single(result.Results);
-        Assert.Equal(isActive ? activeId : deletedId, department.Id);
-        Assert.Equal(isActive, department.IsActive);
-        Assert.Equal(isActive, department.DeletedAt is null);
+        if (isActive is not null)
+        {
+            Assert.Equal(1, result.TotalCount);
+            var department = Assert.Single(result.Results);
+            Assert.Equal(isActive.Value ? activeId : deletedId, department.Id);
+            Assert.Equal(isActive, department.IsActive);
+            Assert.Equal(isActive, department.DeletedAt is null);
+        }
+        else
+        {
+            Assert.Equal(2, result.TotalCount);
+        }
     }
 
     [Fact]
