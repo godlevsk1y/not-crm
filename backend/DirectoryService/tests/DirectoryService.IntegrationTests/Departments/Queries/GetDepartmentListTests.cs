@@ -174,7 +174,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
         var deleteResponse = await _client.DeleteAsync($"api/departments/{deletedId}");
         Assert.Equal(204, (int)deleteResponse.StatusCode);
 
-        var result = await GetDepartmentListAsync("");
+        var result = await GetDepartmentListAsync("?isActive=");
 
         Assert.Equal(2, result.TotalCount);
         Assert.Equal([activeId, deletedId], result.Results.Select(d => d.Id));

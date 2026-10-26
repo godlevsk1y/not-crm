@@ -6,7 +6,7 @@ public record GetDepartmentListQuery(
     string? Search,
     string SortBy = "name",
     string SortDirection = "asc",
-    bool? IsActive = true,
+    bool? IsActive = null,
     IReadOnlyList<Guid>? LocationIds = null,
     IReadOnlyList<Guid>? ExcludeIds = null,
     int Page = 1,
