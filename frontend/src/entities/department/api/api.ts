@@ -56,11 +56,13 @@ export const departmentsApi = {
 };
 
 export const departmentsQueryOptions = {
-  baseKey: ["departments"],
+  baseKey: "departments",
 
-  getDepartmentInfiniteOptions: (request: GetDepartmentListRequest) => {
+  getDepartmentInfiniteOptions: (
+    request: Omit<GetDepartmentListRequest, "page">,
+  ) => {
     return infiniteQueryOptions({
-      queryKey: [departmentsQueryOptions.baseKey, request],
+      queryKey: [departmentsQueryOptions.baseKey, "list", "infinite", request],
       queryFn: ({ pageParam, signal }) => {
         return departmentsApi.getDepartmentList(
           {
@@ -87,9 +89,11 @@ export const departmentsQueryOptions = {
     });
   },
 
-  getRootDepartmentsInfiniteOptions: (request: GetRootDepartmentsRequest) => {
+  getRootDepartmentsInfiniteOptions: (
+    request: Omit<GetRootDepartmentsRequest, "page">,
+  ) => {
     return infiniteQueryOptions({
-      queryKey: [departmentsQueryOptions.baseKey, request],
+      queryKey: [departmentsQueryOptions.baseKey, "tree", "roots", request],
       queryFn: ({ pageParam }) => {
         return departmentsApi.getRootDepartments({
           ...request,
@@ -115,10 +119,16 @@ export const departmentsQueryOptions = {
 
   getImmediateChildrenInfiniteOptions: (
     id: string,
-    request: GetRootDepartmentsRequest,
+    request: Omit<GetImmediateChildrenRequest, "page">,
   ) => {
     return infiniteQueryOptions({
-      queryKey: [departmentsQueryOptions.baseKey, id, request],
+      queryKey: [
+        departmentsQueryOptions.baseKey,
+        "tree",
+        "children",
+        id,
+        request,
+      ],
       queryFn: ({ pageParam }) => {
         return departmentsApi.getImmediateChildren(id, {
           ...request,
