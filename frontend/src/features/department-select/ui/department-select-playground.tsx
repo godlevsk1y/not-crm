@@ -11,10 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/ui/card";
-import type {
-  DepartmentSelectOption,
-  DepartmentSelectStatus,
-} from "../model/types";
+import type { DepartmentSelectOption } from "../model/types";
 import { DepartmentSelect } from "./department-select";
 
 const previewStates = [
@@ -26,7 +23,6 @@ const previewStates = [
 export function DepartmentSelectPlayground() {
   const [single, setSingle] = useState<DepartmentSelectOption | null>(null);
   const [multiple, setMultiple] = useState<DepartmentSelectOption[]>([]);
-  const [status, setStatus] = useState<DepartmentSelectStatus>("ready");
   const [resetKey, setResetKey] = useState(0);
 
   return (
@@ -49,8 +45,8 @@ export function DepartmentSelectPlayground() {
             </h1>
           </div>
           <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Одиночный и множественный выбор подразделений. Поиск и фильтры каждого
-            поля работают независимо.
+            Одиночный и множественный выбор подразделений. Поиск и фильтры
+            каждого поля работают независимо.
           </p>
         </header>
 
@@ -64,14 +60,7 @@ export function DepartmentSelectPlayground() {
               Состояние списка
             </span>
             {previewStates.map((state) => (
-              <Button
-                key={state.value}
-                type="button"
-                size="sm"
-                variant={status === state.value ? "secondary" : "ghost"}
-                aria-pressed={status === state.value}
-                onClick={() => setStatus(state.value)}
-              >
+              <Button key={state.value} type="button" size="sm">
                 {state.label}
               </Button>
             ))}
@@ -83,7 +72,6 @@ export function DepartmentSelectPlayground() {
             onClick={() => {
               setSingle(null);
               setMultiple([]);
-              setStatus("ready");
               setResetKey((key) => key + 1);
             }}
           >
@@ -106,8 +94,6 @@ export function DepartmentSelectPlayground() {
                 label="Родительское подразделение"
                 value={single}
                 onChange={setSingle}
-                status={status}
-                onRetry={() => setStatus("ready")}
               />
               <p className="text-xs leading-relaxed text-muted-foreground">
                 Новый выбор заменяет предыдущий.
@@ -127,8 +113,6 @@ export function DepartmentSelectPlayground() {
                 value={multiple}
                 onChange={setMultiple}
                 placeholder="Выберите подразделения"
-                status={status}
-                onRetry={() => setStatus("ready")}
               />
               <p className="text-xs leading-relaxed text-muted-foreground">
                 Отметьте несколько подразделений. Чтобы убрать выбранное,

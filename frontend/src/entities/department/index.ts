@@ -8,8 +8,3 @@ export {
   departmentsQueryOptions,
   type GetDepartmentListRequest,
 } from "./api/api";
-export {
-  useDepartmentList,
-  type UseDepartmentListProps,
-  type DepartmentListState,
-} from "./api/hooks/use-department-list";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { RefCallback, useCallback, useId, useState } from "react";
 import {
   ArrowClockwiseIcon,
   CaretUpDownIcon,
@@ -30,7 +30,6 @@ import type {
   DepartmentSelectOption,
   DepartmentSelectProps,
 } from "../model/types";
-import { useDepartmentList } from "@/entities/department";
 import { useDebounce } from "use-debounce";
 import { useInfiniteDepartmentSelect } from "../api/use-infinite-department-select";
 
@@ -62,7 +61,6 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     items: departments,
     isPending,
     isError,
-    totalCount,
     refetch,
     isFetchingNextPage,
     fetchNextPage,
@@ -75,6 +73,26 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     excludeIds: props.excludeIds,
     pageSize: PAGE_SIZE,
   });
+
+  const cursorRef: RefCallback<HTMLDivElement> = useCallback(
+    (el) => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 0.8 },
+      );
+
+      if (el) {
+        observer.observe(el);
+
+        return () => observer.disconnect();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
 
   let selected: DepartmentSelectOption[] = [];
 
@@ -260,6 +278,9 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   );
                 })
               )}
+              <div ref={cursorRef} className="flex justify-center py-8">
+                {isFetchingNextPage && <Spinner />}
+              </div>
             </CommandList>
           </Command>
           <div className="border-t px-3 py-2 text-xs text-muted-foreground">
