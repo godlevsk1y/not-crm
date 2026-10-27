@@ -1,5 +1,4 @@
-import type { DepartmentListState } from "../model/use-department-list";
-
+import { DepartmentListState } from "@/entities/department";
 import { DepartmentList } from "./department-list";
 import {
   DepartmentListLoading,
