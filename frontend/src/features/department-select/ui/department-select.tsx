@@ -31,6 +31,8 @@ import type {
   DepartmentSelectProps,
 } from "../model/types";
 import { useDepartmentList } from "@/entities/department";
+import { useDebounce } from "use-debounce";
+import { useInfiniteDepartmentSelect } from "../api/use-infinite-department-select";
 
 const PAGE_SIZE = 10;
 
@@ -49,18 +51,28 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     disabled = false,
   } = props;
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [activity, setActivity] = useState<"all" | "active" | "inactive">(
     "all",
   );
 
-  const { state, retry } = useDepartmentList({
-    search: search,
-    sortBy: "name",
-    sortDirection: "asc",
+  const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebounce(search, 1000);
+
+  const {
+    items: departments,
+    isPending,
+    isError,
+    totalCount,
+    refetch,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteDepartmentSelect({
+    search: debouncedSearch,
+    sortBy: "createdAt",
+    sortDirection: "desc",
     isActive: activity === "all" ? undefined : activity === "active",
     excludeIds: props.excludeIds,
-    page: 1,
     pageSize: PAGE_SIZE,
   });
 
@@ -164,7 +176,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
               ))}
             </div>
             <CommandList aria-label="Подразделения" className="max-h-64">
-              {state.status === "loading" ? (
+              {isPending ? (
                 <div
                   role="status"
                   className="flex min-h-40 items-center justify-center gap-2 p-4 text-muted-foreground"
@@ -172,7 +184,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   <Spinner />
                   Загрузка подразделений…
                 </div>
-              ) : state.status === "error" ? (
+              ) : isError ? (
                 <div
                   role="alert"
                   className="flex min-h-40 flex-col items-center justify-center gap-3 p-4 text-center"
@@ -188,13 +200,13 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={retry}
+                    onClick={() => refetch()}
                   >
                     <ArrowClockwiseIcon aria-hidden="true" />
                     Повторить
                   </Button>
                 </div>
-              ) : state.departments.length === 0 ? (
+              ) : departments?.length === 0 ? (
                 <div
                   role="status"
                   className="flex min-h-40 flex-col items-center justify-center gap-2 p-4 text-center"
@@ -211,7 +223,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   </p>
                 </div>
               ) : (
-                state.departments.map((department) => {
+                departments?.map((department) => {
                   const isSelected = selected.some(
                     (item) => item.id === department.id,
                   );
