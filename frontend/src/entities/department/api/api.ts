@@ -28,7 +28,7 @@ export const departmentsQueryOptions = {
 
   getDepartmentInfiniteOptions: (request: GetDepartmentListRequest) => {
     return infiniteQueryOptions({
-      queryKey: [departmentsQueryOptions.baseKey],
+      queryKey: [departmentsQueryOptions.baseKey, request],
       queryFn: ({ pageParam }) => {
         return departmentsApi.getDepartmentList({
           ...request,

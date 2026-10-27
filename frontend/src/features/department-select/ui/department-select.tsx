@@ -278,9 +278,11 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                   );
                 })
               )}
-              <div ref={cursorRef} className="flex justify-center py-8">
-                {isFetchingNextPage && <Spinner />}
-              </div>
+              {hasNextPage && (
+                <div ref={cursorRef} className="flex justify-center py-8">
+                  {isFetchingNextPage && <Spinner />}
+                </div>
+              )}
             </CommandList>
           </Command>
           <div className="border-t px-3 py-2 text-xs text-muted-foreground">
