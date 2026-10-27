@@ -6,7 +6,7 @@ import { ListPagination } from "@/shared/ui/list-pagination";
 import { Skeleton } from "@/shared/ui/skeleton";
 
 import { DepartmentListContent } from "./department-list-content";
-import { useDepartmentList } from "@/entities/department";
+import { useDepartmentList } from "../model/use-department-list";
 
 const PAGE_SIZE = 9;
 
