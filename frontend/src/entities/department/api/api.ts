@@ -1,6 +1,7 @@
 import { apiRequest, type PagedResult } from "@/shared/api";
 import { DepartmentListItemDto } from "../model/types";
 import { infiniteQueryOptions } from "@tanstack/react-query";
+import type { AxiosRequestConfig } from "axios";
 
 export type GetDepartmentListRequest = {
   search?: string;
@@ -14,8 +15,12 @@ export type GetDepartmentListRequest = {
 };
 
 export const departmentsApi = {
-  getDepartmentList: async (request: GetDepartmentListRequest) =>
+  getDepartmentList: async (
+    request: GetDepartmentListRequest,
+    options?: Pick<AxiosRequestConfig, "signal" | "timeout">,
+  ) =>
     apiRequest<PagedResult<DepartmentListItemDto>>({
+      ...options,
       method: "GET",
       url: "departments",
       params: request,
@@ -29,11 +34,14 @@ export const departmentsQueryOptions = {
   getDepartmentInfiniteOptions: (request: GetDepartmentListRequest) => {
     return infiniteQueryOptions({
       queryKey: [departmentsQueryOptions.baseKey, request],
-      queryFn: ({ pageParam }) => {
-        return departmentsApi.getDepartmentList({
-          ...request,
-          page: pageParam,
-        });
+      queryFn: ({ pageParam, signal }) => {
+        return departmentsApi.getDepartmentList(
+          {
+            ...request,
+            page: pageParam,
+          },
+          { signal, timeout: 10_000 },
+        );
       },
       initialPageParam: 1,
       getNextPageParam: (response) => {

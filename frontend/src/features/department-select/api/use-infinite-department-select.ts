@@ -24,9 +24,12 @@ export function useInfiniteDepartmentSelect(
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteQuery(
-    departmentsQueryOptions.getDepartmentInfiniteOptions(props),
-  );
+  } = useInfiniteQuery({
+    ...departmentsQueryOptions.getDepartmentInfiniteOptions(props),
+    networkMode: "always",
+    retry: false,
+    refetchOnReconnect: true,
+  });
 
   return {
     items: data?.results,
