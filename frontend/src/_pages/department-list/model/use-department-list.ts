@@ -2,7 +2,7 @@
 
 import type { DepartmentListItemDto } from "@/entities/department";
 import {
-  departmentsApi,
+  departmentsQueryOptions,
   type GetDepartmentListRequest,
 } from "@/entities/department/api/api";
 import { ApiRequestError } from "@/shared/api";
@@ -24,10 +24,9 @@ export function useDepartmentList(props: UseDepartmentListProps) {
     status: "loading",
   };
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryFn: () => departmentsApi.getDepartmentList(props),
-    queryKey: ["departments", props],
-  });
+  const { data, isLoading, error, refetch } = useQuery(
+    departmentsQueryOptions.getDepartmentListOptions(props),
+  );
 
   if (error) {
     let message = "Не удалось загрузить подразделения";
