@@ -18,6 +18,20 @@ export type GetDepartmentListRequest = {
   pageSize?: number;
 };
 
+function normalizeDepartmentListRequest(request: GetDepartmentListRequest) {
+  return {
+    ...request,
+    locationIds:
+      request.locationIds === undefined
+        ? undefined
+        : [...new Set(request.locationIds)].sort(),
+    excludeIds:
+      request.excludeIds === undefined
+        ? undefined
+        : [...new Set(request.excludeIds)].sort(),
+  };
+}
+
 export type GetRootDepartmentsRequest = {
   page?: number;
   pageSize?: number;
@@ -73,21 +87,35 @@ export const departmentsQueryOptions = {
   baseKey: "departments",
 
   getDepartmentListOptions: (request: GetDepartmentListRequest) => {
+    const normalizedRequest = normalizeDepartmentListRequest(request);
+
     return queryOptions({
-      queryKey: [departmentsQueryOptions.baseKey, "list", "paged", request],
-      queryFn: () => departmentsApi.getDepartmentList(request),
+      queryKey: [
+        departmentsQueryOptions.baseKey,
+        "list",
+        "paged",
+        normalizedRequest,
+      ],
+      queryFn: () => departmentsApi.getDepartmentList(normalizedRequest),
     });
   },
 
   getDepartmentInfiniteOptions: (
     request: Omit<GetDepartmentListRequest, "page">,
   ) => {
+    const normalizedRequest = normalizeDepartmentListRequest(request);
+
     return infiniteQueryOptions({
-      queryKey: [departmentsQueryOptions.baseKey, "list", "infinite", request],
+      queryKey: [
+        departmentsQueryOptions.baseKey,
+        "list",
+        "infinite",
+        normalizedRequest,
+      ],
       queryFn: ({ pageParam, signal }) => {
         return departmentsApi.getDepartmentList(
           {
-            ...request,
+            ...normalizedRequest,
             page: pageParam,
           },
           { signal, timeout: 10_000 },
