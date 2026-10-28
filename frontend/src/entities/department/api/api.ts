@@ -1,5 +1,5 @@
 import { apiRequest, type PagedResult } from "@/shared/api";
-import { DepartmentListItemDto } from "../model/types";
+import { DepartmentListItemDto, DepartmentNodeDto } from "../model/types";
 import { infiniteQueryOptions } from "@tanstack/react-query";
 import type { AxiosRequestConfig } from "axios";
 
@@ -10,6 +10,16 @@ export type GetDepartmentListRequest = {
   isActive?: boolean;
   locationIds?: string[];
   excludeIds?: string[];
+  page?: number;
+  pageSize?: number;
+};
+
+export type GetRootDepartmentsRequest = {
+  page?: number;
+  pageSize?: number;
+};
+
+export type GetImmediateChildrenRequest = {
   page?: number;
   pageSize?: number;
 };
@@ -26,14 +36,33 @@ export const departmentsApi = {
       params: request,
       paramsSerializer: { indexes: null },
     }),
+
+  getRootDepartments: async (request: GetRootDepartmentsRequest) =>
+    apiRequest<PagedResult<DepartmentNodeDto>>({
+      method: "GET",
+      url: "departments/tree",
+      params: request,
+    }),
+
+  getImmediateChildren: async (
+    id: string,
+    request: GetImmediateChildrenRequest,
+  ) =>
+    apiRequest<PagedResult<DepartmentNodeDto>>({
+      method: "GET",
+      url: `departments/${id}/children`,
+      params: request,
+    }),
 };
 
 export const departmentsQueryOptions = {
-  baseKey: ["departments"],
+  baseKey: "departments",
 
-  getDepartmentInfiniteOptions: (request: GetDepartmentListRequest) => {
+  getDepartmentInfiniteOptions: (
+    request: Omit<GetDepartmentListRequest, "page">,
+  ) => {
     return infiniteQueryOptions({
-      queryKey: [departmentsQueryOptions.baseKey, request],
+      queryKey: [departmentsQueryOptions.baseKey, "list", "infinite", request],
       queryFn: ({ pageParam, signal }) => {
         return departmentsApi.getDepartmentList(
           {
@@ -52,6 +81,69 @@ export const departmentsQueryOptions = {
         return response.page + 1;
       },
       select: (data): PagedResult<DepartmentListItemDto> => ({
+        results: data.pages.flatMap((page) => page.results),
+        page: data.pages[0].page,
+        pageSize: data.pages[0].pageSize,
+        totalCount: data.pages[0].totalCount,
+      }),
+    });
+  },
+
+  getRootDepartmentsInfiniteOptions: (
+    request: Omit<GetRootDepartmentsRequest, "page">,
+  ) => {
+    return infiniteQueryOptions({
+      queryKey: [departmentsQueryOptions.baseKey, "tree", "roots", request],
+      queryFn: ({ pageParam }) => {
+        return departmentsApi.getRootDepartments({
+          ...request,
+          page: pageParam,
+        });
+      },
+      initialPageParam: 1,
+      getNextPageParam: (response) => {
+        const totalPages = Math.ceil(response.totalCount / response.pageSize);
+
+        if (response.page >= totalPages) return undefined;
+
+        return response.page + 1;
+      },
+      select: (data): PagedResult<DepartmentNodeDto> => ({
+        results: data.pages.flatMap((page) => page.results),
+        page: data.pages[0].page,
+        pageSize: data.pages[0].pageSize,
+        totalCount: data.pages[0].totalCount,
+      }),
+    });
+  },
+
+  getImmediateChildrenInfiniteOptions: (
+    id: string,
+    request: Omit<GetImmediateChildrenRequest, "page">,
+  ) => {
+    return infiniteQueryOptions({
+      queryKey: [
+        departmentsQueryOptions.baseKey,
+        "tree",
+        "children",
+        id,
+        request,
+      ],
+      queryFn: ({ pageParam }) => {
+        return departmentsApi.getImmediateChildren(id, {
+          ...request,
+          page: pageParam,
+        });
+      },
+      initialPageParam: 1,
+      getNextPageParam: (response) => {
+        const totalPages = Math.ceil(response.totalCount / response.pageSize);
+
+        if (response.page >= totalPages) return undefined;
+
+        return response.page + 1;
+      },
+      select: (data): PagedResult<DepartmentNodeDto> => ({
         results: data.pages.flatMap((page) => page.results),
         page: data.pages[0].page,
         pageSize: data.pages[0].pageSize,

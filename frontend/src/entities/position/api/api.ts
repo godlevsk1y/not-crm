@@ -10,6 +10,13 @@ export type GetPositionsListRequest = {
   pageSize: number;
 };
 
+export type GetDepartmentPositionsRequest = {
+  sortBy?: "name" | "createdAt";
+  sortDirection?: "asc" | "desc";
+  page?: number;
+  pageSize?: number;
+};
+
 export const positionsApi = {
   getPositionsList: (request: GetPositionsListRequest) =>
     apiRequest<PagedResult<PositionListItemDto>>({
@@ -17,10 +24,49 @@ export const positionsApi = {
       url: "positions",
       params: request,
     }),
+
+  getDepartmentPositions: (
+    id: string,
+    request: GetDepartmentPositionsRequest,
+  ) =>
+    apiRequest<PagedResult<PositionListItemDto>>({
+      method: "GET",
+      url: `departments/${id}/positions`,
+      params: request,
+    }),
 };
 
 export const positionsQueryOptions = {
   baseKey: "positions",
+
+  getDepartmentPositionsInfiniteOptions: (
+    id: string,
+    request: Omit<GetDepartmentPositionsRequest, "page">,
+  ) => {
+    return infiniteQueryOptions({
+      queryKey: [positionsQueryOptions.baseKey, "department", id, request],
+      queryFn: ({ pageParam }) => {
+        return positionsApi.getDepartmentPositions(id, {
+          ...request,
+          page: pageParam,
+        });
+      },
+      initialPageParam: 1,
+      getNextPageParam: (response) => {
+        const totalPages = Math.ceil(response.totalCount / response.pageSize);
+
+        if (response.page >= totalPages) return undefined;
+
+        return response.page + 1;
+      },
+      select: (data): PagedResult<PositionListItemDto> => ({
+        results: data.pages.flatMap((page) => page.results),
+        page: data.pages[0].page,
+        pageSize: data.pages[0].pageSize,
+        totalCount: data.pages[0].totalCount,
+      }),
+    });
+  },
 
   getPositionInfiniteOptions: ({
     sortBy,
