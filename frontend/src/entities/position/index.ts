@@ -1,4 +1,5 @@
 export {
+  type GetDepartmentPositionsRequest,
   type GetPositionsListRequest,
   positionsApi,
   positionsQueryOptions,
