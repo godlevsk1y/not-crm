@@ -52,6 +52,11 @@ internal static class QueryDocumentation
                 schema.Minimum = "0";
                 schema.Example = JsonValue.Create(1);
             }
+            if (locationList && Is(parameter, nameof(GetLocationListQuery.DepartmentIds)))
+            {
+                parameter.Description = "Optional comma-separated department UUIDs. Returns locations linked to at least one selected department, without duplicates. Omitted, empty or whitespace means no department filter. Combines with search and minDepartmentCount before pagination and totalCount; departmentCount still includes all stored links. Invalid UUIDs or empty list entries return 400.";
+                schema.Example = JsonValue.Create("11111111-1111-1111-1111-111111111111,22222222-2222-2222-2222-222222222222");
+            }
         }
     }
 

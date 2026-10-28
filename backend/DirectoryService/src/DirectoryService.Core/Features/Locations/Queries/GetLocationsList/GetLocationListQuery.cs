@@ -6,6 +6,8 @@ public record GetLocationListQuery : IQuery
 {
     public string? Search { get; init; }
 
+    public string? DepartmentIds { get; init; }
+
     public int? MinDepartmentCount { get; init; }
 
     public string SortBy { get; init; } = "name";

@@ -129,6 +129,164 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         Assert.Equal("locations.sort.direction.invalid", envelope.Error!.Messages[0].Code);
     }
 
+    [Fact]
+    public async Task GetLocationList_ShouldFilterByDepartment_WhenOneDepartmentIsSelected()
+    {
+        var berlin = await CreateLocationAsync("Berlin Office", "Berlin");
+        var moscow = await CreateLocationAsync("Moscow Office", "Moscow");
+        var deleted = await CreateLocationAsync("Deleted Office", "Rome");
+        await CreateLocationAsync("Unlinked Office", "Paris");
+        var department = await CreateDepartmentAsync("Finance", "finance", berlin, deleted);
+        await CreateDepartmentAsync("Product", "product", moscow);
+        var deleteResponse = await _client.DeleteAsync($"api/locations/{deleted}");
+        deleteResponse.EnsureSuccessStatusCode();
+
+        var result = await GetLocationsAsync($"departmentIds={department}");
+
+        Assert.Equal(1, result.TotalCount);
+        Assert.Equal(berlin, Assert.Single(result.Results).Id);
+    }
+
+    [Fact]
+    public async Task GetLocationList_ShouldReturnUnionWithoutDuplicates_WhenMultipleDepartmentsAreSelected()
+    {
+        var berlin = await CreateLocationAsync("Berlin Office", "Berlin");
+        var moscow = await CreateLocationAsync("Moscow Office", "Moscow");
+        var remote = await CreateLocationAsync("Remote Hub", "Lisbon");
+        var unrelated = await CreateLocationAsync("Other Office", "Paris");
+        await CreateLocationAsync("Unlinked Office", "Rome");
+        var finance = await CreateDepartmentAsync("Finance", "finance", berlin, moscow);
+        var product = await CreateDepartmentAsync("Product", "product", berlin, remote);
+        await CreateDepartmentAsync("Other", "other", unrelated);
+
+        var result = await GetLocationsAsync($"departmentIds={finance},{product},{finance}");
+
+        Assert.Equal(3, result.TotalCount);
+        Assert.Equal(new[] { berlin, moscow, remote }, result.Results.Select(location => location.Id));
+        Assert.Equal(2, result.Results.First().DepartmentCount);
+    }
+
+    [Theory]
+    [InlineData(1, false)]
+    [InlineData(2, false)]
+    [InlineData(1, true)]
+    [InlineData(2, true)]
+    public async Task GetLocationList_ShouldReturnEmptyList_WhenSelectedDepartmentHasNoLocations(
+        int page, bool departmentExists)
+    {
+        var location = await CreateLocationAsync("Moscow Office", "Moscow");
+        await CreateDepartmentAsync("Product", "product", location);
+        var department = departmentExists
+            ? await CreateDepartmentAsync("Empty", "empty")
+            : Guid.NewGuid();
+
+        var result = await GetLocationsAsync($"departmentIds={department}&page={page}");
+
+        Assert.Equal(0, result.TotalCount);
+        Assert.Empty(result.Results);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("departmentIds=")]
+    [InlineData("departmentIds=%20%20")]
+    public async Task GetLocationList_ShouldPreserveExistingBehavior_WhenDepartmentFilterIsAbsentOrEmpty(
+        string filter)
+    {
+        var berlin = await CreateLocationAsync("Berlin Office", "Berlin");
+        var moscow = await CreateLocationAsync("Moscow Office", "Moscow");
+        await CreateDepartmentAsync("Finance", "finance", berlin);
+
+        var result = await GetLocationsAsync(filter);
+
+        Assert.Equal(2, result.TotalCount);
+        Assert.Equal(new[] { berlin, moscow }, result.Results.Select(location => location.Id));
+    }
+
+    [Fact]
+    public async Task GetLocationList_ShouldCombineFiltersAndSortByAllDepartmentLinks()
+    {
+        var berlin = await CreateLocationAsync("Berlin Office", "Berlin");
+        var moscow = await CreateLocationAsync("Moscow Office", "Moscow");
+        var singleLink = await CreateLocationAsync("Single Office", "Paris");
+        var remote = await CreateLocationAsync("Remote Hub", "Lisbon");
+        var unrelated = await CreateLocationAsync("Other Office", "Rome");
+        var selected = await CreateDepartmentAsync("Selected", "selected", berlin, moscow, singleLink, remote);
+        await CreateDepartmentAsync("Finance", "finance", berlin, moscow, remote, unrelated);
+        await CreateDepartmentAsync("Product", "product", berlin, unrelated);
+
+        var result = await GetLocationsAsync(
+            $"departmentIds={selected}&search=office&minDepartmentCount=2&sortBy=departmentCount&sortDirection=desc");
+
+        Assert.Equal(2, result.TotalCount);
+        Assert.Collection(result.Results,
+            location =>
+            {
+                Assert.Equal(berlin, location.Id);
+                Assert.Equal(3, location.DepartmentCount);
+            },
+            location =>
+            {
+                Assert.Equal(moscow, location.Id);
+                Assert.Equal(2, location.DepartmentCount);
+            });
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    public async Task GetLocationList_ShouldPaginateUniqueMatches_WhenDepartmentsAreSelected(int page)
+    {
+        await CreateLocationAsync("A Unlinked Office", "Paris");
+        var unrelated = await CreateLocationAsync("B Other Office", "Rome");
+        await CreateDepartmentAsync("Other", "other", unrelated);
+        var locations = new List<Guid>();
+        for (var i = 1; i <= 7; i++)
+        {
+            locations.Add(await CreateLocationAsync($"Office {i}", "Moscow"));
+        }
+
+        var finance = await CreateDepartmentAsync("Finance", "finance", locations.ToArray());
+        var product = await CreateDepartmentAsync("Product", "product", locations.Take(3).ToArray());
+
+        var result = await GetLocationsAsync($"departmentIds={finance},{product}&page={page}");
+
+        Assert.Equal(7, result.TotalCount);
+        Assert.Equal(page, result.Page);
+        Assert.Equal(5, result.PageSize);
+        Assert.Equal(locations.Skip((page - 1) * 5).Take(5), result.Results.Select(location => location.Id));
+    }
+
+    [Theory]
+    [InlineData("invalid")]
+    [InlineData("11111111-1111-1111-1111-111111111111,invalid")]
+    [InlineData("11111111-1111-1111-1111-111111111111,")]
+    [InlineData(",")]
+    public async Task GetLocationList_ShouldReturnBadRequest_WhenDepartmentIdsAreInvalid(string departmentIds)
+    {
+        var response = await _client.GetAsync($"api/locations?departmentIds={departmentIds}");
+
+        Assert.Equal(400, (int)response.StatusCode);
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
+        Assert.NotNull(envelope);
+        Assert.True(envelope.IsError);
+        Assert.Equal("locations.department.ids.invalid", envelope.Error!.Messages[0].Code);
+        Assert.Equal("DepartmentIds", envelope.Error.Messages[0].InvalidField);
+    }
+
+    private async Task<PagedResult<LocationListItemDto>> GetLocationsAsync(string query)
+    {
+        var response = await _client.GetAsync($"api/locations?pageSize=5&{query}");
+        Assert.Equal(200, (int)response.StatusCode);
+
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PagedResult<LocationListItemDto>>>();
+        Assert.NotNull(envelope);
+        Assert.False(envelope.IsError);
+        Assert.NotNull(envelope.Result);
+        return envelope.Result;
+    }
+
     private async Task<Guid> CreateLocationAsync(string name, string city)
     {
         var request = new CreateLocationRequest(
@@ -150,16 +308,21 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         return envelope.Result.Id;
     }
 
-    private async Task CreateDepartmentAsync(string name, string slug, Guid locationId)
+    private async Task<Guid> CreateDepartmentAsync(string name, string slug, params Guid[] locationIds)
     {
         var request = new CreateDepartmentRequest(
             Name: name,
             Slug: slug,
-            LocationIds: [locationId],
+            LocationIds: locationIds,
             ParentId: null);
 
         var response = await _client.PostAsJsonAsync("api/departments", request);
         response.EnsureSuccessStatusCode();
+
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
+        Assert.NotNull(envelope?.Result);
+
+        return envelope.Result.Id;
     }
 
     public Task InitializeAsync() => Task.CompletedTask;

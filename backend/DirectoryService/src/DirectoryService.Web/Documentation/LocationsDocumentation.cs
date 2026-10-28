@@ -63,6 +63,8 @@ internal static class LocationsDocumentation
         [
             new(Error.Validation(new ErrorMessage("location.search.too.long", "The search string must not exceed 100 characters.", nameof(GetLocationListQuery.Search))),
                 "Search exceeds 100 characters."),
+            new(Error.Validation(new ErrorMessage("locations.department.ids.invalid", "The departmentIds parameter must contain comma-separated UUIDs.", nameof(GetLocationListQuery.DepartmentIds))),
+                "DepartmentIds contains an invalid UUID or an empty comma-separated entry."),
             new(Error.Validation(new ErrorMessage("location.department.count.invalid", "The minimum number of departments must be greater than or equal to zero.", nameof(GetLocationListQuery.MinDepartmentCount))),
                 "Supplied MinDepartmentCount is negative."),
             new(Error.Validation(new ErrorMessage("locations.sort.by.invalid", "The sortBy parameter only allows 'name', 'createdAt' or 'departmentCount' values.", nameof(GetLocationListQuery.SortBy))),

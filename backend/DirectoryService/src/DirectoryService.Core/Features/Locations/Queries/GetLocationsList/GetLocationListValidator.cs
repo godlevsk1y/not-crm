@@ -18,6 +18,15 @@ public class GetLocationListValidator : AbstractValidator<GetLocationListQuery>
             )))
             .When(q => q.Search is not null);
 
+        RuleFor(q => q.DepartmentIds)
+            .Must(ids => ids!.Split(',').All(id => Guid.TryParse(id, out _)))
+            .WithError(Error.Validation(new ErrorMessage(
+                "locations.department.ids.invalid",
+                "The departmentIds parameter must contain comma-separated UUIDs.",
+                nameof(GetLocationListQuery.DepartmentIds)
+            )))
+            .When(q => !string.IsNullOrWhiteSpace(q.DepartmentIds));
+
         RuleFor(q => q.MinDepartmentCount)
             .Must(x => x is >= 0)
             .WithError(Error.Validation(new ErrorMessage(

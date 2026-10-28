@@ -55,6 +55,19 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
             whereClauses.Add("l.name ILIKE '%' || @search || '%'");
         }
 
+        if (!string.IsNullOrWhiteSpace(query.DepartmentIds))
+        {
+            var departmentIds = query.DepartmentIds.Split(',').Select(Guid.Parse).ToArray();
+            parameters.Add("departmentIds", departmentIds);
+            whereClauses.Add("""
+                             EXISTS (
+                                 SELECT 1 FROM department_locations dl
+                                 WHERE dl.location_id = l.id
+                                   AND dl.department_id = ANY(@departmentIds)
+                             )
+                             """);
+        }
+
         whereClauses.Add("COALESCE(dc.department_count, 0) >= @minDepartmentCount");
         
         var whereExpression = $"WHERE {string.Join(" AND ", whereClauses)}";
