@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   BriefcaseIcon,
   BuildingsIcon,
+  FoldersIcon,
   MapPinIcon,
   TreeStructureIcon,
 } from "@phosphor-icons/react";
@@ -26,6 +27,12 @@ import {
 import SidebarSection from "./sidebar-section";
 
 const sections = [
+  {
+    href: ROUTES.ORGANIZATION_STRUCTURE,
+    title: "Оргструктура",
+    icon: FoldersIcon,
+    accent: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  },
   {
     href: ROUTES.DEPARTMENTS,
     title: "Подразделения",
