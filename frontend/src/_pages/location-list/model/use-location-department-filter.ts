@@ -46,6 +46,8 @@ export function useLocationDepartmentFilter() {
         }
       },
       retry: false,
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
     })),
   });
 
