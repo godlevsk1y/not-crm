@@ -1,5 +1,9 @@
 import { apiRequest, type PagedResult } from "@/shared/api";
-import { DepartmentListItemDto, DepartmentNodeDto } from "../model/types";
+import {
+  DepartmentDto,
+  DepartmentListItemDto,
+  DepartmentNodeDto,
+} from "../model/types";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import type { AxiosRequestConfig } from "axios";
 
@@ -25,6 +29,16 @@ export type GetImmediateChildrenRequest = {
 };
 
 export const departmentsApi = {
+  getDepartment: async (
+    id: string,
+    options?: Pick<AxiosRequestConfig, "signal" | "timeout">,
+  ) =>
+    apiRequest<DepartmentDto>({
+      ...options,
+      method: "GET",
+      url: `departments/${id}`,
+    }),
+
   getDepartmentList: async (
     request: GetDepartmentListRequest,
     options?: Pick<AxiosRequestConfig, "signal" | "timeout">,

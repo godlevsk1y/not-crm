@@ -1,4 +1,8 @@
-export type { DepartmentListItemDto, DepartmentNodeDto } from "./model/types";
+export type {
+  DepartmentDto,
+  DepartmentListItemDto,
+  DepartmentNodeDto,
+} from "./model/types";
 
 export { DepartmentListItemCard } from "./ui/department-list-item-card";
 export { DepartmentListItemCardSkeleton } from "./ui/department-list-item-card-skeleton";
