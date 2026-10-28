@@ -38,7 +38,7 @@ const PAGE_SIZE = 10;
 const activityFilters = [
   { value: "all", label: "Все" },
   { value: "active", label: "Активные" },
-  { value: "inactive", label: "Неактивные" },
+  { value: "inactive", label: "Архивные" },
 ] as const;
 
 export function DepartmentSelect(props: DepartmentSelectProps) {
@@ -178,7 +178,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
             <div
               className="flex gap-1 border-b p-2"
               role="group"
-              aria-label="Активность подразделений"
+              aria-label="Статус подразделений"
             >
               {activityFilters.map((filter) => (
                 <Button
@@ -237,7 +237,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                     Подразделения не найдены
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Измените запрос или фильтр активности.
+                    Измените запрос или фильтр статуса.
                   </p>
                 </div>
               ) : (
@@ -272,7 +272,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                         {department.name}
                       </span>
                       {!department.isActive && (
-                        <Badge variant="outline">Неактивно</Badge>
+                        <Badge variant="outline">Архивное</Badge>
                       )}
                     </CommandItem>
                   );
