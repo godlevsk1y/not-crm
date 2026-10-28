@@ -18,6 +18,7 @@ export type UseLocationListProps = {
   sortBy: string;
   sortDirection: string;
   departmentIds?: string[];
+  isActive: boolean;
 };
 
 export function useLocationList(props: UseLocationListProps) {
@@ -32,6 +33,7 @@ export function useLocationList(props: UseLocationListProps) {
       page: props.page,
       pageSize: props.pageSize,
       departmentIds: props.departmentIds,
+      isActive: props.isActive,
     }),
   );
 

@@ -16,12 +16,14 @@ interface LocationListContentProps {
   state: LocationListState;
   onRetry: () => void;
   isFiltered?: boolean;
+  isActive: boolean;
 }
 
 export function LocationListContent({
   state,
   onRetry,
   isFiltered = false,
+  isActive,
 }: LocationListContentProps) {
   const [updatingLocation, setUpdatingLocation] =
     useState<LocationListItemDto | null>(null);
@@ -37,7 +39,7 @@ export function LocationListContent({
 
     case "success":
       if (state.locations.length === 0) {
-        return <LocationListEmpty isFiltered={isFiltered} />;
+        return <LocationListEmpty isFiltered={isFiltered} isActive={isActive} />;
       }
 
       return (

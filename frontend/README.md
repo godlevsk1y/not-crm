@@ -1,5 +1,20 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## List status filters
+
+The department, location, and position lists initially request active records.
+Filtering uses the API implemented in [backend subissue #102](https://github.com/godlevsk1y/not-crm/issues/102), linked to [#103](https://github.com/godlevsk1y/not-crm/issues/103).
+
+| Endpoint | Active | Archived | All |
+| --- | --- | --- | --- |
+| `GET /api/departments` | `isActive=true` | `isActive=false` | Omit `isActive` |
+| `GET /api/locations` | `isActive=true` | `isActive=false` | Unavailable |
+| `GET /api/positions` | `isActive=true` | `isActive=false` | Unavailable |
+
+Locations and positions accept only boolean values; empty and `null` values are invalid. Omitting `isActive` defaults to active records for these endpoints. Departments return both statuses when the parameter is omitted.
+
+The server applies the status together with the other filters before pagination and computes `totalCount` for the matching records. Changing status preserves other filters and sorting, resets paginated lists to page one, and restarts position loading from its first page.
+
 ## Getting Started
 
 First, run the development server:

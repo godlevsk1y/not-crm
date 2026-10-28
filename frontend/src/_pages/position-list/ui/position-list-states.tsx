@@ -1,5 +1,6 @@
 import {
   ArrowClockwiseIcon,
+  BriefcaseIcon,
   WarningCircleIcon,
 } from "@phosphor-icons/react";
 
@@ -55,6 +56,29 @@ export function PositionListError({
           <ArrowClockwiseIcon aria-hidden="true" />
           Попробовать снова
         </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function PositionListEmpty({ isActive }: { isActive: boolean }) {
+  return (
+    <Card className="shadow-sm [--card-spacing:--spacing(6)]">
+      <CardContent
+        role="status"
+        className="flex flex-col items-center py-10 text-center sm:py-16"
+      >
+        <span className="mb-6 flex size-14 items-center justify-center bg-violet-500/10 text-violet-600 dark:text-violet-400">
+          <BriefcaseIcon size={30} weight="duotone" aria-hidden="true" />
+        </span>
+
+        <h3 className="text-lg font-semibold">Должности не найдены</h3>
+
+        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+          {isActive
+            ? "Активных должностей нет. Выберите другой статус."
+            : "Архивных должностей нет. Выберите другой статус."}
+        </p>
       </CardContent>
     </Card>
   );

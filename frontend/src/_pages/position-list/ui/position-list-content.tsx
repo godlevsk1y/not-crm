@@ -1,7 +1,11 @@
 import type { PositionListItemDto } from "@/entities/position";
 
 import { PositionList } from "./position-list";
-import { PositionListError, PositionListLoading } from "./position-list-states";
+import {
+  PositionListEmpty,
+  PositionListError,
+  PositionListLoading,
+} from "./position-list-states";
 import { Spinner } from "@/shared/ui/spinner";
 import { RefCallback } from "react";
 
@@ -9,6 +13,7 @@ interface PositionListContentProps {
   positions: PositionListItemDto[] | undefined;
   isError: boolean;
   isPending: boolean;
+  isActive: boolean;
   pageSize: number;
   message?: string;
   isFetchingNextPage: boolean;
@@ -20,6 +25,7 @@ export function PositionListContent({
   positions,
   isError,
   isPending,
+  isActive,
   pageSize,
   isFetchingNextPage,
   cursorRef,
@@ -32,6 +38,10 @@ export function PositionListContent({
 
   if (isPending) {
     return <PositionListLoading pageSize={pageSize} />;
+  }
+
+  if (!positions?.length) {
+    return <PositionListEmpty isActive={isActive} />;
   }
 
   return (
