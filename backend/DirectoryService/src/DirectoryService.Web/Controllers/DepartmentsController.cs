@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.QueryContracts;
+using DirectoryService.Contracts.Positions.QueryContracts;
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Features.Departments.Commands.AddLocation;
 using DirectoryService.Core.Features.Departments.Commands.AddPosition;
@@ -14,6 +15,7 @@ using DirectoryService.Core.Features.Departments.Queries.GetAncestorsById;
 using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
+using DirectoryService.Core.Features.Departments.Queries.GetDepartmentPositions;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTreeByName;
 using Microsoft.AspNetCore.Mvc;
@@ -233,6 +235,30 @@ public class DepartmentsController : ControllerBase
         }
         
         return EndpointResults.Ok(departmentResult.Value);
+    }
+
+    [HttpGet("{id:guid}/positions")]
+    [EndpointSummary("List a department's positions")]
+    [EndpointDescription("Returns distinct active positions linked directly to this department; positions of child departments are excluded. Missing or deleted departments return 404; an active department without positions returns an empty page. Sort by name (default) or createdAt, asc (default) or desc, then ID ascending. Page starts at 1; pageSize is 5–100, default 20. Empty pages retain totalCount.")]
+    [ProducesResponseType<Envelope<PagedResult<PositionListItemDto>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    public async Task<IResult> GetDepartmentPositions(
+        [FromServices] IQueryHandler<GetDepartmentPositionsQuery,
+            Result<PagedResult<PositionListItemDto>, Error>> handler,
+        [FromRoute] Guid id,
+        [FromQuery] GetDepartmentPositionsRequest request,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetDepartmentPositionsQuery(
+            id, request.SortBy, request.SortDirection, request.Page, request.PageSize);
+
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+
+        return EndpointResults.Ok(result.Value);
     }
 
     [HttpGet]

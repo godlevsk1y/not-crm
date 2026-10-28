@@ -1,6 +1,7 @@
 using DirectoryService.Core.Features.Departments;
 using DirectoryService.Core.Features.Departments.Commands.TransferDepartment;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
+using DirectoryService.Core.Features.Departments.Queries.GetDepartmentPositions;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTreeByName;
 using DirectoryService.Core.Features.Locations;
@@ -85,6 +86,18 @@ internal static class DepartmentsDocumentation
             new(DepartmentErrors.Cycle(ContractExamples.Id, ContractExamples.Id),
                 "Requested parent is a descendant of the department."),
             ..MissingDepartment,
+        ],
+        nameof(DepartmentsController.GetDepartmentPositions) =>
+        [
+            ..MissingDepartment,
+            new(Error.Validation(new ErrorMessage("positions.page.invalid", "The page parameter must be greater than 0.", nameof(GetDepartmentPositionsQuery.Page))),
+                "Page is less than 1."),
+            new(Error.Validation(new ErrorMessage("positions.page.size.invalid", "The page size must be from 5 to 100.", nameof(GetDepartmentPositionsQuery.PageSize))),
+                "PageSize is outside 5–100."),
+            new(Error.Validation(new ErrorMessage("positions.sort.by.invalid", "The sortBy parameter only allows 'name' or 'createdAt' values.", nameof(GetDepartmentPositionsQuery.SortBy))),
+                "SortBy is not name or createdAt (case-sensitive)."),
+            new(Error.Validation(new ErrorMessage("positions.sort.direction.invalid", "The sortDirection parameter only allows 'asc' or 'desc' values.", nameof(GetDepartmentPositionsQuery.SortDirection))),
+                "SortDirection is not asc or desc (case-sensitive)."),
         ],
         nameof(DepartmentsController.GetDepartmentList) =>
         [

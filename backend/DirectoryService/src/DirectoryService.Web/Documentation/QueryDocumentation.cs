@@ -21,6 +21,7 @@ internal static class QueryDocumentation
         var departmentList = controller == typeof(DepartmentsController) && string.Equals(method, nameof(DepartmentsController.GetDepartmentList), StringComparison.Ordinal);
         var locationList = controller == typeof(LocationsController) && string.Equals(method, nameof(LocationsController.GetLocationList), StringComparison.Ordinal);
         var positionList = controller == typeof(PositionsController) && string.Equals(method, nameof(PositionsController.GetPositionList), StringComparison.Ordinal);
+        var departmentPositions = controller == typeof(DepartmentsController) && string.Equals(method, nameof(DepartmentsController.GetDepartmentPositions), StringComparison.Ordinal);
         var treeSearch = controller == typeof(DepartmentsController) && string.Equals(method, nameof(DepartmentsController.GetDepartmentTreeByName), StringComparison.Ordinal);
         var departmentPage = controller == typeof(DepartmentsController) && method is
             nameof(DepartmentsController.GetDepartmentTree) or nameof(DepartmentsController.GetChildrenByParentId) or nameof(DepartmentsController.GetAncestorsById);
@@ -34,9 +35,9 @@ internal static class QueryDocumentation
             }
             if (parameter.Schema is not OpenApiSchema schema)
                 continue;
-            if (departmentList || locationList || positionList || treeSearch || departmentPage)
+            if (departmentList || locationList || positionList || departmentPositions || treeSearch || departmentPage)
                 DescribePagination(parameter, schema);
-            if (departmentList || locationList || positionList)
+            if (departmentList || locationList || positionList || departmentPositions)
                 DescribeList(parameter, schema, locationList);
             if (treeSearch && Is(parameter, nameof(GetDepartmentTreeByNameRequest.Q)))
             {
