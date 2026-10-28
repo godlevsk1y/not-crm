@@ -24,7 +24,7 @@ export function LocationListSection() {
           label="Фильтр по подразделениям"
           placeholder="Все подразделения"
           value={filter.selected}
-          onChange={filter.onChange}
+          onChange={filter.updateUrlFilters}
           disabled={filter.isPending}
         />
       </div>

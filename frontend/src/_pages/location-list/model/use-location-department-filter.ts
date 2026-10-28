@@ -47,7 +47,7 @@ export function useLocationDepartmentFilter() {
     query.data ? [query.data] : [],
   );
 
-  function onChange(departments: DepartmentSelectOption[]) {
+  function updateUrlFilters(departments: DepartmentSelectOption[]) {
     const url = new URL(window.location.href);
     url.searchParams.delete("departmentIds");
     const params = url.searchParams.toString();
@@ -65,7 +65,7 @@ export function useLocationDepartmentFilter() {
 
   return {
     selected,
-    onChange,
+    updateUrlFilters,
     isPending: queries.some((query) => query.isPending),
     isError: queries.some((query) => query.isError),
     retry: () =>
