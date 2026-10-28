@@ -19,6 +19,54 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
     }
 
     [Theory]
+    [InlineData(true, 1)]
+    [InlineData(true, 2)]
+    [InlineData(true, 3)]
+    [InlineData(false, 1)]
+    [InlineData(false, 2)]
+    [InlineData(false, 3)]
+    public async Task GetLocationList_ShouldFilterByActiveStatusBeforePagination(bool isActive, int page)
+    {
+        var activeIds = new List<Guid>();
+        var inactiveIds = new List<Guid>();
+        for (var i = 1; i <= 7; i++)
+        {
+            activeIds.Add(await CreateLocationAsync($"Active Office {i}", "Berlin"));
+            var inactive = await CreateLocationAsync($"Inactive Office {i}", "Moscow");
+            using var deleteResponse = await _client.DeleteAsync($"api/locations/{inactive}");
+            Assert.Equal(204, (int)deleteResponse.StatusCode);
+            inactiveIds.Add(inactive);
+        }
+        await CreateLocationAsync("Active Hub", "Paris");
+        var inactiveHub = await CreateLocationAsync("Inactive Hub", "Rome");
+        using var deleteHubResponse = await _client.DeleteAsync($"api/locations/{inactiveHub}");
+        Assert.Equal(204, (int)deleteHubResponse.StatusCode);
+
+        var result = await GetLocationsAsync($"isActive={isActive}&search=office&page={page}");
+
+        var expected = isActive ? activeIds : inactiveIds;
+        Assert.Equal(7, result.TotalCount);
+        Assert.Equal(expected.Skip((page - 1) * 5).Take(5), result.Results.Select(location => location.Id));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("null")]
+    [InlineData("invalid")]
+    [InlineData("0")]
+    [InlineData("1")]
+    public async Task GetLocationList_ShouldReturnStandardError_WhenIsActiveIsInvalid(string isActive)
+    {
+        using var response = await _client.GetAsync($"api/locations?isActive={isActive}");
+
+        Assert.Equal(400, (int)response.StatusCode);
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
+        Assert.NotNull(envelope);
+        Assert.True(envelope.IsError);
+        Assert.Equal("invalid.model.state", envelope.Error!.Messages[0].Code);
+    }
+
+    [Theory]
     [InlineData(2)]
     [InlineData(20)]
     public async Task GetLocationList_ShouldPreserveTotalCount_WhenPageIsOutOfRange(int page)

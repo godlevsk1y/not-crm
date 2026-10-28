@@ -39,6 +39,11 @@ internal static class QueryDocumentation
                 DescribePagination(parameter, schema);
             if (departmentList || locationList || positionList || departmentPositions)
                 DescribeList(parameter, schema, locationList);
+            if ((locationList || positionList) && Is(parameter, nameof(GetPositionListRequest.IsActive)))
+            {
+                parameter.Description = "true returns active records; false returns inactive records, including soft-deleted and archived records. Default: true. Empty and null values return 400.";
+                schema.Default = JsonValue.Create(true);
+            }
             if (treeSearch && Is(parameter, nameof(GetDepartmentTreeByNameRequest.Q)))
             {
                 parameter.Description = "Required case-insensitive ILIKE name search, at least 2 characters; % and _ are wildcards. No maximum length is validated.";

@@ -10,6 +10,8 @@ public record GetLocationListQuery : IQuery
 
     public int? MinDepartmentCount { get; init; }
 
+    public bool IsActive { get; init; } = true;
+
     public string SortBy { get; init; } = "name";
 
     public string SortDirection { get; init; } = "asc";

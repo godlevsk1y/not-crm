@@ -5,5 +5,6 @@ public record GetPositionListRequest(
     string SortBy = "name",
     string SortDirection = "asc",
     int Page = 1,
-    int PageSize = 20
+    int PageSize = 20,
+    bool IsActive = true
 );

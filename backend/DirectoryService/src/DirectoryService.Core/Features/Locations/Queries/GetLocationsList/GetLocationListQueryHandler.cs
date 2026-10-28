@@ -47,7 +47,7 @@ public class GetLocationListQueryHandler : IQueryHandler<GetLocationListQuery,
 
         var whereClauses = new List<string>()
         {
-            "l.deleted_at IS NULL",
+            query.IsActive ? "l.deleted_at IS NULL" : "l.deleted_at IS NOT NULL",
         };
 
         if (query.Search is not null)
