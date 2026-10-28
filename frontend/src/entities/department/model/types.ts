@@ -1,3 +1,11 @@
+export type DepartmentDto = {
+  id: string;
+  name: string;
+  slug: string;
+  path: string;
+  parentId: string | null;
+};
+
 export type DepartmentListItemDto = {
   id: string;
   name: string;

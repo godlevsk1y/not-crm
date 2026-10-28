@@ -5,6 +5,7 @@ import { queryOptions } from "@tanstack/react-query";
 export type GetLocationsListRequest = {
   search?: string;
   minDepartmentCount?: number;
+  departmentIds?: string[];
   sortBy: string;
   sortDirection: string;
   page: number;
@@ -43,7 +44,10 @@ export const locationsApi = {
     apiRequest<PagedResult<LocationListItemDto>>({
       method: "GET",
       url: "locations",
-      params: request,
+      params: {
+        ...request,
+        departmentIds: request.departmentIds?.join(",") || undefined,
+      },
     }),
 
   createLocationAsync: async (request: CreateLocationRequest) =>
@@ -76,11 +80,13 @@ export const locationsQueryOptions = {
     sortDirection,
     page,
     pageSize,
+    departmentIds,
   }: {
     sortBy: string;
     sortDirection: string;
     page: number;
     pageSize: number;
+    departmentIds?: string[];
   }) => {
     return queryOptions({
       queryFn: () =>
@@ -89,6 +95,7 @@ export const locationsQueryOptions = {
           sortDirection: sortDirection,
           page: page,
           pageSize: pageSize,
+          departmentIds,
         }),
       queryKey: [
         locationsQueryOptions.baseKey,
@@ -97,6 +104,7 @@ export const locationsQueryOptions = {
           sortDirection: sortDirection,
           page: page,
           pageSize: pageSize,
+          departmentIds,
         },
       ],
     });

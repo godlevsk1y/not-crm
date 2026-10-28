@@ -15,11 +15,13 @@ import { DeleteLocationDialog } from "./delete-location-dialog";
 interface LocationListContentProps {
   state: LocationListState;
   onRetry: () => void;
+  isFiltered?: boolean;
 }
 
 export function LocationListContent({
   state,
   onRetry,
+  isFiltered = false,
 }: LocationListContentProps) {
   const [updatingLocation, setUpdatingLocation] =
     useState<LocationListItemDto | null>(null);
@@ -35,7 +37,7 @@ export function LocationListContent({
 
     case "success":
       if (state.locations.length === 0) {
-        return <LocationListEmpty />;
+        return <LocationListEmpty isFiltered={isFiltered} />;
       }
 
       return (

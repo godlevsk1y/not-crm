@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ArrowClockwiseIcon,
   MapPinIcon,
@@ -61,7 +63,11 @@ export function LocationListError({
   );
 }
 
-export function LocationListEmpty() {
+export function LocationListEmpty({
+  isFiltered = false,
+}: {
+  isFiltered?: boolean;
+}) {
   return (
     <Card className="shadow-sm [--card-spacing:--spacing(6)]">
       <CardContent
@@ -72,11 +78,14 @@ export function LocationListEmpty() {
           <MapPinIcon size={30} weight="duotone" aria-hidden="true" />
         </span>
 
-        <h3 className="text-lg font-semibold">Локаций пока нет</h3>
+        <h3 className="text-lg font-semibold">
+          {isFiltered ? "Локации не найдены" : "Локаций пока нет"}
+        </h3>
 
         <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-          Здесь появятся адреса офисов и рабочих пространств, когда в справочник
-          добавят первую локацию.
+          {isFiltered
+            ? "С выбранными подразделениями не связано ни одной локации. Измените или очистите фильтр."
+            : "Здесь появятся адреса офисов и рабочих пространств, когда в справочник добавят первую локацию."}
         </p>
       </CardContent>
     </Card>

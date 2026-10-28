@@ -1,11 +1,6 @@
 import type { DepartmentListItemDto } from "@/entities/department";
 
-export type DepartmentSelectOption = Pick<
-  DepartmentListItemDto,
-  "id" | "name"
-> & {
-  isActive: boolean;
-};
+export type DepartmentSelectOption = Pick<DepartmentListItemDto, "id" | "name">;
 
 export type DepartmentSelectProps = {
   id?: string;
