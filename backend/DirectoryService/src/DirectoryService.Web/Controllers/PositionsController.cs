@@ -23,7 +23,7 @@ public class PositionsController : ControllerBase
 {
     [HttpGet]
     [EndpointSummary("List positions")]
-    [EndpointDescription("Active positions with id, name and createdAt. Optional case-insensitive name search, at most 100 characters (PostgreSQL ILIKE; % and _ are wildcards). Sort by name or createdAt (default name), asc or desc (default asc), then ID ascending. Page starts at 1 (default 1); pageSize is 5–100 (default 20). totalCount is the matching count before pagination, including empty pages. No matches return 200 with an empty list.")]
+    [EndpointDescription("Positions with id, name and createdAt. isActive defaults to true (active only); false returns inactive, including soft-deleted and archived positions. Empty or null isActive values are invalid. Optional case-insensitive name search, at most 100 characters (PostgreSQL ILIKE; % and _ are wildcards). Sort by name or createdAt (default name), asc or desc (default asc), then ID ascending. Page starts at 1 (default 1); pageSize is 5–100 (default 20). totalCount is the matching count before pagination, including empty pages. No matches return 200 with an empty list.")]
     [ProducesResponseType<Envelope<PagedResult<PositionListItemDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetPositionList(
         [FromServices] IQueryHandler<GetPositionListQuery,
@@ -36,7 +36,8 @@ public class PositionsController : ControllerBase
             request.SortBy,
             request.SortDirection,
             request.Page,
-            request.PageSize);
+            request.PageSize,
+            request.IsActive);
 
         var getResult = await handler.Handle(query, cancellationToken);
         if (getResult.IsFailure)

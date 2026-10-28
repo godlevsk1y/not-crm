@@ -127,7 +127,7 @@ public class LocationsController : ControllerBase
 
     [HttpGet]
     [EndpointSummary("List locations")]
-    [EndpointDescription("Active locations with nested addresses and department link counts. Case-insensitive ILIKE name search (% and _ are wildcards); optional minDepartmentCount >= 0. Optional comma-separated departmentIds selects locations linked to any selected department, without duplicates; omitted or empty means no department filter. Filters combine before pagination; totalCount counts all unique matches. Sort by name, createdAt or departmentCount, then ID. Page starts at 1; pageSize is 5–100, default 20.")]
+    [EndpointDescription("Locations with nested addresses and department link counts. isActive defaults to true (active only); false returns inactive, including soft-deleted and archived locations. Empty or null isActive values are invalid. Case-insensitive ILIKE name search (% and _ are wildcards); optional minDepartmentCount >= 0. Optional comma-separated departmentIds selects locations linked to any selected department, without duplicates; omitted or empty means no department filter. Filters combine before pagination; totalCount counts all unique matches. Sort by name, createdAt or departmentCount, then ID. Page starts at 1; pageSize is 5–100, default 20.")]
     [ProducesResponseType<Envelope<PagedResult<LocationListItemDto>>>(StatusCodes.Status200OK)]
     public async Task<IResult> GetLocationList(
         [FromServices] IQueryHandler<GetLocationListQuery, 

@@ -35,6 +35,35 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     }
 
     [Theory]
+    [InlineData(true, 1)]
+    [InlineData(true, 2)]
+    [InlineData(true, 3)]
+    [InlineData(false, 1)]
+    [InlineData(false, 2)]
+    public async Task GetPositionList_ShouldFilterByActiveStatusBeforePagination(bool isActive, int page)
+    {
+        var positions = await CreatePositionsAsync();
+        var result = await GetListAsync(
+            $"api/positions?isActive={isActive}&search=engineer&page={page}&pageSize=5");
+
+        Assert.Equal(isActive ? 7 : 1, result.TotalCount);
+        if (isActive)
+        {
+            var expected = positions.Where(p => p.Name.Contains("Engineer", StringComparison.Ordinal))
+                .OrderBy(p => p.Name, StringComparer.Ordinal).Skip((page - 1) * 5).Take(5);
+            Assert.Equal(expected, result.Results);
+        }
+        else if (page == 1)
+        {
+            Assert.Equal("Engineer I", Assert.Single(result.Results).Name);
+        }
+        else
+        {
+            Assert.Empty(result.Results);
+        }
+    }
+
+    [Theory]
     [InlineData("name", "asc")]
     [InlineData("name", "desc")]
     [InlineData("createdAt", "asc")]
@@ -171,6 +200,11 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     [Theory]
     [InlineData("page=invalid")]
     [InlineData("pageSize=invalid")]
+    [InlineData("isActive=")]
+    [InlineData("isActive=null")]
+    [InlineData("isActive=invalid")]
+    [InlineData("isActive=0")]
+    [InlineData("isActive=1")]
     public async Task GetPositionList_ShouldReturnStandardError_WhenModelBindingFails(string query)
     {
         using var response = await _client.GetAsync($"api/positions?{query}");

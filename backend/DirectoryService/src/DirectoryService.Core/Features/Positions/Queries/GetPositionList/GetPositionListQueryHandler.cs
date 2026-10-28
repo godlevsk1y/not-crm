@@ -43,7 +43,7 @@ public class GetPositionListQueryHandler : IQueryHandler<GetPositionListQuery, R
 
         var whereClauses = new List<string>()
         {
-            "p.deleted_at IS NULL",
+            request.IsActive ? "p.deleted_at IS NULL" : "p.deleted_at IS NOT NULL",
         };
 
         if (request.Search is not null)
