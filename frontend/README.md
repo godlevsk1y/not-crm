@@ -31,16 +31,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## List status filters
 
-The department, location, and position lists initially request active records.  
-Filtering uses the API implemented in [backend subissue #102](https://github.com/godlevsk1y/not-crm/issues/102), linked to [#103](https://github.com/godlevsk1y/not-crm/issues/103).
-
+The department, location, and position lists initially request active records.
 
 | Endpoint               | Active          | Archived         | All             |
 | ---------------------- | --------------- | ---------------- | --------------- |
 | `GET /api/departments` | `isActive=true` | `isActive=false` | Omit `isActive` |
 | `GET /api/locations`   | `isActive=true` | `isActive=false` | Unavailable     |
 | `GET /api/positions`   | `isActive=true` | `isActive=false` | Unavailable     |
-
 
 Locations and positions accept only boolean values; empty and `null` values are invalid. Omitting `isActive` defaults to active records for these endpoints. Departments return both statuses when the parameter is omitted.
 
