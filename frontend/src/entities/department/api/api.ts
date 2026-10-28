@@ -1,6 +1,6 @@
 import { apiRequest, type PagedResult } from "@/shared/api";
 import { DepartmentListItemDto, DepartmentNodeDto } from "../model/types";
-import { infiniteQueryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import type { AxiosRequestConfig } from "axios";
 
 export type GetDepartmentListRequest = {
@@ -57,6 +57,13 @@ export const departmentsApi = {
 
 export const departmentsQueryOptions = {
   baseKey: "departments",
+
+  getDepartmentListOptions: (request: GetDepartmentListRequest) => {
+    return queryOptions({
+      queryKey: [departmentsQueryOptions.baseKey, "list", "paged", request],
+      queryFn: () => departmentsApi.getDepartmentList(request),
+    });
+  },
 
   getDepartmentInfiniteOptions: (
     request: Omit<GetDepartmentListRequest, "page">,
