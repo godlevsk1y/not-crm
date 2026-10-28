@@ -78,7 +78,12 @@ export const positionsQueryOptions = {
     pageSize: number;
   }) => {
     return infiniteQueryOptions({
-      queryKey: [positionsQueryOptions.baseKey],
+      queryKey: [
+        positionsQueryOptions.baseKey,
+        "list",
+        "infinite",
+        { sortBy, sortDirection, pageSize },
+      ],
       queryFn: ({ pageParam }) => {
         return positionsApi.getPositionsList({
           sortBy: sortBy,
