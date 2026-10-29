@@ -24,11 +24,22 @@ export type UpdatePositionRequest = {
   name: string;
 };
 
+export type CreatePositionRequest = {
+  name: string;
+};
+
 export type DeletePositionRequest = {
   id: string;
 };
 
 export const positionsApi = {
+  createPositionAsync: async (request: CreatePositionRequest) =>
+    apiRequest<Pick<PositionListItemDto, "id" | "name">>({
+      method: "POST",
+      url: "positions",
+      data: request,
+    }),
+
   updatePositionAsync: async ({ id, ...body }: UpdatePositionRequest) =>
     apiRequest<string>({
       method: "PATCH",

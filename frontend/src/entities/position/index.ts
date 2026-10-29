@@ -1,6 +1,7 @@
 export {
   type GetDepartmentPositionsRequest,
   type GetPositionsListRequest,
+  type CreatePositionRequest,
   positionsApi,
   positionsQueryOptions,
 } from "./api/api";
