@@ -283,16 +283,7 @@ export function LocationSelect(props: LocationSelectProps) {
                 </div>
               ) : hasNextPage ? (
                 <div ref={cursorRef} className="flex justify-center p-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={isFetchingNextPage}
-                    onClick={() => fetchNextPage()}
-                  >
-                    {isFetchingNextPage && <Spinner />}
-                    {isFetchingNextPage ? "Загрузка локаций…" : "Загрузить ещё"}
-                  </Button>
+                  {isFetchingNextPage && <Spinner />}
                 </div>
               ) : null}
             </CommandList>
