@@ -33,6 +33,11 @@ internal static class PositionsDocumentation
             ..NameValidation,
             ..PositionMissing,
         ],
+        nameof(PositionsController.Restore) =>
+        [
+            new(PositionErrors.NotFound(ContractExamples.Id),
+                "Record is missing or has been physically deleted."),
+        ],
         nameof(PositionsController.Delete) =>
         [
             ..PositionMissing,

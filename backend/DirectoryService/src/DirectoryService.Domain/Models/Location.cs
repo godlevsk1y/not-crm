@@ -48,4 +48,15 @@ public class Location
     }
     
     public void SoftDelete() => DeletedAt = DateTime.UtcNow;
+
+    public void Restore()
+    {
+        if (DeletedAt is null)
+        {
+            return;
+        }
+
+        DeletedAt = null;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

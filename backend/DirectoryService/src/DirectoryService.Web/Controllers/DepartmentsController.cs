@@ -10,6 +10,7 @@ using DirectoryService.Core.Features.Departments.Commands.DeleteDepartment;
 using DirectoryService.Core.Features.Departments.Commands.RemoveLocation;
 using DirectoryService.Core.Features.Departments.Commands.RemovePosition;
 using DirectoryService.Core.Features.Departments.Commands.TransferDepartment;
+using DirectoryService.Core.Features.Departments.Commands.RestoreDepartment;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
 using DirectoryService.Core.Features.Departments.Queries.GetAncestorsById;
 using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
@@ -78,6 +79,28 @@ public class DepartmentsController : ControllerBase
         }
         
         return EndpointResults.Ok(updateResult.Value);
+    }
+
+    [HttpPost("{id:guid}/restore")]
+    [EndpointSummary("Restore a department")]
+    [EndpointDescription("No request body. Restores an archived record while preserving its data. An active record returns 204 without changes. Missing or physically deleted records return 404. Existing relationships are preserved; removed relationships are not recreated. Hierarchy is preserved; children are not restored. Restore an archived parent first (409 department.parent.archived).")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
+    public async Task<IResult> Restore(
+        [FromServices] ICommandHandler<RestoreDepartmentCommand> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new RestoreDepartmentCommand(id);
+
+        var restoreResult = await handler.Handle(command, cancellationToken);
+        if (restoreResult.IsFailure)
+        {
+            return EndpointResults.Error(restoreResult.Error);
+        }
+
+        return EndpointResults.NoContent();
     }
 
     [HttpDelete("{id:guid}")]

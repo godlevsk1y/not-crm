@@ -28,6 +28,13 @@ public class PositionsRepository : IPositionsRepository
             cancellationToken);
     }
 
+    public async Task<Position?> GetByIdIncludingDeletedAsync(PositionId id, CancellationToken cancellationToken)
+    {
+        return await _context.Positions
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
+    }
+
     public void Delete(Position position)
     {
         _context.Positions.Remove(position);
