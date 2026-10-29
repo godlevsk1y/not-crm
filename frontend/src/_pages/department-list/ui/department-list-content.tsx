@@ -1,5 +1,9 @@
+import { useState } from "react";
+import type { DepartmentListItemDto } from "@/entities/department";
 import type { DepartmentListState } from "../model/use-department-list";
 import { DepartmentList } from "./department-list";
+import { UpdateDepartmentDialog } from "./update-department-dialog";
+import { DeleteDepartmentDialog } from "./delete-department-dialog";
 import {
   DepartmentListLoading,
   DepartmentListError,
@@ -17,6 +21,11 @@ export function DepartmentListContent({
   onRetry,
   isActive,
 }: DepartmentListContentProps) {
+  const [updatingDepartment, setUpdatingDepartment] =
+    useState<DepartmentListItemDto | null>(null);
+  const [deletingDepartment, setDeletingDepartment] =
+    useState<DepartmentListItemDto | null>(null);
+
   switch (state.status) {
     case "loading":
       return <DepartmentListLoading />;
@@ -29,6 +38,26 @@ export function DepartmentListContent({
         return <DepartmentListEmpty isActive={isActive} />;
       }
 
-      return <DepartmentList departments={state.departments} />;
+      return (
+        <>
+          <DepartmentList
+            departments={state.departments}
+            onCardUpdate={setUpdatingDepartment}
+            onCardDelete={setDeletingDepartment}
+          />
+          {updatingDepartment && (
+            <UpdateDepartmentDialog
+              department={updatingDepartment}
+              onClose={() => setUpdatingDepartment(null)}
+            />
+          )}
+          {deletingDepartment && (
+            <DeleteDepartmentDialog
+              department={deletingDepartment}
+              onClose={() => setDeletingDepartment(null)}
+            />
+          )}
+        </>
+      );
   }
 }

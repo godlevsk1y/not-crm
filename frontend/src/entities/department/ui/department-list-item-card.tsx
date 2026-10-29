@@ -1,4 +1,9 @@
-import { TreeStructureIcon } from "@phosphor-icons/react/ssr";
+import {
+  PencilSimpleIcon,
+  TrashIcon,
+  TreeStructureIcon,
+} from "@phosphor-icons/react/ssr";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
@@ -17,8 +22,12 @@ const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
 
 export function DepartmentListItemCard({
   department,
+  onUpdate,
+  onDelete,
 }: {
   department: DepartmentListItemDto;
+  onUpdate: () => void;
+  onDelete: () => void;
 }) {
   const { name, slug, path, createdAt } = department;
   const createdAtDate = new Date(createdAt);
@@ -46,13 +55,28 @@ export function DepartmentListItemCard({
         </p>
       </CardContent>
 
-      <CardFooter className="mt-auto">
+      <CardFooter className="mt-auto flex-col items-start gap-3">
         <p className="text-xs text-muted-foreground">
           Добавлено{" "}
           <time dateTime={createdAtDate.toISOString()}>
             {dateFormatter.format(createdAtDate)}
           </time>
         </p>
+        <div className="flex w-full flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
+            <PencilSimpleIcon aria-hidden="true" />
+            Редактировать
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            onClick={onDelete}
+          >
+            <TrashIcon aria-hidden="true" />
+            Удалить
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
