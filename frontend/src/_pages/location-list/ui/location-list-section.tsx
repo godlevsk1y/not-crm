@@ -1,6 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/shared/ui/skeleton";
+import { StatusFilter } from "@/shared/ui/status-filter";
 
 import { useLocationList } from "../model/use-location-list";
 import { LocationListContent } from "./location-list-content";
@@ -13,20 +14,24 @@ import { LocationListError, LocationListLoading } from "./location-list-states";
 const PAGE_SIZE = 9;
 
 export function LocationListSection() {
+  const [isActive, setIsActive] = useState(true);
   const filter = useLocationDepartmentFilter();
   const departmentIds = filter.selected.map((department) => department.id);
 
   return (
     <section aria-label="Локации организации">
-      <div className="mb-6 max-w-lg">
-        <DepartmentSelect
-          mode="multiple"
-          label="Фильтр по подразделениям"
-          placeholder="Все подразделения"
-          value={filter.selected}
-          onChange={filter.updateUrlFilters}
-          disabled={filter.isPending}
-        />
+      <div className="mb-6 flex flex-wrap items-start gap-4">
+        <StatusFilter value={isActive} onChange={setIsActive} />
+        <div className="w-full max-w-lg">
+          <DepartmentSelect
+            mode="multiple"
+            label="Фильтр по подразделениям"
+            placeholder="Все подразделения"
+            value={filter.selected}
+            onChange={filter.updateUrlFilters}
+            disabled={filter.isPending}
+          />
+        </div>
       </div>
 
       {filter.isError ? (
@@ -38,15 +43,22 @@ export function LocationListSection() {
         <LocationListLoading />
       ) : (
         <LocationListResults
-          key={departmentIds.join(",")}
+          key={`${isActive}:${departmentIds.join(",")}`}
           departmentIds={departmentIds}
+          isActive={isActive}
         />
       )}
     </section>
   );
 }
 
-function LocationListResults({ departmentIds }: { departmentIds: string[] }) {
+function LocationListResults({
+  departmentIds,
+  isActive,
+}: {
+  departmentIds: string[];
+  isActive: boolean;
+}) {
   const [page, setPage] = useState(1);
 
   const { state, retry } = useLocationList({
@@ -55,6 +67,7 @@ function LocationListResults({ departmentIds }: { departmentIds: string[] }) {
     sortBy: "name",
     sortDirection: "asc",
     departmentIds,
+    isActive,
   });
 
   const isLoading = state.status === "loading";
@@ -93,6 +106,7 @@ function LocationListResults({ departmentIds }: { departmentIds: string[] }) {
         state={state}
         onRetry={retry}
         isFiltered={departmentIds.length > 0}
+        isActive={isActive}
       />
 
       {state.status === "success" && (

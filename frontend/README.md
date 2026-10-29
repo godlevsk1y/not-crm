@@ -29,8 +29,16 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## List status filters
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The department, location, and position lists initially request active records.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Endpoint               | Active          | Archived         | All             |
+| ---------------------- | --------------- | ---------------- | --------------- |
+| `GET /api/departments` | `isActive=true` | `isActive=false` | Omit `isActive` |
+| `GET /api/locations`   | `isActive=true` | `isActive=false` | Unavailable     |
+| `GET /api/positions`   | `isActive=true` | `isActive=false` | Unavailable     |
+
+Locations and positions accept only boolean values; empty and `null` values are invalid. Omitting `isActive` defaults to active records for these endpoints. Departments return both statuses when the parameter is omitted.
+
+The server applies the status together with the other filters before pagination and computes `totalCount` for the matching records. Changing status preserves other filters and sorting, resets paginated lists to page one, and restarts position loading from its first page.

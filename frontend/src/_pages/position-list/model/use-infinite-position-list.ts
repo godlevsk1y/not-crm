@@ -8,10 +8,12 @@ export function useInfinitePositionList({
   sortBy,
   sortDirection,
   pageSize,
+  isActive,
 }: {
   sortBy: string;
   sortDirection: string;
   pageSize: number;
+  isActive: boolean;
 }) {
   const {
     data,
@@ -27,6 +29,7 @@ export function useInfinitePositionList({
       sortBy: sortBy,
       sortDirection: sortDirection,
       pageSize: pageSize,
+      isActive,
     }),
   });
 

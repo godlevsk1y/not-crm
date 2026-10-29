@@ -61,7 +61,11 @@ export function DepartmentListError({
   );
 }
 
-export function DepartmentListEmpty() {
+export function DepartmentListEmpty({
+  isActive,
+}: {
+  isActive: boolean | undefined;
+}) {
   return (
     <Card className="shadow-sm [--card-spacing:--spacing(6)]">
       <CardContent
@@ -72,11 +76,14 @@ export function DepartmentListEmpty() {
           <TreeStructureIcon size={30} weight="duotone" aria-hidden="true" />
         </span>
 
-        <h3 className="text-lg font-semibold">Подразделений пока нет</h3>
+        <h3 className="text-lg font-semibold">Подразделения не найдены</h3>
 
         <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-          Здесь появится структура организации, когда в справочник добавят
-          первое подразделение.
+          {isActive === undefined
+            ? "В справочнике пока нет подразделений."
+            : isActive
+              ? "Активных подразделений нет. Выберите другой статус."
+              : "Архивных подразделений нет. Выберите другой статус."}
         </p>
       </CardContent>
     </Card>

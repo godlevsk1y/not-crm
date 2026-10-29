@@ -1,4 +1,4 @@
-import { DepartmentListState } from "@/entities/department";
+import type { DepartmentListState } from "../model/use-department-list";
 import { DepartmentList } from "./department-list";
 import {
   DepartmentListLoading,
@@ -9,11 +9,13 @@ import {
 interface DepartmentListContentProps {
   state: DepartmentListState;
   onRetry: () => void;
+  isActive: boolean | undefined;
 }
 
 export function DepartmentListContent({
   state,
   onRetry,
+  isActive,
 }: DepartmentListContentProps) {
   switch (state.status) {
     case "loading":
@@ -24,7 +26,7 @@ export function DepartmentListContent({
 
     case "success":
       if (state.departments.length === 0) {
-        return <DepartmentListEmpty />;
+        return <DepartmentListEmpty isActive={isActive} />;
       }
 
       return <DepartmentList departments={state.departments} />;

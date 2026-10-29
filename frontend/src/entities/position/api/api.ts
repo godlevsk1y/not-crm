@@ -1,9 +1,11 @@
 import { apiRequest, PagedResult } from "@/shared/api";
 import { PositionListItemDto } from "../model/types";
 import { infiniteQueryOptions } from "@tanstack/react-query";
+import type { AxiosRequestConfig } from "axios";
 
 export type GetPositionsListRequest = {
   search?: string;
+  isActive?: boolean;
   sortBy: string;
   sortDirection: string;
   page: number;
@@ -18,8 +20,12 @@ export type GetDepartmentPositionsRequest = {
 };
 
 export const positionsApi = {
-  getPositionsList: (request: GetPositionsListRequest) =>
+  getPositionsList: (
+    request: GetPositionsListRequest,
+    options?: Pick<AxiosRequestConfig, "signal">,
+  ) =>
     apiRequest<PagedResult<PositionListItemDto>>({
+      ...options,
       method: "GET",
       url: "positions",
       params: request,
@@ -72,25 +78,31 @@ export const positionsQueryOptions = {
     sortBy,
     sortDirection,
     pageSize,
+    isActive = true,
   }: {
     sortBy: string;
     sortDirection: string;
     pageSize: number;
+    isActive?: boolean;
   }) => {
     return infiniteQueryOptions({
       queryKey: [
         positionsQueryOptions.baseKey,
         "list",
         "infinite",
-        { sortBy, sortDirection, pageSize },
+        { sortBy, sortDirection, pageSize, isActive },
       ],
-      queryFn: ({ pageParam }) => {
-        return positionsApi.getPositionsList({
-          sortBy: sortBy,
-          sortDirection: sortDirection,
-          page: pageParam ?? 1,
-          pageSize: pageSize,
-        });
+      queryFn: ({ pageParam, signal }) => {
+        return positionsApi.getPositionsList(
+          {
+            sortBy: sortBy,
+            sortDirection: sortDirection,
+            page: pageParam ?? 1,
+            pageSize: pageSize,
+            isActive,
+          },
+          { signal },
+        );
       },
       initialPageParam: 1,
       getNextPageParam: (response) => {

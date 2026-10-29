@@ -4,6 +4,7 @@ import { queryOptions } from "@tanstack/react-query";
 
 export type GetLocationsListRequest = {
   search?: string;
+  isActive?: boolean;
   minDepartmentCount?: number;
   departmentIds?: string[];
   sortBy: string;
@@ -81,12 +82,14 @@ export const locationsQueryOptions = {
     page,
     pageSize,
     departmentIds,
+    isActive = true,
   }: {
     sortBy: string;
     sortDirection: string;
     page: number;
     pageSize: number;
     departmentIds?: string[];
+    isActive?: boolean;
   }) => {
     return queryOptions({
       queryFn: () =>
@@ -96,6 +99,7 @@ export const locationsQueryOptions = {
           page: page,
           pageSize: pageSize,
           departmentIds,
+          isActive,
         }),
       queryKey: [
         locationsQueryOptions.baseKey,
@@ -105,6 +109,7 @@ export const locationsQueryOptions = {
           page: page,
           pageSize: pageSize,
           departmentIds,
+          isActive,
         },
       ],
     });

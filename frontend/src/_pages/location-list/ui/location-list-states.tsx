@@ -65,8 +65,10 @@ export function LocationListError({
 
 export function LocationListEmpty({
   isFiltered = false,
+  isActive,
 }: {
   isFiltered?: boolean;
+  isActive: boolean;
 }) {
   return (
     <Card className="shadow-sm [--card-spacing:--spacing(6)]">
@@ -78,14 +80,11 @@ export function LocationListEmpty({
           <MapPinIcon size={30} weight="duotone" aria-hidden="true" />
         </span>
 
-        <h3 className="text-lg font-semibold">
-          {isFiltered ? "Локации не найдены" : "Локаций пока нет"}
-        </h3>
+        <h3 className="text-lg font-semibold">Локации не найдены</h3>
 
         <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
-          {isFiltered
-            ? "С выбранными подразделениями не связано ни одной локации. Измените или очистите фильтр."
-            : "Здесь появятся адреса офисов и рабочих пространств, когда в справочник добавят первую локацию."}
+          {isActive ? "Активных локаций нет" : "Архивных локаций нет"}
+          {isFiltered ? " у выбранных подразделений" : ""}. Измените фильтры.
         </p>
       </CardContent>
     </Card>
