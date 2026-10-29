@@ -1,6 +1,7 @@
 import { apiRequest, type PagedResult } from "@/shared/api";
 import type { LocationDto, LocationListItemDto } from "../model/types";
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
+import type { AxiosRequestConfig } from "axios";
 
 export type GetLocationsListRequest = {
   search?: string;
@@ -41,8 +42,12 @@ export type DeleteLocationRequest = {
 };
 
 export const locationsApi = {
-  getLocationsList: async (request: GetLocationsListRequest) =>
+  getLocationsList: async (
+    request: GetLocationsListRequest,
+    options?: Pick<AxiosRequestConfig, "signal" | "timeout">,
+  ) =>
     apiRequest<PagedResult<LocationListItemDto>>({
+      ...options,
       method: "GET",
       url: "locations",
       params: {
@@ -75,6 +80,33 @@ export const locationsApi = {
 
 export const locationsQueryOptions = {
   baseKey: "locations",
+
+  getLocationInfiniteOptions: (
+    request: Omit<GetLocationsListRequest, "page">,
+  ) => {
+    return infiniteQueryOptions({
+      queryKey: [locationsQueryOptions.baseKey, "list", "infinite", request],
+      queryFn: ({ pageParam, signal }) =>
+        locationsApi.getLocationsList(
+          { ...request, page: pageParam },
+          { signal, timeout: 10_000 },
+        ),
+      initialPageParam: 1,
+      getNextPageParam: (response) => {
+        const totalPages = Math.ceil(response.totalCount / response.pageSize);
+
+        if (response.page >= totalPages) return undefined;
+
+        return response.page + 1;
+      },
+      select: (data): PagedResult<LocationListItemDto> => ({
+        results: data.pages.flatMap((page) => page.results),
+        page: data.pages[0].page,
+        pageSize: data.pages[0].pageSize,
+        totalCount: data.pages[0].totalCount,
+      }),
+    });
+  },
 
   getLocationOptions: ({
     sortBy,

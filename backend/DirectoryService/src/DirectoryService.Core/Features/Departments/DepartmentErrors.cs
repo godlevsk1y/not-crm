@@ -44,6 +44,11 @@ public static class DepartmentErrors
     
     
     
+    public static Error ParentArchived(Guid id) =>
+        Error.Conflict(new ErrorMessage(
+            "department.parent.archived",
+            $"Restore parent department with id '{id}' before restoring this department"));
+
     public static Error ParentNotFound(Guid id) =>
         Error.NotFound(new ErrorMessage("department.parent.not.found", $"Parent with id '{id}' was not found"));
     

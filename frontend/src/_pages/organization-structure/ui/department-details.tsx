@@ -1,7 +1,12 @@
-import { TreeStructureIcon } from "@phosphor-icons/react";
+import {
+  PencilSimpleIcon,
+  TrashIcon,
+  TreeStructureIcon,
+} from "@phosphor-icons/react";
 
 import type { DepartmentNodeDto } from "@/entities/department";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/shared/ui/card";
 
 const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
   day: "numeric",
@@ -12,8 +17,12 @@ const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
 
 export function DepartmentDetails({
   department,
+  onUpdate,
+  onDelete,
 }: {
   department: DepartmentNodeDto;
+  onUpdate: () => void;
+  onDelete: () => void;
 }) {
   const createdAt = new Date(department.createdAt);
 
@@ -21,7 +30,7 @@ export function DepartmentDetails({
     <Card className="shadow-sm [--card-spacing:--spacing(6)]">
       <CardHeader className="gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+          <span className="flex size-10 shrink-0 items-center justify-center bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
             <TreeStructureIcon size={24} weight="duotone" aria-hidden="true" />
           </span>
           <span className="min-w-0 wrap-break-words bg-muted px-3 py-1 font-mono text-xs text-muted-foreground">
@@ -60,6 +69,21 @@ export function DepartmentDetails({
           </div>
         </dl>
       </CardContent>
+      <CardFooter className="flex flex-wrap gap-2 border-t pt-4">
+        <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
+          <PencilSimpleIcon aria-hidden="true" />
+          Редактировать
+        </Button>
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          onClick={onDelete}
+        >
+          <TrashIcon aria-hidden="true" />
+          Удалить
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

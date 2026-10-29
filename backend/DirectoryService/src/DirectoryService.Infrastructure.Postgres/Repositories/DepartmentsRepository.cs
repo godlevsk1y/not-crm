@@ -78,6 +78,14 @@ public class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
+    public async Task<Department?> GetByIdIncludingDeletedAsync(DepartmentId id, CancellationToken cancellationToken)
+    {
+        return await _context.Departments
+            .IgnoreQueryFilters()
+            .Include(d => d.Parent)
+            .FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
+    }
+
     public void Delete(Department department)
     {
         _context.Departments.Remove(department);

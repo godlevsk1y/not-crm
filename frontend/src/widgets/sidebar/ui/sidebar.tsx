@@ -31,7 +31,7 @@ const sections = [
     href: ROUTES.ORGANIZATION_STRUCTURE,
     title: "Оргструктура",
     icon: FoldersIcon,
-    accent: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    accent: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
   },
   {
     href: ROUTES.DEPARTMENTS,

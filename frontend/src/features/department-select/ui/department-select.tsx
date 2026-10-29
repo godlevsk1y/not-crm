@@ -1,6 +1,6 @@
 "use client";
 
-import { RefCallback, useCallback, useId, useState } from "react";
+import { RefCallback, useCallback, useId, useRef, useState } from "react";
 import {
   ArrowClockwiseIcon,
   CaretUpDownIcon,
@@ -50,6 +50,8 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
     disabled = false,
   } = props;
   const [open, setOpen] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const [activity, setActivity] = useState<"all" | "active" | "inactive">(
     "all",
   );
@@ -82,7 +84,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
             fetchNextPage();
           }
         },
-        { threshold: 0.8 },
+        { root: listRef.current, threshold: 0.8 },
       );
 
       if (el) {
@@ -163,13 +165,14 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
           />
         </PopoverTrigger>
         <PopoverContent
+          initialFocus={searchRef}
           align="start"
           className="w-(--anchor-width) max-w-[calc(100vw-2rem)] gap-0 p-0"
         >
           <PopoverTitle className="sr-only">{label}</PopoverTitle>
           <Command shouldFilter={false} label={label}>
             <CommandInput
-              autoFocus
+              ref={searchRef}
               aria-label="Поиск подразделений"
               placeholder="Найти подразделение…"
               value={search}
@@ -193,7 +196,7 @@ export function DepartmentSelect(props: DepartmentSelectProps) {
                 </Button>
               ))}
             </div>
-            <CommandList aria-label="Подразделения" className="max-h-64">
+            <CommandList ref={listRef} aria-label="Подразделения" className="max-h-64">
               {isPending ? (
                 <div
                   role="status"

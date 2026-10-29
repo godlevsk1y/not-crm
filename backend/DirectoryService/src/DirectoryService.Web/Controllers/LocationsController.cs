@@ -3,6 +3,7 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
 using DirectoryService.Core.Features.Locations.Commands.CreateLocation;
 using DirectoryService.Core.Features.Locations.Commands.DeleteLocation;
+using DirectoryService.Core.Features.Locations.Commands.RestoreLocation;
 using DirectoryService.Core.Features.Locations.Commands.UpdateLocation;
 using DirectoryService.Core.Features.Locations.Queries.GetLocationById;
 using DirectoryService.Core.Features.Locations.Queries.GetLocationsList;
@@ -66,6 +67,28 @@ public class LocationsController : ControllerBase
         }
         
         return EndpointResults.Ok(updateResult.Value);
+    }
+
+    [HttpPost("{id:guid}/restore")]
+    [EndpointSummary("Restore a location")]
+    [EndpointDescription("No request body. Restores an archived record while preserving its data. An active record returns 204 without changes. Missing or physically deleted records return 404. Existing relationships are preserved; removed relationships are not recreated. Data constraint conflicts return 409 and leave the record archived.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
+    public async Task<IResult> Restore(
+        [FromServices] ICommandHandler<RestoreLocationCommand> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new RestoreLocationCommand(id);
+
+        var restoreResult = await handler.Handle(command, cancellationToken);
+        if (restoreResult.IsFailure)
+        {
+            return EndpointResults.Error(restoreResult.Error);
+        }
+
+        return EndpointResults.NoContent();
     }
 
     [HttpDelete("{id:guid}")]

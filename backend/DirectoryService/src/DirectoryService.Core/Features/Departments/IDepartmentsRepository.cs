@@ -9,6 +9,8 @@ public interface IDepartmentsRepository
     Task<Guid> AddAsync(Department department, CancellationToken cancellationToken);
     
     Task<Department?> GetByIdAsync(DepartmentId id, CancellationToken cancellationToken);
+
+    Task<Department?> GetByIdIncludingDeletedAsync(DepartmentId id, CancellationToken cancellationToken);
     
     Task<Department?> GetByIdWithLockAsync(DepartmentId id, CancellationToken cancellationToken);
     

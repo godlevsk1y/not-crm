@@ -9,6 +9,8 @@ public interface ILocationsRepository
     Task<Guid> AddAsync(Location location, CancellationToken cancellationToken);
     
     Task<Location?> GetByIdAsync(LocationId id, CancellationToken cancellationToken);
+
+    Task<Location?> GetByIdIncludingDeletedAsync(LocationId id, CancellationToken cancellationToken);
     
     Task<IReadOnlyList<Location>> GetByIdsAsync(IReadOnlyCollection<LocationId> ids, CancellationToken cancellationToken);
     

@@ -65,6 +65,13 @@ internal static class DepartmentsDocumentation
             new(DepartmentErrors.NotFound(ContractExamples.Id),
                 "Active department or requested parentId is missing, including a parent foreign key race while saving."),
         ],
+        nameof(DepartmentsController.Restore) =>
+        [
+            new(DepartmentErrors.NotFound(ContractExamples.Id),
+                "Record is missing or has been physically deleted."),
+            new(DepartmentErrors.ParentArchived(ContractExamples.Id),
+                "Parent is archived; restore the parent first. The department remains archived."),
+        ],
         nameof(DepartmentsController.Delete) =>
         [
             ..MissingDepartment,

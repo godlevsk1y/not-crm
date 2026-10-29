@@ -40,6 +40,13 @@ public class LocationsRepository : ILocationsRepository
         return await _context.Locations.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
     }
 
+    public async Task<Location?> GetByIdIncludingDeletedAsync(LocationId id, CancellationToken cancellationToken)
+    {
+        return await _context.Locations
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(entity => entity.Id == id, cancellationToken);
+    }
+
     public void Delete(Location location)
     {
         _context.Locations.Remove(location);

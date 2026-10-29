@@ -87,6 +87,17 @@ public sealed class Department
     }
     
     public void SoftDelete() => DeletedAt = DateTime.UtcNow;
+
+    public void Restore()
+    {
+        if (DeletedAt is null)
+        {
+            return;
+        }
+
+        DeletedAt = null;
+        UpdatedAt = DateTime.UtcNow;
+    }
     
     private Path CalculatePath() => Parent is null ? Path.Create(Slug) : Parent.Path.Append(Slug);
     private int CalculateDepth() => Parent is null ? 0 : Parent.Depth + 1;

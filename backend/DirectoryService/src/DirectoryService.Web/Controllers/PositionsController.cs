@@ -4,6 +4,7 @@ using DirectoryService.Contracts.Positions.QueryContracts;
 using DirectoryService.Contracts.WebApi.Positions;
 using DirectoryService.Core.Features.Positions.Commands.CreatePosition;
 using DirectoryService.Core.Features.Positions.Commands.DeletePosition;
+using DirectoryService.Core.Features.Positions.Commands.RestorePosition;
 using DirectoryService.Core.Features.Positions.Commands.UpdatePosition;
 using DirectoryService.Core.Features.Positions.Queries.GetPositionList;
 using Microsoft.AspNetCore.Mvc;
@@ -91,6 +92,28 @@ public class PositionsController : ControllerBase
         }
 
         return EndpointResults.Ok(updateResult.Value);
+    }
+
+    [HttpPost("{id:guid}/restore")]
+    [EndpointSummary("Restore a position")]
+    [EndpointDescription("No request body. Restores an archived record while preserving its data. An active record returns 204 without changes. Missing or physically deleted records return 404. Existing relationships are preserved; removed relationships are not recreated. Data constraint conflicts return 409 and leave the record archived.")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status409Conflict)]
+    public async Task<IResult> Restore(
+        [FromServices] ICommandHandler<RestorePositionCommand> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var command = new RestorePositionCommand(id);
+
+        var restoreResult = await handler.Handle(command, cancellationToken);
+        if (restoreResult.IsFailure)
+        {
+            return EndpointResults.Error(restoreResult.Error);
+        }
+
+        return EndpointResults.NoContent();
     }
 
     [HttpDelete("{id:guid}")]
