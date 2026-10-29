@@ -9,8 +9,10 @@ import {
   LocationListEmpty,
 } from "./location-list-states";
 import { LocationListItemDto } from "@/entities/location";
-import { UpdateLocationDialog } from "./update-location-dialog";
-import { DeleteLocationDialog } from "./delete-location-dialog";
+import {
+  UpdateLocationDialog,
+  DeleteLocationDialog,
+} from "@/features/location-actions";
 
 interface LocationListContentProps {
   state: LocationListState;
