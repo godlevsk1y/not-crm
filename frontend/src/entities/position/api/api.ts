@@ -19,7 +19,29 @@ export type GetDepartmentPositionsRequest = {
   pageSize?: number;
 };
 
+export type UpdatePositionRequest = {
+  id: string;
+  name: string;
+};
+
+export type DeletePositionRequest = {
+  id: string;
+};
+
 export const positionsApi = {
+  updatePositionAsync: async ({ id, ...body }: UpdatePositionRequest) =>
+    apiRequest<string>({
+      method: "PATCH",
+      url: `positions/${id}`,
+      data: body,
+    }),
+
+  deletePositionAsync: async ({ id }: DeletePositionRequest) =>
+    apiRequest<void>({
+      method: "DELETE",
+      url: `positions/${id}`,
+    }),
+
   getPositionsList: (
     request: GetPositionsListRequest,
     options?: Pick<AxiosRequestConfig, "signal">,

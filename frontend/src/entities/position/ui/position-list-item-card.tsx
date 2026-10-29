@@ -1,4 +1,9 @@
-import { BriefcaseIcon } from "@phosphor-icons/react/ssr";
+import {
+  BriefcaseIcon,
+  PencilSimpleIcon,
+  TrashIcon,
+} from "@phosphor-icons/react/ssr";
+import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardFooter,
@@ -16,8 +21,12 @@ const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
 
 export function PositionListItemCard({
   position,
+  onUpdate,
+  onDelete,
 }: {
   position: PositionListItemDto;
+  onUpdate?: () => void;
+  onDelete?: () => void;
 }) {
   const { name, createdAt } = position;
   const createdAtDate = new Date(createdAt);
@@ -33,13 +42,34 @@ export function PositionListItemCard({
         </CardTitle>
       </CardHeader>
 
-      <CardFooter className="mt-auto">
+      <CardFooter className="mt-auto flex-col items-start gap-3">
         <p className="text-xs text-muted-foreground">
           Добавлена{" "}
           <time dateTime={createdAtDate.toISOString()}>
             {dateFormatter.format(createdAtDate)}
           </time>
         </p>
+        {(onUpdate || onDelete) && (
+          <div className="flex w-full flex-wrap gap-2">
+            {onUpdate && (
+              <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
+                <PencilSimpleIcon aria-hidden="true" />
+                Редактировать
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={onDelete}
+              >
+                <TrashIcon aria-hidden="true" />
+                Удалить
+              </Button>
+            )}
+          </div>
+        )}
       </CardFooter>
     </Card>
   );
