@@ -1,3 +1,4 @@
+import { RestorePositionButton } from "@/features/position-actions";
 import {
   PositionListItemCard,
   type PositionListItemDto,
@@ -5,12 +6,14 @@ import {
 
 type PositionListProps = {
   positions: PositionListItemDto[];
+  isActive: boolean;
   onCardUpdate: (position: PositionListItemDto) => void;
   onCardDelete: (position: PositionListItemDto) => void;
 };
 
 export function PositionList({
   positions,
+  isActive,
   onCardUpdate,
   onCardDelete,
 }: PositionListProps) {
@@ -20,6 +23,9 @@ export function PositionList({
         <li key={position.id} className="min-w-0">
           <PositionListItemCard
             position={position}
+            restoreAction={
+              !isActive ? <RestorePositionButton id={position.id} /> : undefined
+            }
             onUpdate={() => onCardUpdate(position)}
             onDelete={() => onCardDelete(position)}
           />

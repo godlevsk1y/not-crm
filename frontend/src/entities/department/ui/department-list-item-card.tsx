@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   PencilSimpleIcon,
   TrashIcon,
@@ -24,8 +25,10 @@ export function DepartmentListItemCard({
   department,
   onUpdate,
   onDelete,
+  restoreAction,
 }: {
   department: DepartmentListItemDto;
+  restoreAction?: ReactNode;
   onUpdate: () => void;
   onDelete: () => void;
 }) {
@@ -63,6 +66,7 @@ export function DepartmentListItemCard({
           </time>
         </p>
         <div className="flex w-full flex-wrap gap-2">
+          {restoreAction}
           <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
             <PencilSimpleIcon aria-hidden="true" />
             Редактировать

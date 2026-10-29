@@ -1,13 +1,16 @@
+import { RestoreLocationButton } from "@/features/location-actions";
 import { LocationListItemCard, LocationListItemDto } from "@/entities/location";
 
 type LocationListProps = {
   locations: LocationListItemDto[];
+  isActive: boolean;
   onCardUpdate: (location: LocationListItemDto) => void;
   onCardDelete: (location: LocationListItemDto) => void;
 };
 
 export function LocationList({
   locations,
+  isActive,
   onCardUpdate,
   onCardDelete,
 }: LocationListProps) {
@@ -17,6 +20,9 @@ export function LocationList({
         <li key={location.id} className="min-w-0">
           <LocationListItemCard
             location={location}
+            restoreAction={
+              !isActive ? <RestoreLocationButton id={location.id} /> : undefined
+            }
             onUpdate={() => onCardUpdate(location)}
             onDelete={() => onCardDelete(location)}
           />
