@@ -138,10 +138,10 @@ public class DepartmentsRepository : IDepartmentsRepository
                            WHERE d.path <@ @oldPath::ltree
                            """;
 
-        return await connection.ExecuteAsync(
-            sql: sql, 
-            param: parameters,
-            transaction: transaction
-        );
+        return await connection.ExecuteAsync(new CommandDefinition(
+            sql,
+            parameters,
+            transaction,
+            cancellationToken: cancellationToken));
     }
 }
