@@ -26,8 +26,8 @@ export function DepartmentList({
                 <RestoreDepartmentButton id={department.id} />
               ) : undefined
             }
-            onUpdate={() => onCardUpdate(department)}
-            onDelete={() => onCardDelete(department)}
+            onUpdate={department.isActive ? () => onCardUpdate(department) : undefined}
+            onDelete={department.isActive ? () => onCardDelete(department) : undefined}
           />
         </li>
       ))}

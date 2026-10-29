@@ -26,8 +26,8 @@ export function PositionList({
             restoreAction={
               !isActive ? <RestorePositionButton id={position.id} /> : undefined
             }
-            onUpdate={() => onCardUpdate(position)}
-            onDelete={() => onCardDelete(position)}
+            onUpdate={isActive ? () => onCardUpdate(position) : undefined}
+            onDelete={isActive ? () => onCardDelete(position) : undefined}
           />
         </li>
       ))}

@@ -38,8 +38,8 @@ export function LocationListItemCard({
 }: {
   location: LocationListItemDto;
   restoreAction?: ReactNode;
-  onUpdate: () => void;
-  onDelete: () => void;
+  onUpdate?: () => void;
+  onDelete?: () => void;
 }) {
   const { name, address, departmentCount, createdAt } = location;
   const createdAtDate = new Date(createdAt);
@@ -100,19 +100,23 @@ export function LocationListItemCard({
         </p>
         <div className="flex w-full flex-wrap gap-2">
           {restoreAction}
-          <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
-            <PencilSimpleIcon aria-hidden="true" />
-            Редактировать
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            onClick={onDelete}
-          >
-            <TrashIcon aria-hidden="true" />
-            Удалить
-          </Button>
+          {onUpdate && (
+            <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
+              <PencilSimpleIcon aria-hidden="true" />
+              Редактировать
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={onDelete}
+            >
+              <TrashIcon aria-hidden="true" />
+              Удалить
+            </Button>
+          )}
         </div>
       </CardFooter>
     </Card>

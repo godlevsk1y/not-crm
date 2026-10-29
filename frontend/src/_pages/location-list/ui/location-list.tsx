@@ -23,8 +23,8 @@ export function LocationList({
             restoreAction={
               !isActive ? <RestoreLocationButton id={location.id} /> : undefined
             }
-            onUpdate={() => onCardUpdate(location)}
-            onDelete={() => onCardDelete(location)}
+            onUpdate={isActive ? () => onCardUpdate(location) : undefined}
+            onDelete={isActive ? () => onCardDelete(location) : undefined}
           />
         </li>
       ))}
