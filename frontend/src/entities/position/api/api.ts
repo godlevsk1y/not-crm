@@ -38,7 +38,8 @@ export const positionsApi = {
       method: "POST",
       url: "positions",
       data: request,
-      
+    }),
+
   restorePositionAsync: async ({ id }: { id: string }) =>
     apiRequest<void>({
       method: "POST",

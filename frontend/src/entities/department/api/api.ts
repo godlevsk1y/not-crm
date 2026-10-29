@@ -65,7 +65,8 @@ export const departmentsApi = {
       method: "POST",
       url: "departments",
       data: request,
-      
+    }),
+
   restoreDepartmentAsync: async ({ id }: { id: string }) =>
     apiRequest<void>({
       method: "POST",
