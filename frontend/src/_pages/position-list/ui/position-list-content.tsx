@@ -7,7 +7,9 @@ import {
   PositionListLoading,
 } from "./position-list-states";
 import { Spinner } from "@/shared/ui/spinner";
-import { RefCallback } from "react";
+import { type RefCallback, useState } from "react";
+import { UpdatePositionDialog } from "./update-position-dialog";
+import { DeletePositionDialog } from "./delete-position-dialog";
 
 interface PositionListContentProps {
   positions: PositionListItemDto[] | undefined;
@@ -32,24 +34,48 @@ export function PositionListContent({
   message = "Не удалось загрузить должности",
   onRetry,
 }: PositionListContentProps) {
+  const [updatingPosition, setUpdatingPosition] =
+    useState<PositionListItemDto | null>(null);
+  const [deletingPosition, setDeletingPosition] =
+    useState<PositionListItemDto | null>(null);
+
+  let content;
   if (isError) {
-    return <PositionListError message={message} onRetry={onRetry} />;
-  }
-
-  if (isPending) {
-    return <PositionListLoading pageSize={pageSize} />;
-  }
-
-  if (!positions?.length) {
-    return <PositionListEmpty isActive={isActive} />;
+    content = <PositionListError message={message} onRetry={onRetry} />;
+  } else if (isPending) {
+    content = <PositionListLoading pageSize={pageSize} />;
+  } else if (!positions?.length) {
+    content = <PositionListEmpty isActive={isActive} />;
+  } else {
+    content = (
+      <div>
+        <PositionList
+          positions={positions}
+          onCardUpdate={setUpdatingPosition}
+          onCardDelete={setDeletingPosition}
+        />
+        <div ref={cursorRef} className="flex justify-center py-8">
+          {isFetchingNextPage && <Spinner />}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <PositionList positions={positions ?? []} />
-      <div ref={cursorRef} className="flex justify-center py-8">
-        {isFetchingNextPage && <Spinner />}
-      </div>
-    </div>
+    <>
+      {content}
+      {updatingPosition && (
+        <UpdatePositionDialog
+          position={updatingPosition}
+          onClose={() => setUpdatingPosition(null)}
+        />
+      )}
+      {deletingPosition && (
+        <DeletePositionDialog
+          position={deletingPosition}
+          onClose={() => setDeletingPosition(null)}
+        />
+      )}
+    </>
   );
 }
