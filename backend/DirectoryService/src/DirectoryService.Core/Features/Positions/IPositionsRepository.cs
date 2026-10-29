@@ -9,5 +9,7 @@ public interface IPositionsRepository
 
     Task<Position?> GetByIdAsync(PositionId id, CancellationToken cancellationToken);
 
+    Task<Position?> GetByIdIncludingDeletedAsync(PositionId id, CancellationToken cancellationToken);
+
     void Delete(Position position);
 }

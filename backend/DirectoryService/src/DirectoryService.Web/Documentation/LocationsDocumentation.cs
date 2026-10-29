@@ -51,6 +51,13 @@ internal static class LocationsDocumentation
                 "Supplied HouseNumber is empty or whitespace on update; null preserves its stored value."),
             ..MissingResource,
         ],
+        nameof(LocationsController.Restore) =>
+        [
+            new(LocationErrors.NotFound(ContractExamples.Id),
+                "Record is missing or has been physically deleted."),
+            new(LocationErrors.AlreadyExists(),
+                "Restoration violates the existing location name constraint; the location remains archived."),
+        ],
         nameof(LocationsController.Delete) =>
         [
             ..MissingResource,
