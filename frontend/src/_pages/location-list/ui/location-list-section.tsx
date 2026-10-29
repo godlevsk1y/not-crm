@@ -70,6 +70,11 @@ function LocationListResults({
     isActive,
   });
 
+  if (state.status === "success" && page > 1) {
+    const lastPage = Math.max(1, Math.ceil(state.totalCount / PAGE_SIZE));
+    if (page > lastPage) setPage(lastPage);
+  }
+
   const isLoading = state.status === "loading";
 
   const cityCount =

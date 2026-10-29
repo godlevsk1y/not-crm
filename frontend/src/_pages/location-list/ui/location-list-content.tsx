@@ -47,6 +47,7 @@ export function LocationListContent({
       return (
         <>
           <LocationList
+            isActive={isActive}
             locations={state.locations}
             onCardUpdate={setUpdatingLocation}
             onCardDelete={setDeletingLocation}

@@ -53,6 +53,12 @@ export type DeleteDepartmentRequest = {
 };
 
 export const departmentsApi = {
+  restoreDepartmentAsync: async ({ id }: { id: string }) =>
+    apiRequest<void>({
+      method: "POST",
+      url: `departments/${id}/restore`,
+    }),
+
   updateDepartmentAsync: async ({ id, ...body }: UpdateDepartmentRequest) =>
     apiRequest<string>({
       method: "PATCH",

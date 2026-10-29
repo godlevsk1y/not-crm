@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   BriefcaseIcon,
   PencilSimpleIcon,
@@ -23,8 +24,10 @@ export function PositionListItemCard({
   position,
   onUpdate,
   onDelete,
+  restoreAction,
 }: {
   position: PositionListItemDto;
+  restoreAction?: ReactNode;
   onUpdate?: () => void;
   onDelete?: () => void;
 }) {
@@ -49,8 +52,9 @@ export function PositionListItemCard({
             {dateFormatter.format(createdAtDate)}
           </time>
         </p>
-        {(onUpdate || onDelete) && (
+        {(onUpdate || onDelete || restoreAction) && (
           <div className="flex w-full flex-wrap gap-2">
+            {restoreAction}
             {onUpdate && (
               <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
                 <PencilSimpleIcon aria-hidden="true" />

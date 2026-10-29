@@ -29,6 +29,12 @@ export type DeletePositionRequest = {
 };
 
 export const positionsApi = {
+  restorePositionAsync: async ({ id }: { id: string }) =>
+    apiRequest<void>({
+      method: "POST",
+      url: `positions/${id}/restore`,
+    }),
+
   updatePositionAsync: async ({ id, ...body }: UpdatePositionRequest) =>
     apiRequest<string>({
       method: "PATCH",

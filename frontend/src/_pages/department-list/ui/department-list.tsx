@@ -1,3 +1,4 @@
+import { RestoreDepartmentButton } from "@/features/department-actions";
 import {
   DepartmentListItemCard,
   type DepartmentListItemDto,
@@ -20,8 +21,13 @@ export function DepartmentList({
         <li key={department.id} className="min-w-0">
           <DepartmentListItemCard
             department={department}
-            onUpdate={() => onCardUpdate(department)}
-            onDelete={() => onCardDelete(department)}
+            restoreAction={
+              !department.isActive ? (
+                <RestoreDepartmentButton id={department.id} />
+              ) : undefined
+            }
+            onUpdate={department.isActive ? () => onCardUpdate(department) : undefined}
+            onDelete={department.isActive ? () => onCardDelete(department) : undefined}
           />
         </li>
       ))}

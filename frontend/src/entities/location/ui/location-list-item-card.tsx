@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   MapPinIcon,
   PencilSimpleIcon,
@@ -33,10 +34,12 @@ export function LocationListItemCard({
   location,
   onUpdate,
   onDelete,
+  restoreAction,
 }: {
   location: LocationListItemDto;
-  onUpdate: () => void;
-  onDelete: () => void;
+  restoreAction?: ReactNode;
+  onUpdate?: () => void;
+  onDelete?: () => void;
 }) {
   const { name, address, departmentCount, createdAt } = location;
   const createdAtDate = new Date(createdAt);
@@ -96,19 +99,24 @@ export function LocationListItemCard({
           </time>
         </p>
         <div className="flex w-full flex-wrap gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
-            <PencilSimpleIcon aria-hidden="true" />
-            Редактировать
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            onClick={onDelete}
-          >
-            <TrashIcon aria-hidden="true" />
-            Удалить
-          </Button>
+          {restoreAction}
+          {onUpdate && (
+            <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
+              <PencilSimpleIcon aria-hidden="true" />
+              Редактировать
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={onDelete}
+            >
+              <TrashIcon aria-hidden="true" />
+              Удалить
+            </Button>
+          )}
         </div>
       </CardFooter>
     </Card>
