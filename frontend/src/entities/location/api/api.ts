@@ -42,6 +42,12 @@ export type DeleteLocationRequest = {
 };
 
 export const locationsApi = {
+  restoreLocationAsync: async ({ id }: { id: string }) =>
+    apiRequest<void>({
+      method: "POST",
+      url: `locations/${id}/restore`,
+    }),
+
   getLocationsList: async (
     request: GetLocationsListRequest,
     options?: Pick<AxiosRequestConfig, "signal" | "timeout">,

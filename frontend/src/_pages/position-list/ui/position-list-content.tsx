@@ -52,6 +52,7 @@ export function PositionListContent({
     content = (
       <div>
         <PositionList
+          isActive={isActive}
           positions={positions}
           onCardUpdate={setUpdatingPosition}
           onCardDelete={setDeletingPosition}
