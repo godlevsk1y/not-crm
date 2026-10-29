@@ -14,6 +14,7 @@ export {
   type GetRootDepartmentsRequest,
   type GetImmediateChildrenRequest,
   type UpdateDepartmentRequest,
+  type CreateDepartmentRequest,
   type DeleteDepartmentRequest,
 } from "./api/api";
 

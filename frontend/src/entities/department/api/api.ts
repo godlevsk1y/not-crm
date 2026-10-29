@@ -48,11 +48,24 @@ export type UpdateDepartmentRequest = {
   slug?: string;
 };
 
+export type CreateDepartmentRequest = {
+  name: string;
+  slug: string;
+  parentId: string | null;
+  locationIds: string[];
+};
+
 export type DeleteDepartmentRequest = {
   id: string;
 };
 
 export const departmentsApi = {
+  createDepartmentAsync: async (request: CreateDepartmentRequest) =>
+    apiRequest<DepartmentDto>({
+      method: "POST",
+      url: "departments",
+      data: request,
+      
   restoreDepartmentAsync: async ({ id }: { id: string }) =>
     apiRequest<void>({
       method: "POST",
