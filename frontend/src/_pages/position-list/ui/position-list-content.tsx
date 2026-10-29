@@ -8,8 +8,10 @@ import {
 } from "./position-list-states";
 import { Spinner } from "@/shared/ui/spinner";
 import { type RefCallback, useState } from "react";
-import { UpdatePositionDialog } from "./update-position-dialog";
-import { DeletePositionDialog } from "./delete-position-dialog";
+import {
+  UpdatePositionDialog,
+  DeletePositionDialog,
+} from "@/features/position-actions";
 
 interface PositionListContentProps {
   positions: PositionListItemDto[] | undefined;
