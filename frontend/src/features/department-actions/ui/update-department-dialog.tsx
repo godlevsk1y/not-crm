@@ -2,7 +2,7 @@
 
 import {
   type DepartmentFormValues,
-  type DepartmentListItemDto,
+  type DepartmentDto,
   departmentSchema,
 } from "@/entities/department";
 import { ApiRequestError } from "@/shared/api";
@@ -44,7 +44,7 @@ export function UpdateDepartmentDialog({
   department,
   onClose,
 }: {
-  department: DepartmentListItemDto;
+  department: Pick<DepartmentDto, "id" | "name" | "slug">;
   onClose: () => void;
 }) {
   const id = useId();

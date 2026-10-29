@@ -109,6 +109,12 @@ export const departmentsApi = {
 export const departmentsQueryOptions = {
   baseKey: "departments",
 
+  getDepartmentOptions: (id: string) =>
+    queryOptions({
+      queryKey: [departmentsQueryOptions.baseKey, "detail", id],
+      queryFn: ({ signal }) => departmentsApi.getDepartment(id, { signal }),
+    }),
+
   getDepartmentListOptions: (request: GetDepartmentListRequest) => {
     const normalizedRequest = normalizeDepartmentListRequest(request);
 

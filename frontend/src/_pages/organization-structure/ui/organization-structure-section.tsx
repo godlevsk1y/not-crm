@@ -2,8 +2,16 @@
 
 import { useState } from "react";
 import { TreeStructureIcon } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 
-import type { DepartmentNodeDto } from "@/entities/department";
+import {
+  type DepartmentNodeDto,
+  departmentsQueryOptions,
+} from "@/entities/department";
+import {
+  UpdateDepartmentDialog,
+  DeleteDepartmentDialog,
+} from "@/features/department-actions";
 import { Card, CardContent } from "@/shared/ui/card";
 
 import { DepartmentDetails } from "./department-details";
@@ -13,6 +21,15 @@ import { DepartmentTree } from "./department-tree";
 export function OrganizationStructureSection() {
   const [selectedDepartment, setSelectedDepartment] =
     useState<DepartmentNodeDto | null>(null);
+  const [action, setAction] = useState<"update" | "delete" | null>(null);
+
+  const { data: departmentDetails } = useQuery({
+    ...departmentsQueryOptions.getDepartmentOptions(selectedDepartment?.id ?? ""),
+    enabled: selectedDepartment !== null,
+  });
+  const currentDepartment = selectedDepartment
+    ? { ...selectedDepartment, ...departmentDetails }
+    : null;
 
   return (
     <div className="grid items-start gap-6 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
@@ -35,13 +52,30 @@ export function OrganizationStructureSection() {
       </Card>
 
       <section aria-label="Выбранное подразделение" className="min-w-0">
-        {selectedDepartment ? (
+        {currentDepartment ? (
           <div className="space-y-8">
-            <DepartmentDetails department={selectedDepartment} />
-            <DepartmentPositions
-              key={selectedDepartment.id}
-              id={selectedDepartment.id}
+            <DepartmentDetails
+              department={currentDepartment}
+              onUpdate={() => setAction("update")}
+              onDelete={() => setAction("delete")}
             />
+            <DepartmentPositions
+              key={currentDepartment.id}
+              id={currentDepartment.id}
+            />
+            {action === "update" && (
+              <UpdateDepartmentDialog
+                department={currentDepartment}
+                onClose={() => setAction(null)}
+              />
+            )}
+            {action === "delete" && (
+              <DeleteDepartmentDialog
+                department={currentDepartment}
+                onClose={() => setAction(null)}
+                onDeleted={() => setSelectedDepartment(null)}
+              />
+            )}
           </div>
         ) : (
           <Card className="shadow-sm [--card-spacing:--spacing(6)]">

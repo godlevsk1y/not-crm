@@ -2,8 +2,10 @@ import { useState } from "react";
 import type { DepartmentListItemDto } from "@/entities/department";
 import type { DepartmentListState } from "../model/use-department-list";
 import { DepartmentList } from "./department-list";
-import { UpdateDepartmentDialog } from "./update-department-dialog";
-import { DeleteDepartmentDialog } from "./delete-department-dialog";
+import {
+  UpdateDepartmentDialog,
+  DeleteDepartmentDialog,
+} from "@/features/department-actions";
 import {
   DepartmentListLoading,
   DepartmentListError,

@@ -1,6 +1,6 @@
 "use client";
 
-import type { DepartmentListItemDto } from "@/entities/department";
+import type { DepartmentDto } from "@/entities/department";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -17,9 +17,11 @@ import { useDeleteDepartment } from "../model/use-delete-department";
 export function DeleteDepartmentDialog({
   department,
   onClose,
+  onDeleted,
 }: {
-  department: DepartmentListItemDto;
+  department: Pick<DepartmentDto, "id" | "name" | "slug">;
   onClose: () => void;
+  onDeleted?: () => void;
 }) {
   const { deleteDepartmentFunc, isPending, errorMessage } = useDeleteDepartment();
 
@@ -28,7 +30,12 @@ export function DeleteDepartmentDialog({
 
     deleteDepartmentFunc(
       { id: department.id },
-      { onSuccess: () => onClose() },
+      {
+        onSuccess: () => {
+          onDeleted?.();
+          onClose();
+        },
+      },
     );
   };
 
