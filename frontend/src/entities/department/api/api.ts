@@ -42,7 +42,30 @@ export type GetImmediateChildrenRequest = {
   pageSize?: number;
 };
 
+export type UpdateDepartmentRequest = {
+  id: string;
+  name?: string;
+  slug?: string;
+};
+
+export type DeleteDepartmentRequest = {
+  id: string;
+};
+
 export const departmentsApi = {
+  updateDepartmentAsync: async ({ id, ...body }: UpdateDepartmentRequest) =>
+    apiRequest<string>({
+      method: "PATCH",
+      url: `departments/${id}`,
+      data: body,
+    }),
+
+  deleteDepartmentAsync: async ({ id }: DeleteDepartmentRequest) =>
+    apiRequest<void>({
+      method: "DELETE",
+      url: `departments/${id}`,
+    }),
+
   getDepartment: async (
     id: string,
     options?: Pick<AxiosRequestConfig, "signal" | "timeout">,
@@ -85,6 +108,12 @@ export const departmentsApi = {
 
 export const departmentsQueryOptions = {
   baseKey: "departments",
+
+  getDepartmentOptions: (id: string) =>
+    queryOptions({
+      queryKey: [departmentsQueryOptions.baseKey, "detail", id],
+      queryFn: ({ signal }) => departmentsApi.getDepartment(id, { signal }),
+    }),
 
   getDepartmentListOptions: (request: GetDepartmentListRequest) => {
     const normalizedRequest = normalizeDepartmentListRequest(request);

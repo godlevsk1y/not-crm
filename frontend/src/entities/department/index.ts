@@ -13,4 +13,8 @@ export {
   type GetDepartmentListRequest,
   type GetRootDepartmentsRequest,
   type GetImmediateChildrenRequest,
+  type UpdateDepartmentRequest,
+  type DeleteDepartmentRequest,
 } from "./api/api";
+
+export { departmentSchema, type DepartmentFormValues } from "./model/validation";
