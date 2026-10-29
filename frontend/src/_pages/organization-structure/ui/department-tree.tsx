@@ -117,7 +117,7 @@ function DepartmentTreeNode({
       <div
         className={cn(
           "flex items-center hover:bg-muted/70",
-          isSelected && "bg-emerald-500/10 hover:bg-emerald-500/15",
+          isSelected && "bg-yellow-500/10 hover:bg-yellow-500/15",
         )}
       >
         {department.hasChildren ? (
@@ -152,11 +152,11 @@ function DepartmentTreeNode({
           title={department.name}
           className={cn(
             "flex min-w-0 flex-1 items-center gap-2 py-2 pr-2 text-left text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring",
-            isSelected && "font-medium text-emerald-700 dark:text-emerald-300",
+            isSelected && "font-medium text-yellow-800 dark:text-yellow-200",
           )}
         >
           <Folder
-            className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400"
+            className="size-4 shrink-0 text-yellow-700 dark:text-yellow-400"
             weight="duotone"
             aria-hidden="true"
           />

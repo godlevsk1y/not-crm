@@ -49,7 +49,7 @@ export function OrganizationStructureSection() {
               role="status"
               className="flex flex-col items-center py-10 text-center sm:py-16"
             >
-              <span className="mb-6 flex size-14 items-center justify-center bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <span className="mb-6 flex size-14 items-center justify-center bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
                 <TreeStructureIcon
                   size={30}
                   weight="duotone"
