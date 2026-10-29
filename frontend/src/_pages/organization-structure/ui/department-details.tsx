@@ -21,7 +21,7 @@ export function DepartmentDetails({
     <Card className="shadow-sm [--card-spacing:--spacing(6)]">
       <CardHeader className="gap-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+          <span className="flex size-10 shrink-0 items-center justify-center bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
             <TreeStructureIcon size={24} weight="duotone" aria-hidden="true" />
           </span>
           <span className="min-w-0 wrap-break-words bg-muted px-3 py-1 font-mono text-xs text-muted-foreground">

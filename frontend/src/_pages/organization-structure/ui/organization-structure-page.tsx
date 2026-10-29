@@ -11,7 +11,7 @@ export function OrganizationStructurePage() {
             Directory Service
           </p>
           <div className="flex items-center gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+            <span className="flex size-12 shrink-0 items-center justify-center bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">
               <TreeStructureIcon
                 size={26}
                 weight="duotone"
