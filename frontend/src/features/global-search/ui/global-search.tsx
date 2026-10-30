@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+import {
+  BriefcaseIcon,
+  MagnifyingGlassIcon,
+  MapPinIcon,
+  TreeStructureIcon,
+} from "@phosphor-icons/react";
 
 import { getDepartmentStructureHref } from "@/shared/config/routes";
 import { Button } from "@/shared/ui/button";
@@ -25,9 +30,24 @@ import { Spinner } from "@/shared/ui/spinner";
 import { searchDirectory } from "../api/search";
 
 const groups = [
-  { key: "departments", title: "Подразделения" },
-  { key: "locations", title: "Локации" },
-  { key: "positions", title: "Должности" },
+  {
+    key: "departments",
+    title: "Подразделения",
+    icon: TreeStructureIcon,
+    accent: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  },
+  {
+    key: "locations",
+    title: "Локации",
+    icon: MapPinIcon,
+    accent: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+  },
+  {
+    key: "positions",
+    title: "Должности",
+    icon: BriefcaseIcon,
+    accent: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+  },
 ] as const;
 
 export function GlobalSearch() {
@@ -156,7 +176,7 @@ function SearchContent({
             </Button>
           </div>
         ) : (
-          groups.map(({ key, title }) =>
+          groups.map(({ key, title, icon: Icon, accent }) =>
             data?.[key].items.length ? (
               <CommandGroup key={key} heading={title}>
                 {data[key].items.map((item) => (
@@ -170,6 +190,15 @@ function SearchContent({
                     }}
                     className={key === "departments" ? "cursor-pointer" : undefined}
                   >
+                    <span
+                      className={`flex size-7 shrink-0 items-center justify-center ${accent}`}
+                    >
+                      <Icon
+                        className="size-4"
+                        weight="duotone"
+                        aria-hidden="true"
+                      />
+                    </span>
                     <span className="min-w-0 break-words">{item.name}</span>
                   </CommandItem>
                 ))}
