@@ -135,6 +135,10 @@ internal static class DepartmentsDocumentation
             new(DepartmentErrors.NotFound(ContractExamples.Id),
                 "Department with the route ID is missing or has been physically deleted. Archived departments are included."),
         ],
+        nameof(DepartmentsController.GetBranchById) =>
+        [
+            ..MissingDepartment,
+        ],
         nameof(DepartmentsController.GetAncestorsById) =>
         [
             ..PaginationValidation,

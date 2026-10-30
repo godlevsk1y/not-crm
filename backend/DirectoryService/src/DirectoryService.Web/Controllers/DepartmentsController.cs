@@ -13,6 +13,7 @@ using DirectoryService.Core.Features.Departments.Commands.TransferDepartment;
 using DirectoryService.Core.Features.Departments.Commands.RestoreDepartment;
 using DirectoryService.Core.Features.Departments.Commands.UpdateDepartment;
 using DirectoryService.Core.Features.Departments.Queries.GetAncestorsById;
+using DirectoryService.Core.Features.Departments.Queries.GetBranchById;
 using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentById;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
@@ -366,6 +367,28 @@ public class DepartmentsController : ControllerBase
     )
     {
         var query = new GetDescendantsByIdQuery(id);
+
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+
+        return EndpointResults.Ok(result.Value);
+    }
+
+    [HttpGet("{id:guid}/branch")]
+    [EndpointSummary("Get a department branch from root")]
+    [EndpointDescription("Returns the full array of active departments ordered from root to the selected department, inclusive. The last element has the requested ID; a root returns one element. No pagination or depth limit. Siblings and descendants are excluded, but childCount counts all active immediate children and hasChildren equals childCount > 0. createdAt is the stored creation timestamp. Missing or deleted target departments return 404.")]
+    [ProducesResponseType<Envelope<IReadOnlyList<DepartmentBranchNodeDto>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    public async Task<IResult> GetBranchById(
+        [FromServices] IQueryHandler<GetBranchByIdQuery,
+            Result<IReadOnlyList<DepartmentBranchNodeDto>, Error>> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetBranchByIdQuery(id);
 
         var result = await handler.Handle(query, cancellationToken);
         if (result.IsFailure)
