@@ -45,6 +45,7 @@ internal static class ContractExamples
         [typeof(PagedResult<DepartmentListItemDto>)] = new PagedResult<DepartmentListItemDto>([new(Id, "Engineering", "engineering", "engineering", true, Timestamp, Timestamp, null)], 1, 20, 1),
         [typeof(PagedResult<DepartmentNodeDto>)] = new PagedResult<DepartmentNodeDto>([new() { Id = Id, Name = "Engineering", Slug = "engineering", Path = "engineering", Depth = 0, CreatedAt = default, HasChildren = false, ChildCount = 0 }], 1, 20, 1),
         [typeof(PagedResult<DepartmentAncestorDto>)] = new PagedResult<DepartmentAncestorDto>([new(Id, "Company", "company", "company", 0, null)], 1, 20, 1),
+        [typeof(IReadOnlyList<DepartmentDescendantDto>)] = new DepartmentDescendantDto[] { new(Id, "Engineering", Guid.Parse("22222222-2222-2222-2222-222222222222")) },
         [typeof(PagedResult<DepartmentWithAncestorsDto>)] = new PagedResult<DepartmentWithAncestorsDto>([new() { Id = Id, Name = "Engineering", Slug = "engineering", Path = "engineering", Depth = 0, ParentId = null, Ancestors = [] }], 1, 20, 1),
     };
 

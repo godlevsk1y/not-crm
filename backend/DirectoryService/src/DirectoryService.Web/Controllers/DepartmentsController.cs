@@ -19,6 +19,7 @@ using DirectoryService.Core.Features.Departments.Queries.GetDepartmentList;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentPositions;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTreeByName;
+using DirectoryService.Core.Features.Departments.Queries.GetDescendantsById;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Core.Abstractions;
 using Shared.Framework.Results;
@@ -349,6 +350,29 @@ public class DepartmentsController : ControllerBase
             return EndpointResults.Error(result.Error);
         }
         
+        return EndpointResults.Ok(result.Value);
+    }
+
+    [HttpGet("{id}/descendants")]
+    [EndpointSummary("List all department descendants")]
+    [EndpointDescription("Returns a flat list of all active and archived descendants at any depth, excluding this department, ordered by name/ID. No pagination or depth limit. An existing department with no descendants returns an empty list; a missing department returns 404. The source department may be active or archived.")]
+    [ProducesResponseType<Envelope<IReadOnlyList<DepartmentDescendantDto>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    public async Task<IResult> GetDescendantsById(
+        [FromServices] IQueryHandler<GetDescendantsByIdQuery,
+            Result<IReadOnlyList<DepartmentDescendantDto>, Error>> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetDescendantsByIdQuery(id);
+
+        var result = await handler.Handle(query, cancellationToken);
+        if (result.IsFailure)
+        {
+            return EndpointResults.Error(result.Error);
+        }
+
         return EndpointResults.Ok(result.Value);
     }
 
