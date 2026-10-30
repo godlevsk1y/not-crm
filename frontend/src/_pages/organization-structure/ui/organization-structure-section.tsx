@@ -11,6 +11,7 @@ import {
 import {
   UpdateDepartmentDialog,
   DeleteDepartmentDialog,
+  TransferDepartmentDialog,
 } from "@/features/department-actions";
 import { Card, CardContent } from "@/shared/ui/card";
 
@@ -21,7 +22,7 @@ import { DepartmentTree } from "./department-tree";
 export function OrganizationStructureSection() {
   const [selectedDepartment, setSelectedDepartment] =
     useState<DepartmentNodeDto | null>(null);
-  const [action, setAction] = useState<"update" | "delete" | null>(null);
+  const [action, setAction] = useState<"update" | "delete" | "transfer" | null>(null);
 
   const { data: departmentDetails } = useQuery({
     ...departmentsQueryOptions.getDepartmentOptions(selectedDepartment?.id ?? ""),
@@ -58,6 +59,7 @@ export function OrganizationStructureSection() {
               department={currentDepartment}
               onUpdate={() => setAction("update")}
               onDelete={() => setAction("delete")}
+              onTransfer={() => setAction("transfer")}
             />
             <DepartmentPositions
               key={currentDepartment.id}
@@ -74,6 +76,13 @@ export function OrganizationStructureSection() {
                 department={currentDepartment}
                 onClose={() => setAction(null)}
                 onDeleted={() => setSelectedDepartment(null)}
+              />
+            )}
+            {action === "transfer" && (
+              <TransferDepartmentDialog
+                key={`transfer-${currentDepartment.id}`}
+                department={currentDepartment}
+                onClose={() => setAction(null)}
               />
             )}
           </div>

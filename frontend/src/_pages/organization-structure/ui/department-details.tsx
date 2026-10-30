@@ -19,10 +19,12 @@ export function DepartmentDetails({
   department,
   onUpdate,
   onDelete,
+  onTransfer,
 }: {
   department: DepartmentNodeDto;
   onUpdate: () => void;
   onDelete: () => void;
+  onTransfer: () => void;
 }) {
   const createdAt = new Date(department.createdAt);
 
@@ -73,6 +75,10 @@ export function DepartmentDetails({
         <Button type="button" variant="outline" size="sm" onClick={onUpdate}>
           <PencilSimpleIcon aria-hidden="true" />
           Редактировать
+        </Button>
+        <Button type="button" variant="outline" size="sm" onClick={onTransfer}>
+          <TreeStructureIcon aria-hidden="true" />
+          Перенести
         </Button>
         <Button
           type="button"

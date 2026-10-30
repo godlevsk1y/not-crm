@@ -17,6 +17,16 @@ export type DepartmentListItemDto = {
   deletedAt?: string;
 };
 
+export type DepartmentDescendantDto = {
+  id: string;
+  name: string;
+  parentId: string | null;
+};
+
+export type TransferredDepartmentDto = DepartmentDto & {
+  depth: number;
+};
+
 export type DepartmentNodeDto = {
   id: string;
   name: string;
