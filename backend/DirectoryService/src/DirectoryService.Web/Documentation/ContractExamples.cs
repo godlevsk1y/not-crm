@@ -36,6 +36,12 @@ internal static class ContractExamples
     public static IReadOnlyDictionary<Type, object> Results { get; } = new Dictionary<Type, object>
     {
         [typeof(Guid)] = Id,
+        [typeof(IReadOnlyList<DepartmentBranchNodeDto>)] = new DepartmentBranchNodeDto[]
+        {
+            new(Id, null, "Company", "company", "company", 0, Timestamp, 2, true),
+            new(Guid.Parse("22222222-2222-2222-2222-222222222222"), Id,
+                "Engineering", "engineering", "company.engineering", 1, Timestamp, 0, false),
+        },
         [typeof(DepartmentDto)] = new DepartmentDto(Id, "Engineering", "engineering", "engineering", null),
         [typeof(TransferredDepartmentDto)] = new TransferredDepartmentDto(Id, "Engineering", "engineering", "engineering", 0, null),
         [typeof(LocationDto)] = new LocationDto(Id, "Moscow Office", Address),
