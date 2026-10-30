@@ -236,7 +236,9 @@ function SearchResultsGroup({
   ];
 
   return (
-    <CommandGroup heading={title}>
+    <CommandGroup
+      heading={<span className="text-sm font-semibold">{title}</span>}
+    >
       {items.map((item) => (
         <CommandItem
           key={item.id}
