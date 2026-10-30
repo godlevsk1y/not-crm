@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import {
   BriefcaseIcon,
@@ -27,7 +27,12 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { Spinner } from "@/shared/ui/spinner";
-import { searchDirectory } from "../api/search";
+import {
+  SEARCH_PAGE_SIZE,
+  searchDirectory,
+  searchDirectoryPage,
+  type SearchPage,
+} from "../api/search";
 
 const groups = [
   {
@@ -129,10 +134,12 @@ function SearchContent({
   const [debouncedQuery] = useDebounce(query, 300);
   const isReady = query.length >= 2 && query === debouncedQuery;
   const result = useQuery({
-    queryKey: ["global-search", query],
+    queryKey: ["global-search", query, SEARCH_PAGE_SIZE],
     queryFn: ({ signal }) => searchDirectory(query, signal),
     enabled: isReady,
     retry: false,
+    staleTime: Infinity,
+    gcTime: 0,
   });
   const data = isReady ? result.data : undefined;
   const isEmpty =
@@ -176,33 +183,18 @@ function SearchContent({
             </Button>
           </div>
         ) : (
-          groups.map(({ key, title, icon: Icon, accent }) =>
-            data?.[key].items.length ? (
-              <CommandGroup key={key} heading={title}>
-                {data[key].items.map((item) => (
-                  <CommandItem
-                    key={item.id}
-                    value={`${key}:${item.id}`}
-                    onSelect={() => {
-                      if (key !== "departments") return;
-                      router.push(getDepartmentStructureHref(item.id));
-                      onNavigate();
-                    }}
-                    className={key === "departments" ? "cursor-pointer" : undefined}
-                  >
-                    <span
-                      className={`flex size-7 shrink-0 items-center justify-center ${accent}`}
-                    >
-                      <Icon
-                        className="size-4"
-                        weight="duotone"
-                        aria-hidden="true"
-                      />
-                    </span>
-                    <span className="min-w-0 break-words">{item.name}</span>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+          groups.map((group) =>
+            data?.[group.key].items.length ? (
+              <SearchResultsGroup
+                key={`${query}:${group.key}`}
+                group={group}
+                query={query}
+                firstPage={data[group.key]}
+                onSelectDepartment={(id) => {
+                  router.push(getDepartmentStructureHref(id));
+                  onNavigate();
+                }}
+              />
             ) : null,
           )
         )}
@@ -211,5 +203,82 @@ function SearchContent({
         ↑ ↓ — выбрать · Enter — открыть подразделение · Esc — закрыть
       </p>
     </Command>
+  );
+}
+
+function SearchResultsGroup({
+  group: { key, title, icon: Icon, accent },
+  query,
+  firstPage,
+  onSelectDepartment,
+}: {
+  group: (typeof groups)[number];
+  query: string;
+  firstPage: SearchPage;
+  onSelectDepartment: (id: string) => void;
+}) {
+  const result = useInfiniteQuery({
+    queryKey: ["global-search", query, SEARCH_PAGE_SIZE, key],
+    queryFn: ({ pageParam, signal }) =>
+      searchDirectoryPage(key, query, pageParam, signal),
+    initialPageParam: 1,
+    initialData: { pages: [firstPage], pageParams: [1] },
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.hasMore ? pages.length + 1 : undefined,
+    retry: false,
+    staleTime: Infinity,
+    gcTime: 0,
+  });
+  const items = [
+    ...new Map(
+      result.data.pages.flatMap((page) => page.items).map((item) => [item.id, item]),
+    ).values(),
+  ];
+
+  return (
+    <CommandGroup heading={title}>
+      {items.map((item) => (
+        <CommandItem
+          key={item.id}
+          value={`${key}:${item.id}`}
+          onSelect={() => {
+            if (key === "departments") onSelectDepartment(item.id);
+          }}
+          className={key === "departments" ? "cursor-pointer" : undefined}
+        >
+          <span
+            className={`flex size-7 shrink-0 items-center justify-center ${accent}`}
+          >
+            <Icon className="size-4" weight="duotone" aria-hidden="true" />
+          </span>
+          <span className="min-w-0 break-words">{item.name}</span>
+        </CommandItem>
+      ))}
+      {result.isFetchNextPageError && (
+        <p role="alert" className="px-2 py-2 text-xs text-destructive">
+          Не удалось загрузить следующие результаты.
+        </p>
+      )}
+      {result.hasNextPage && (
+        <CommandItem
+          value={`${key}:load-more`}
+          aria-label={`${result.isFetchNextPageError ? "Повторить загрузку" : "Загрузить ещё"}: ${title.toLowerCase()}`}
+          disabled={result.isFetchingNextPage}
+          onSelect={() => {
+            if (!result.isFetchingNextPage) {
+              void result.fetchNextPage({ cancelRefetch: false });
+            }
+          }}
+          className="cursor-pointer justify-center text-muted-foreground"
+        >
+          {result.isFetchingNextPage && <Spinner aria-hidden="true" />}
+          {result.isFetchingNextPage
+            ? "Загружаем…"
+            : result.isFetchNextPageError
+              ? "Попробовать снова"
+              : "Загрузить ещё"}
+        </CommandItem>
+      )}
+    </CommandGroup>
   );
 }
