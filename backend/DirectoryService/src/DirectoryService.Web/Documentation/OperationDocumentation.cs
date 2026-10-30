@@ -90,6 +90,8 @@ internal sealed class OperationDocumentation : IOpenApiOperationTransformer
             return LocationsDocumentation.Errors(action.MethodInfo.Name);
         if (type == typeof(PositionsController))
             return PositionsDocumentation.Errors(action.MethodInfo.Name);
+        if (type == typeof(SearchController))
+            return SearchDocumentation.Errors(action.MethodInfo.Name);
         return [];
     }
 

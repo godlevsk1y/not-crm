@@ -7,6 +7,7 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.QueryContracts;
 using DirectoryService.Contracts.Positions;
 using DirectoryService.Contracts.Positions.QueryContracts;
+using DirectoryService.Contracts.Search;
 using DirectoryService.Contracts.WebApi.Departments;
 using Shared.Kernel.Results;
 
@@ -39,6 +40,11 @@ internal static class ContractExamples
         [typeof(TransferredDepartmentDto)] = new TransferredDepartmentDto(Id, "Engineering", "engineering", "engineering", 0, null),
         [typeof(LocationDto)] = new LocationDto(Id, "Moscow Office", Address),
         [typeof(PositionDto)] = new PositionDto(Id, "Engineer"),
+        [typeof(SearchPageDto)] = new SearchPageDto([new(Id, "Engineer")], false),
+        [typeof(SearchResultDto)] = new SearchResultDto(
+            new([new(Id, "Engineering")], false),
+            new([new(Id, "Engineering office")], false),
+            new([new(Id, "Engineer")], false)),
         [typeof(PagedResult<PositionListItemDto>)] = new PagedResult<PositionListItemDto>([new(Id, "Engineer", Timestamp)], 1, 20, 1),
         [typeof(PagedResult<LocationListItemDto>)] = new PagedResult<LocationListItemDto>([new(Id, "Moscow Office", Address, Timestamp, 0)], 1, 20, 1),
         [typeof(IReadOnlyList<LocationWithDepartmentCountDto>)] = new LocationWithDepartmentCountDto[] { new(new(Id, "Moscow Office", Address), 0) },
