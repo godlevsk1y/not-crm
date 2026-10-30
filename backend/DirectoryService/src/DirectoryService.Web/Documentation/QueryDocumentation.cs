@@ -17,6 +17,11 @@ internal static class QueryDocumentation
             return;
 
         var controller = action.ControllerTypeInfo.AsType();
+        if (controller == typeof(SearchController))
+        {
+            SearchDocumentation.Describe(operation);
+            return;
+        }
         var method = action.MethodInfo.Name;
         var departmentList = controller == typeof(DepartmentsController) && string.Equals(method, nameof(DepartmentsController.GetDepartmentList), StringComparison.Ordinal);
         var locationList = controller == typeof(LocationsController) && string.Equals(method, nameof(LocationsController.GetLocationList), StringComparison.Ordinal);

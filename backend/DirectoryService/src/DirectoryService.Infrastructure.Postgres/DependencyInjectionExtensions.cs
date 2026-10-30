@@ -2,6 +2,7 @@ using DirectoryService.Core.Database;
 using DirectoryService.Core.Features.Departments;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Core.Features.Positions;
+using DirectoryService.Core.Features.Search;
 using DirectoryService.Infrastructure.Postgres.Repositories;
 using DirectoryService.Infrastructure.Postgres.Services.DatabaseCleanup;
 using DirectoryService.Infrastructure.Postgres.Transactions;
@@ -40,6 +41,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IDepartmentLocationsRepository, DepartmentLocationsRepository>();
         services.AddScoped<IDepartmentPositionsRepository, DepartmentPositionsRepository>();
         services.AddScoped<IPositionsRepository, PositionsRepository>();
+        services.AddScoped<ISearchRepository, SearchRepository>();
 
         services.AddScoped<ITransactionManager, TransactionManager>();
 
