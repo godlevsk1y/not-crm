@@ -3,6 +3,8 @@ import {
   DepartmentDto,
   DepartmentListItemDto,
   DepartmentNodeDto,
+  DepartmentDescendantDto,
+  TransferredDepartmentDto,
 } from "../model/types";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import type { AxiosRequestConfig } from "axios";
@@ -59,7 +61,29 @@ export type DeleteDepartmentRequest = {
   id: string;
 };
 
+export type TransferDepartmentRequest = {
+  id: string;
+  newParentId: string | null;
+};
+
 export const departmentsApi = {
+  transferDepartmentAsync: async ({ id, ...body }: TransferDepartmentRequest) =>
+    apiRequest<TransferredDepartmentDto>({
+      method: "PUT",
+      url: `departments/${id}/parent`,
+      data: body,
+    }),
+
+  getDepartmentDescendants: async (
+    id: string,
+    options?: Pick<AxiosRequestConfig, "signal" | "timeout">,
+  ) =>
+    apiRequest<DepartmentDescendantDto[]>({
+      ...options,
+      method: "GET",
+      url: `departments/${id}/descendants`,
+    }),
+
   createDepartmentAsync: async (request: CreateDepartmentRequest) =>
     apiRequest<DepartmentDto>({
       method: "POST",
@@ -128,6 +152,13 @@ export const departmentsApi = {
 
 export const departmentsQueryOptions = {
   baseKey: "departments",
+
+  getDepartmentDescendantsOptions: (id: string) =>
+    queryOptions({
+      queryKey: [departmentsQueryOptions.baseKey, "descendants", id],
+      queryFn: ({ signal }) =>
+        departmentsApi.getDepartmentDescendants(id, { signal }),
+    }),
 
   getDepartmentOptions: (id: string) =>
     queryOptions({

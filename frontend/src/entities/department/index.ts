@@ -2,6 +2,8 @@ export type {
   DepartmentDto,
   DepartmentListItemDto,
   DepartmentNodeDto,
+  DepartmentDescendantDto,
+  TransferredDepartmentDto,
 } from "./model/types";
 
 export { DepartmentListItemCard } from "./ui/department-list-item-card";
@@ -16,6 +18,7 @@ export {
   type UpdateDepartmentRequest,
   type CreateDepartmentRequest,
   type DeleteDepartmentRequest,
+  type TransferDepartmentRequest,
 } from "./api/api";
 
 export { departmentSchema, type DepartmentFormValues } from "./model/validation";
