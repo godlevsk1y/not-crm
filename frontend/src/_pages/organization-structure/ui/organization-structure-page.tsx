@@ -1,4 +1,5 @@
 import { TreeStructureIcon } from "@phosphor-icons/react/ssr";
+import { Suspense } from "react";
 
 import { OrganizationStructureSection } from "./organization-structure-section";
 
@@ -28,7 +29,9 @@ export function OrganizationStructurePage() {
           </p>
         </header>
 
-        <OrganizationStructureSection />
+        <Suspense fallback={<p role="status">Загружаем оргструктуру…</p>}>
+          <OrganizationStructureSection />
+        </Suspense>
       </div>
     </main>
   );

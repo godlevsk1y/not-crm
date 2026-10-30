@@ -1,6 +1,7 @@
 import { apiRequest, type PagedResult } from "@/shared/api";
 import {
   DepartmentDto,
+  DepartmentBranchNodeDto,
   DepartmentListItemDto,
   DepartmentNodeDto,
   DepartmentDescendantDto,
@@ -67,6 +68,16 @@ export type TransferDepartmentRequest = {
 };
 
 export const departmentsApi = {
+  getDepartmentBranch: async (
+    id: string,
+    options?: Pick<AxiosRequestConfig, "signal" | "timeout">,
+  ) =>
+    apiRequest<DepartmentBranchNodeDto[]>({
+      ...options,
+      method: "GET",
+      url: `departments/${id}/branch`,
+    }),
+
   transferDepartmentAsync: async ({ id, ...body }: TransferDepartmentRequest) =>
     apiRequest<TransferredDepartmentDto>({
       method: "PUT",
@@ -152,6 +163,12 @@ export const departmentsApi = {
 
 export const departmentsQueryOptions = {
   baseKey: "departments",
+
+  getDepartmentBranchOptions: (id: string) =>
+    queryOptions({
+      queryKey: [departmentsQueryOptions.baseKey, "branch", id],
+      queryFn: ({ signal }) => departmentsApi.getDepartmentBranch(id, { signal }),
+    }),
 
   getDepartmentDescendantsOptions: (id: string) =>
     queryOptions({

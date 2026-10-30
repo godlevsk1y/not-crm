@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 import {
   CaretRightIcon,
   FolderIcon,
@@ -6,7 +6,10 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "cn";
 
-import type { DepartmentNodeDto } from "@/entities/department";
+import type {
+  DepartmentBranchNodeDto,
+  DepartmentNodeDto,
+} from "@/entities/department";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 
@@ -19,6 +22,7 @@ const PAGE_SIZE = 20;
 
 type DepartmentTreeProps = {
   selectedId?: string;
+  branch?: DepartmentBranchNodeDto[];
   onSelect: (department: DepartmentNodeDto) => void;
 };
 
@@ -34,12 +38,14 @@ export function DepartmentTree(props: DepartmentTreeProps) {
 
 function DepartmentTreeItems({
   query,
+  parentId = null,
   ...props
 }: DepartmentTreeProps & {
   query: ReturnType<typeof useInfiniteRootDepartments>;
+  parentId?: string | null;
 }) {
   const {
-    items,
+    items: loadedItems,
     isPending,
     isError,
     refetch,
@@ -47,8 +53,15 @@ function DepartmentTreeItems({
     isFetchingNextPage,
     fetchNextPage,
   } = query;
+  // The selected branch can be outside every loaded page. Keep it visible
+  // without changing the server's page sizes, counts or page parameters.
+  const nodes = new Map(loadedItems?.map((node) => [node.id, node]));
+  for (const node of props.branch ?? []) {
+    if (node.parentId === parentId) nodes.set(node.id, node);
+  }
+  const items = [...nodes.values()];
 
-  if (isPending) {
+  if (isPending && items.length === 0) {
     return (
       <li role="status" className="space-y-3 p-3">
         <span className="sr-only">Загружаем подразделения…</span>
@@ -102,8 +115,10 @@ function DepartmentTreeNode({
   department,
   selectedId,
   onSelect,
+  branch,
 }: DepartmentTreeProps & { department: DepartmentNodeDto }) {
   const childrenId = useId();
+  const selectedRef = useRef<HTMLButtonElement>(null);
   const isExpanded = useTreeStore((state) =>
     state.expandedIds.has(department.id),
   );
@@ -111,6 +126,10 @@ function DepartmentTreeNode({
   const collapseNode = useTreeStore((state) => state.collapseNode);
   const isSelected = selectedId === department.id;
   const Folder = isExpanded ? FolderOpenIcon : FolderIcon;
+
+  useEffect(() => {
+    if (isSelected) selectedRef.current?.scrollIntoView({ block: "nearest" });
+  }, [isSelected]);
 
   return (
     <li>
@@ -146,6 +165,7 @@ function DepartmentTreeNode({
           <span className="w-7 shrink-0" aria-hidden="true" />
         )}
         <button
+          ref={selectedRef}
           type="button"
           aria-current={isSelected ? "true" : undefined}
           onClick={() => onSelect(department)}
@@ -179,6 +199,7 @@ function DepartmentTreeNode({
             id={department.id}
             selectedId={selectedId}
             onSelect={onSelect}
+            branch={branch}
           />
         </ul>
       )}
@@ -192,5 +213,5 @@ function DepartmentTreeChildren({
 }: DepartmentTreeProps & { id: string }) {
   const query = useInfiniteImmediateChildren({ id, pageSize: PAGE_SIZE });
 
-  return <DepartmentTreeItems {...props} query={query} />;
+  return <DepartmentTreeItems {...props} parentId={id} query={query} />;
 }

@@ -2,26 +2,25 @@ import { create } from "zustand";
 
 export type TreeState = {
   expandedIds: Set<string>;
-  selectedId?: string;
 };
 
 export type TreeActions = {
   resetTree: () => void;
 
-  updateSelectedId: (id?: string) => void;
-
+  expandNodes: (ids: string[]) => void;
   expandNode: (id: string) => void;
   collapseNode: (id: string) => void;
 };
 
 export const useTreeStore = create<TreeState & TreeActions>()((set) => ({
   expandedIds: new Set<string>(),
-  selectedId: undefined,
 
-  resetTree: () =>
-    set({ expandedIds: new Set<string>(), selectedId: undefined }),
+  resetTree: () => set({ expandedIds: new Set<string>() }),
 
-  updateSelectedId: (id?: string) => set({ selectedId: id }),
+  expandNodes: (ids) =>
+    set((state) => ({
+      expandedIds: new Set([...state.expandedIds, ...ids]),
+    })),
 
   expandNode: (id: string) =>
     set((state) => ({
