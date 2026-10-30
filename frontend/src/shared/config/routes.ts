@@ -5,3 +5,7 @@ export const ROUTES = {
   LOCATIONS: "/locations",
   POSITIONS: "/positions",
 } as const;
+
+export function getDepartmentStructureHref(id: string) {
+  return `${ROUTES.ORGANIZATION_STRUCTURE}?${new URLSearchParams({ departmentId: id })}`;
+}

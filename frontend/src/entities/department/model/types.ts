@@ -37,3 +37,7 @@ export type DepartmentNodeDto = {
   hasChildren: boolean;
   childCount: number;
 };
+
+export type DepartmentBranchNodeDto = DepartmentNodeDto & {
+  parentId: string | null;
+};

@@ -2,35 +2,38 @@
 
 import { useState } from "react";
 import { TreeStructureIcon } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
 
-import {
-  type DepartmentNodeDto,
-  departmentsQueryOptions,
-} from "@/entities/department";
 import {
   UpdateDepartmentDialog,
   DeleteDepartmentDialog,
   TransferDepartmentDialog,
 } from "@/features/department-actions";
 import { Card, CardContent } from "@/shared/ui/card";
+import { ApiRequestError } from "@/shared/api";
 
+import { useSelectedDepartment } from "../model/use-selected-department";
 import { DepartmentDetails } from "./department-details";
 import { DepartmentPositions } from "./department-positions";
 import { DepartmentTree } from "./department-tree";
+import { QueryError } from "./query-controls";
 
 export function OrganizationStructureSection() {
-  const [selectedDepartment, setSelectedDepartment] =
-    useState<DepartmentNodeDto | null>(null);
-  const [action, setAction] = useState<"update" | "delete" | "transfer" | null>(null);
-
-  const { data: departmentDetails } = useQuery({
-    ...departmentsQueryOptions.getDepartmentOptions(selectedDepartment?.id ?? ""),
-    enabled: selectedDepartment !== null,
-  });
-  const currentDepartment = selectedDepartment
-    ? { ...selectedDepartment, ...departmentDetails }
-    : null;
+  const {
+    selectedId,
+    selectDepartment,
+    branch,
+    department: currentDepartment,
+    isInvalidId,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useSelectedDepartment();
+  const [action, setAction] = useState<{
+    id: string;
+    type: "update" | "delete" | "transfer";
+  } | null>(null);
+  const isNotFound = error instanceof ApiRequestError && error.status === 404;
 
   return (
     <div className="grid items-start gap-6 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
@@ -46,39 +49,57 @@ export function OrganizationStructureSection() {
           className="max-h-[60vh] overflow-auto p-2 md:max-h-[70vh]"
         >
           <DepartmentTree
-            selectedId={selectedDepartment?.id}
-            onSelect={setSelectedDepartment}
+            selectedId={selectedId}
+            branch={branch}
+            onSelect={(department) => selectDepartment(department.id)}
           />
         </nav>
       </Card>
 
       <section aria-label="Выбранное подразделение" className="min-w-0">
-        {currentDepartment ? (
+        {isInvalidId ? (
+          <p role="alert">Некорректный ID подразделения в ссылке.</p>
+        ) : isPending ? (
+          <p role="status">Загружаем подразделение…</p>
+        ) : isNotFound ? (
+          <p role="alert">Подразделение не найдено или было удалено.</p>
+        ) : isError ? (
+          <QueryError
+            message="Не удалось загрузить подразделение."
+            onRetry={() => void refetch()}
+          />
+        ) : currentDepartment ? (
           <div className="space-y-8">
             <DepartmentDetails
               department={currentDepartment}
-              onUpdate={() => setAction("update")}
-              onDelete={() => setAction("delete")}
-              onTransfer={() => setAction("transfer")}
+              onUpdate={() =>
+                setAction({ id: currentDepartment.id, type: "update" })
+              }
+              onDelete={() =>
+                setAction({ id: currentDepartment.id, type: "delete" })
+              }
+              onTransfer={() =>
+                setAction({ id: currentDepartment.id, type: "transfer" })
+              }
             />
             <DepartmentPositions
               key={currentDepartment.id}
               id={currentDepartment.id}
             />
-            {action === "update" && (
+            {action?.id === currentDepartment.id && action.type === "update" && (
               <UpdateDepartmentDialog
                 department={currentDepartment}
                 onClose={() => setAction(null)}
               />
             )}
-            {action === "delete" && (
+            {action?.id === currentDepartment.id && action.type === "delete" && (
               <DeleteDepartmentDialog
                 department={currentDepartment}
                 onClose={() => setAction(null)}
-                onDeleted={() => setSelectedDepartment(null)}
+                onDeleted={() => selectDepartment(undefined, true)}
               />
             )}
-            {action === "transfer" && (
+            {action?.id === currentDepartment.id && action.type === "transfer" && (
               <TransferDepartmentDialog
                 key={`transfer-${currentDepartment.id}`}
                 department={currentDepartment}

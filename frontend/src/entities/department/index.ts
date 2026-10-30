@@ -2,6 +2,7 @@ export type {
   DepartmentDto,
   DepartmentListItemDto,
   DepartmentNodeDto,
+  DepartmentBranchNodeDto,
   DepartmentDescendantDto,
   TransferredDepartmentDto,
 } from "./model/types";
