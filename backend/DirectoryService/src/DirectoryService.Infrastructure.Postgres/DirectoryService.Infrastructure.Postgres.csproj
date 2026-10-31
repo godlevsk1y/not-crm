@@ -3,10 +3,10 @@
   <ItemGroup>
     <ProjectReference Include="..\DirectoryService.Core\DirectoryService.Core.csproj" />
     <ProjectReference Include="..\DirectoryService.Domain\DirectoryService.Domain.csproj" />
-    <ProjectReference Include="..\..\..\Shared\Shared.Core\Shared.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GodlevskiyDev.Shared.Core" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
