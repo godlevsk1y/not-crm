@@ -19,7 +19,7 @@ namespace DirectoryService.Web.Controllers;
 [ProducesResponseType<Envelope>(StatusCodes.Status400BadRequest)]
 [ProducesResponseType<Envelope>(StatusCodes.Status500InternalServerError)]
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class PositionsController : ControllerBase
 {
     [HttpGet]

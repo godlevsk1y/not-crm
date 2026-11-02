@@ -20,7 +20,7 @@ public class CreateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var request = CreateValidRequest();
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
 
         Assert.Equal(201, (int)response.StatusCode);
 
@@ -43,10 +43,10 @@ public class CreateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
     public async Task CreateLocation_ShouldReturnConflict_WhenNameAlreadyExists()
     {
         var request = CreateValidRequest();
-        var firstResponse = await _client.PostAsJsonAsync("api/locations", request);
+        var firstResponse = await _client.PostAsJsonAsync("locations", request);
         firstResponse.EnsureSuccessStatusCode();
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
 
         Assert.Equal(409, (int)response.StatusCode);
 
@@ -61,7 +61,7 @@ public class CreateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var request = CreateValidRequest() with { Name = "" };
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
 
         Assert.Equal(400, (int)response.StatusCode);
 

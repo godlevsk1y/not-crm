@@ -20,7 +20,7 @@ public class GetDepartmentByIdTests : IClassFixture<DirectoryServiceTestWebFacto
     {
         var createdDepartment = await CreateDepartmentAsync();
 
-        var response = await _client.GetAsync($"api/departments/{createdDepartment.Id}");
+        var response = await _client.GetAsync($"departments/{createdDepartment.Id}");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -40,7 +40,7 @@ public class GetDepartmentByIdTests : IClassFixture<DirectoryServiceTestWebFacto
     {
         var departmentId = Guid.NewGuid();
 
-        var response = await _client.GetAsync($"api/departments/{departmentId}");
+        var response = await _client.GetAsync($"departments/{departmentId}");
 
         Assert.Equal(404, (int)response.StatusCode);
 
@@ -59,7 +59,7 @@ public class GetDepartmentByIdTests : IClassFixture<DirectoryServiceTestWebFacto
             ParentId: null
         );
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();

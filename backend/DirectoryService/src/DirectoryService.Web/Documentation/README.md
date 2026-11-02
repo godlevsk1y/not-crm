@@ -4,7 +4,7 @@ The API document is available at `/openapi/v1.json` and Scalar at `/scalar` outs
 
 ## Where to edit
 
-For `PATCH /api/locations/{id}`:
+For `PATCH /locations/{id}`:
 
 - Operation summary, behavior and response types: `Controllers/LocationsController.Update`, using built-in endpoint and response metadata.
 - Request field meaning: `[property: Description]` on `UpdateLocationRequest.City` (and the other members) in Contracts. These are documentation-only attributes, not validation attributes.

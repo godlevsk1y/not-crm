@@ -26,7 +26,7 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     {
         var positions = await CreatePositionsAsync();
 
-        var result = await GetListAsync("api/positions");
+        var result = await GetListAsync("positions");
 
         Assert.Equal(1, result.Page);
         Assert.Equal(20, result.PageSize);
@@ -44,7 +44,7 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     {
         var positions = await CreatePositionsAsync();
         var result = await GetListAsync(
-            $"api/positions?isActive={isActive}&search=engineer&page={page}&pageSize=5");
+            $"positions?isActive={isActive}&search=engineer&page={page}&pageSize=5");
 
         Assert.Equal(isActive ? 7 : 1, result.TotalCount);
         if (isActive)
@@ -80,8 +80,8 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
         };
         var expected = ordered.ToArray();
 
-        var first = await GetListAsync($"api/positions?search=eNgInEeR&sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
-        var second = await GetListAsync($"api/positions?search=eNgInEeR&sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
+        var first = await GetListAsync($"positions?search=eNgInEeR&sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
+        var second = await GetListAsync($"positions?search=eNgInEeR&sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
 
         Assert.Equal(7, first.TotalCount);
         Assert.Equal(7, second.TotalCount);
@@ -115,8 +115,8 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
         }
         await context.SaveChangesAsync();
 
-        var first = await GetListAsync($"api/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
-        var second = await GetListAsync($"api/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
+        var first = await GetListAsync($"positions?sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
+        var second = await GetListAsync($"positions?sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
 
         Assert.Equal(ids.Order(), first.Results.Concat(second.Results).Select(p => p.Id));
     }
@@ -129,7 +129,7 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     {
         await CreatePositionsAsync();
 
-        var result = await GetListAsync($"api/positions?search=engineer&page={page}&pageSize=5");
+        var result = await GetListAsync($"positions?search=engineer&page={page}&pageSize=5");
 
         Assert.Equal(7, result.TotalCount);
         Assert.Equal(page, result.Page);
@@ -138,9 +138,9 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     }
 
     [Theory]
-    [InlineData("api/positions", false)]
-    [InlineData("api/positions?search=missing", true)]
-    [InlineData("api/positions?search=missing&page=20", true)]
+    [InlineData("positions", false)]
+    [InlineData("positions?search=missing", true)]
+    [InlineData("positions?search=missing&page=20", true)]
     public async Task GetPositionList_ShouldReturnEmptyList_WhenNothingMatches(string requestPath, bool seed)
     {
         if (seed)
@@ -160,7 +160,7 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     {
         await CreatePositionsAsync();
 
-        var result = await GetListAsync($"api/positions?search={search}");
+        var result = await GetListAsync($"positions?search={search}");
 
         Assert.Equal(expectedCount, result.TotalCount);
         Assert.Equal(expectedCount, result.Results.Count());
@@ -191,7 +191,7 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     [InlineData(100)]
     public async Task GetPositionList_ShouldAcceptBoundaryValues(int pageSize)
     {
-        var result = await GetListAsync($"api/positions?search={new string('a', 100)}&pageSize={pageSize}");
+        var result = await GetListAsync($"positions?search={new string('a', 100)}&pageSize={pageSize}");
 
         Assert.Equal(pageSize, result.PageSize);
         Assert.Empty(result.Results);
@@ -207,7 +207,7 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
     [InlineData("isActive=1")]
     public async Task GetPositionList_ShouldReturnStandardError_WhenModelBindingFails(string query)
     {
-        using var response = await _client.GetAsync($"api/positions?{query}");
+        using var response = await _client.GetAsync($"positions?{query}");
 
         Assert.Equal(400, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
@@ -218,7 +218,7 @@ public class GetPositionListTests : IClassFixture<DirectoryServiceTestWebFactory
 
     private async Task AssertErrorAsync(string query, string code, string field)
     {
-        using var response = await _client.GetAsync($"api/positions?{query}");
+        using var response = await _client.GetAsync($"positions?{query}");
 
         Assert.Equal(400, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();

@@ -23,13 +23,13 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
         var locationId = await CreateLocationAsync();
 
         var response = await _client.PostAsync(
-            $"api/departments/{departmentId}/locations/{locationId}",
+            $"departments/{departmentId}/locations/{locationId}",
             content: null);
 
         Assert.Equal(204, (int)response.StatusCode);
 
         var removeResponse = await _client.DeleteAsync(
-            $"api/departments/{departmentId}/locations/{locationId}");
+            $"departments/{departmentId}/locations/{locationId}");
 
         Assert.Equal(204, (int)removeResponse.StatusCode);
     }
@@ -40,7 +40,7 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
         var locationId = await CreateLocationAsync();
 
         var response = await _client.PostAsync(
-            $"api/departments/{Guid.NewGuid()}/locations/{locationId}",
+            $"departments/{Guid.NewGuid()}/locations/{locationId}",
             content: null);
 
         Assert.Equal(404, (int)response.StatusCode);
@@ -53,7 +53,7 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
         var departmentId = await CreateDepartmentAsync();
 
         var response = await _client.PostAsync(
-            $"api/departments/{departmentId}/locations/{Guid.NewGuid()}",
+            $"departments/{departmentId}/locations/{Guid.NewGuid()}",
             content: null);
 
         Assert.Equal(404, (int)response.StatusCode);
@@ -65,7 +65,7 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
     {
         var departmentId = await CreateDepartmentAsync();
         var locationId = await CreateLocationAsync();
-        var route = $"api/departments/{departmentId}/locations/{locationId}";
+        var route = $"departments/{departmentId}/locations/{locationId}";
 
         var firstResponse = await _client.PostAsync(route, content: null);
         firstResponse.EnsureSuccessStatusCode();
@@ -81,7 +81,7 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
     {
         var departmentId = await CreateDepartmentAsync();
         var locationId = await CreateLocationAsync();
-        var route = $"api/departments/{departmentId}/locations/{locationId}";
+        var route = $"departments/{departmentId}/locations/{locationId}";
         var addResponse = await _client.PostAsync(route, content: null);
         addResponse.EnsureSuccessStatusCode();
 
@@ -100,7 +100,7 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
         var locationId = await CreateLocationAsync();
 
         var response = await _client.DeleteAsync(
-            $"api/departments/{departmentId}/locations/{locationId}");
+            $"departments/{departmentId}/locations/{locationId}");
 
         Assert.Equal(404, (int)response.StatusCode);
         await AssertErrorCodeAsync(response, "department.location.not.found");
@@ -114,7 +114,7 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
             LocationIds: [],
             ParentId: null);
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
@@ -135,7 +135,7 @@ public class DepartmentLocationTests : IClassFixture<DirectoryServiceTestWebFact
             HouseNumber: "1",
             PostalCode: "125009");
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<LocationDto>>();

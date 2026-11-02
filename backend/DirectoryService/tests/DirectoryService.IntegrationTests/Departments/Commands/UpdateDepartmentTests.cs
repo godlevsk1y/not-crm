@@ -33,7 +33,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: parent.Id
         );
 
-        var response = await _client.PatchAsJsonAsync($"api/departments/{department.Id}", request);
+        var response = await _client.PatchAsJsonAsync($"departments/{department.Id}", request);
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -42,7 +42,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         Assert.False(updateEnvelope.IsError);
         Assert.Equal(department.Id, updateEnvelope.Result);
 
-        var getResponse = await _client.GetAsync($"api/departments/{department.Id}");
+        var getResponse = await _client.GetAsync($"departments/{department.Id}");
         var getEnvelope = await getResponse.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
 
         Assert.NotNull(getEnvelope);
@@ -68,7 +68,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         var prefix = isNested ? "company.platform" : "platform";
 
         var response = await _client.PatchAsJsonAsync(
-            $"api/departments/{department.Id}",
+            $"departments/{department.Id}",
             new UpdateDepartmentRequest(Name: null, Slug: "platform", ParentId: null));
 
         Assert.Equal(200, (int)response.StatusCode);
@@ -78,8 +78,8 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         await AssertDepartmentPathAsync(unrelated.Id, unrelated.Path, sibling.Id);
 
         var treeUrl = root is null
-            ? "api/departments/tree?page=1&pageSize=20"
-            : $"api/departments/{root.Id}/children?page=1&pageSize=20";
+            ? "departments/tree?page=1&pageSize=20"
+            : $"departments/{root.Id}/children?page=1&pageSize=20";
         var tree = await _client.GetFromJsonAsync<Envelope<PagedResult<DepartmentNodeDto>>>(treeUrl);
         Assert.NotNull(tree?.Result);
         var node = Assert.Single(tree.Result.Results, d => d.Id == department.Id);
@@ -88,7 +88,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         Assert.Equal(1, node.ChildCount);
 
         var children = await _client.GetFromJsonAsync<Envelope<PagedResult<DepartmentNodeDto>>>(
-            $"api/departments/{department.Id}/children?page=1&pageSize=20");
+            $"departments/{department.Id}/children?page=1&pageSize=20");
         Assert.NotNull(children?.Result);
         var childNode = Assert.Single(children.Result.Results);
         Assert.Equal(child.Id, childNode.Id);
@@ -97,7 +97,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         Assert.Equal(1, childNode.ChildCount);
 
         var ancestors = await _client.GetFromJsonAsync<Envelope<PagedResult<DepartmentAncestorDto>>>(
-            $"api/departments/{grandchild.Id}/ancestors?page=1&pageSize=20");
+            $"departments/{grandchild.Id}/ancestors?page=1&pageSize=20");
         Assert.NotNull(ancestors?.Result);
         Guid[] expectedIds = root is null
             ? [department.Id, child.Id]
@@ -122,14 +122,14 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         try
         {
             var response = await _client.PatchAsJsonAsync(
-                $"api/departments/{department.Id}",
+                $"departments/{department.Id}",
                 new UpdateDepartmentRequest(Name: null, Slug: "platform", ParentId: null));
 
             Assert.Equal(500, (int)response.StatusCode);
             await AssertDepartmentPathAsync(department.Id, "engineering", parentId: null);
             await AssertDepartmentPathAsync(child.Id, "engineering.backend", department.Id);
             var envelope = await _client.GetFromJsonAsync<Envelope<DepartmentDto>>(
-                $"api/departments/{department.Id}");
+                $"departments/{department.Id}");
             Assert.NotNull(envelope?.Result);
             Assert.Equal("engineering", envelope.Result.Slug);
         }
@@ -142,7 +142,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
 
     private async Task AssertDepartmentPathAsync(Guid id, string path, Guid? parentId)
     {
-        var envelope = await _client.GetFromJsonAsync<Envelope<DepartmentDto>>($"api/departments/{id}");
+        var envelope = await _client.GetFromJsonAsync<Envelope<DepartmentDto>>($"departments/{id}");
         Assert.NotNull(envelope?.Result);
         Assert.Equal(path, envelope.Result.Path);
         Assert.Equal(parentId, envelope.Result.ParentId);
@@ -158,7 +158,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: null
         );
 
-        var response = await _client.PatchAsJsonAsync($"api/departments/{departmentId}", request);
+        var response = await _client.PatchAsJsonAsync($"departments/{departmentId}", request);
 
         Assert.Equal(404, (int)response.StatusCode);
 
@@ -178,7 +178,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: null
         );
 
-        var response = await _client.PatchAsJsonAsync($"api/departments/{department.Id}", request);
+        var response = await _client.PatchAsJsonAsync($"departments/{department.Id}", request);
 
         Assert.Equal(400, (int)response.StatusCode);
 
@@ -197,7 +197,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: parentId
         );
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();

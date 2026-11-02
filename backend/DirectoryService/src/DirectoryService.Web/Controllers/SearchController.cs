@@ -11,7 +11,7 @@ using IResult = Microsoft.AspNetCore.Http.IResult;
 namespace DirectoryService.Web.Controllers;
 
 [ApiController]
-[Route("api/search")]
+[Route("search")]
 [ProducesResponseType<Envelope>(StatusCodes.Status400BadRequest)]
 [ProducesResponseType<Envelope>(StatusCodes.Status500InternalServerError)]
 public class SearchController : ControllerBase

@@ -34,7 +34,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
         Assert.Contains(id, await ListIdsAsync(resource, isActive: false));
         Assert.DoesNotContain(id, await ListIdsAsync(resource, isActive: true));
 
-        var response = await _client.PostAsync($"api/{resource}/{id}/restore", content: null);
+        var response = await _client.PostAsync($"{resource}/{id}/restore", content: null);
 
         Assert.Equal(204, (int)response.StatusCode);
         Assert.Empty(await response.Content.ReadAsByteArrayAsync());
@@ -45,7 +45,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
         Assert.Contains(id, await ListIdsAsync(resource, isActive: true));
         Assert.DoesNotContain(id, await ListIdsAsync(resource, isActive: false));
 
-        var repeated = await _client.PostAsync($"api/{resource}/{id}/restore", content: null);
+        var repeated = await _client.PostAsync($"{resource}/{id}/restore", content: null);
 
         Assert.Equal(204, (int)repeated.StatusCode);
         Assert.Equal(after, await ReadAsync(resource, id));
@@ -60,7 +60,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
         var id = await SeedAsync(resource, archived: false);
         var before = await ReadAsync(resource, id);
 
-        var response = await _client.PostAsync($"api/{resource}/{id}/restore", content: null);
+        var response = await _client.PostAsync($"{resource}/{id}/restore", content: null);
 
         Assert.Equal(204, (int)response.StatusCode);
         Assert.Equal(before, await ReadAsync(resource, id));
@@ -86,7 +86,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
             await context.SaveChangesAsync();
         }
 
-        var response = await _client.PostAsync($"api/{resource}/{id}/restore", content: null);
+        var response = await _client.PostAsync($"{resource}/{id}/restore", content: null);
 
         await AssertErrorAsync(response, 404, code);
     }
@@ -104,7 +104,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
         context.Entry(entity).Property("DeletedAt").CurrentValue = DateTime.UtcNow.AddDays(-31);
         await context.SaveChangesAsync();
 
-        var response = await _client.PostAsync($"api/{resource}/{id}/restore", content: null);
+        var response = await _client.PostAsync($"{resource}/{id}/restore", content: null);
         Assert.Equal(204, (int)response.StatusCode);
         var cleanup = new DatabaseCleanupService(context, Options.Create(new DatabaseCleanupOptions()));
         Assert.Equal(0, await cleanup.CleanupAsync(CancellationToken.None));
@@ -133,15 +133,15 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
         }
         var before = await ReadAsync("departments", department.Id.Value);
 
-        var conflict = await _client.PostAsync($"api/departments/{department.Id.Value}/restore", content: null);
+        var conflict = await _client.PostAsync($"departments/{department.Id.Value}/restore", content: null);
 
         await AssertErrorAsync(conflict, 409, "department.parent.archived");
         Assert.Equal(before, await ReadAsync("departments", department.Id.Value));
-        var parentResponse = await _client.PostAsync($"api/departments/{parent.Id.Value}/restore", content: null);
+        var parentResponse = await _client.PostAsync($"departments/{parent.Id.Value}/restore", content: null);
         Assert.Equal(204, (int)parentResponse.StatusCode);
         Assert.NotNull((await ReadAsync("departments", department.Id.Value)).DeletedAt);
 
-        var response = await _client.PostAsync($"api/departments/{department.Id.Value}/restore", content: null);
+        var response = await _client.PostAsync($"departments/{department.Id.Value}/restore", content: null);
 
         Assert.Equal(204, (int)response.StatusCode);
         Assert.Equal(before.Data, (await ReadAsync("departments", department.Id.Value)).Data);
@@ -161,12 +161,12 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var departmentId = await SeedAsync("departments", archived: false);
         var id = await SeedAsync(resource, archived: false);
-        var link = await _client.PostAsync($"api/departments/{departmentId}/{resource}/{id}", content: null);
+        var link = await _client.PostAsync($"departments/{departmentId}/{resource}/{id}", content: null);
         link.EnsureSuccessStatusCode();
-        var delete = await _client.DeleteAsync($"api/{resource}/{id}");
+        var delete = await _client.DeleteAsync($"{resource}/{id}");
         Assert.Equal(204, (int)delete.StatusCode);
 
-        var response = await _client.PostAsync($"api/{resource}/{id}/restore", content: null);
+        var response = await _client.PostAsync($"{resource}/{id}/restore", content: null);
 
         Assert.Equal(204, (int)response.StatusCode);
         await using var scope = _factory.Services.CreateAsyncScope();
@@ -201,7 +201,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
             await context.SaveChangesAsync();
         }
 
-        var response = await _client.PostAsync($"api/{resource}/{id}/restore", content: null);
+        var response = await _client.PostAsync($"{resource}/{id}/restore", content: null);
 
         Assert.Equal(204, (int)response.StatusCode);
         await using var verificationScope = _factory.Services.CreateAsyncScope();
@@ -242,7 +242,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
             """);
         try
         {
-            var response = await _client.PostAsync($"api/locations/{id}/restore", content: null);
+            var response = await _client.PostAsync($"locations/{id}/restore", content: null);
 
             await AssertErrorAsync(response, 409, "location.exists");
             Assert.Equal(before, await ReadAsync("locations", id));
@@ -262,7 +262,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
         using var document = JsonDocument.Parse(await _client.GetStringAsync("openapi/v1.json"));
         foreach (var resource in new[] { "departments", "locations", "positions" })
         {
-            var operation = document.RootElement.GetProperty("paths").GetProperty($"/api/{resource}/{{id}}/restore").GetProperty("post");
+            var operation = document.RootElement.GetProperty("paths").GetProperty($"/{resource}/{{id}}/restore").GetProperty("post");
             Assert.False(operation.TryGetProperty("requestBody", out _));
             var responses = operation.GetProperty("responses");
             Assert.True(responses.TryGetProperty("204", out _));
@@ -325,7 +325,7 @@ public class RestoreRecordsTests : IClassFixture<DirectoryServiceTestWebFactory>
 
     private async Task<Guid[]> ListIdsAsync(string resource, bool isActive)
     {
-        using var document = JsonDocument.Parse(await _client.GetStringAsync($"api/{resource}?isActive={isActive}"));
+        using var document = JsonDocument.Parse(await _client.GetStringAsync($"{resource}?isActive={isActive}"));
         return document.RootElement.GetProperty("result").GetProperty("results").EnumerateArray()
             .Select(item => item.GetProperty("id").GetGuid()).ToArray();
     }

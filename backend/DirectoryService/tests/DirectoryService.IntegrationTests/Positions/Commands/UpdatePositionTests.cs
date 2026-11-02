@@ -21,7 +21,7 @@ public class UpdatePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
         var position = await CreatePositionAsync();
         var request = new UpdatePositionRequest("Senior Software Engineer");
 
-        var response = await _client.PatchAsJsonAsync($"api/positions/{position.Id}", request);
+        var response = await _client.PatchAsJsonAsync($"positions/{position.Id}", request);
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -37,7 +37,7 @@ public class UpdatePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
         var positionId = Guid.NewGuid();
         var request = new UpdatePositionRequest("Senior Software Engineer");
 
-        var response = await _client.PatchAsJsonAsync($"api/positions/{positionId}", request);
+        var response = await _client.PatchAsJsonAsync($"positions/{positionId}", request);
 
         Assert.Equal(404, (int)response.StatusCode);
 
@@ -53,7 +53,7 @@ public class UpdatePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
         var position = await CreatePositionAsync();
         var request = new UpdatePositionRequest("");
 
-        var response = await _client.PatchAsJsonAsync($"api/positions/{position.Id}", request);
+        var response = await _client.PatchAsJsonAsync($"positions/{position.Id}", request);
 
         Assert.Equal(400, (int)response.StatusCode);
 
@@ -67,7 +67,7 @@ public class UpdatePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var request = new CreatePositionRequest("Software Engineer");
 
-        var response = await _client.PostAsJsonAsync("api/positions", request);
+        var response = await _client.PostAsJsonAsync("positions", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<PositionDto>>();

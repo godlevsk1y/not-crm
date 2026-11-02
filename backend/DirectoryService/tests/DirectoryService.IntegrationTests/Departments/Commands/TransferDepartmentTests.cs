@@ -176,7 +176,7 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
 
         await AssertConcurrentTransferResponsesAsync(responses);
 
-        var response = await _client.GetAsync($"api/departments/{backend.Id}");
+        var response = await _client.GetAsync($"departments/{backend.Id}");
         Assert.Equal(200, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
         Assert.NotNull(envelope?.Result);
@@ -294,7 +294,7 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
     private async Task<DepartmentDto> CreateDepartmentAsync(string name, string slug, Guid? parentId = null)
     {
         var request = new CreateDepartmentRequest(name, slug, [], parentId);
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
@@ -304,12 +304,12 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
 
     private Task<HttpResponseMessage> TransferAsync(Guid departmentId, Guid? newParentId) =>
         _client.PutAsJsonAsync(
-            $"api/departments/{departmentId}/parent",
+            $"departments/{departmentId}/parent",
             new TransferDepartmentRequest(newParentId));
 
     private async Task AssertDepartmentAsync(Guid id, Guid? parentId, string path)
     {
-        var response = await _client.GetAsync($"api/departments/{id}");
+        var response = await _client.GetAsync($"departments/{id}");
         Assert.Equal(200, (int)response.StatusCode);
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
@@ -322,8 +322,8 @@ public class TransferDepartmentTests : IClassFixture<DirectoryServiceTestWebFact
     private async Task AssertDepthAsync(Guid id, Guid? parentId, int expectedDepth)
     {
         var url = parentId is null
-            ? "api/departments/tree"
-            : $"api/departments/{parentId}/children";
+            ? "departments/tree"
+            : $"departments/{parentId}/children";
         var response = await _client.GetAsync(url);
         Assert.Equal(200, (int)response.StatusCode);
 

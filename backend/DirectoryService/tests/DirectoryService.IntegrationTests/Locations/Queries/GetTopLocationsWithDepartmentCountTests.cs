@@ -37,7 +37,7 @@ public class GetTopLocationsWithDepartmentCountTests : IClassFixture<DirectorySe
         await CreateDepartmentAsync("Marketing Team", "marketing-team", amsterdamId);
         await CreateDepartmentAsync("Support Team", "support-team", parisId);
 
-        var response = await _client.GetAsync("api/locations/top");
+        var response = await _client.GetAsync("locations/top");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -58,7 +58,7 @@ public class GetTopLocationsWithDepartmentCountTests : IClassFixture<DirectorySe
     [Fact]
     public async Task GetTopLocationsWithDepartmentCount_ShouldReturnEmptyList_WhenLocationsDoNotExist()
     {
-        var response = await _client.GetAsync("api/locations/top");
+        var response = await _client.GetAsync("locations/top");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -93,7 +93,7 @@ public class GetTopLocationsWithDepartmentCountTests : IClassFixture<DirectorySe
             HouseNumber: "1",
             PostalCode: null);
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<LocationDto>>();
@@ -110,7 +110,7 @@ public class GetTopLocationsWithDepartmentCountTests : IClassFixture<DirectorySe
             LocationIds: [locationId],
             ParentId: null);
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
     }
 

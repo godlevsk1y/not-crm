@@ -14,7 +14,7 @@ export type SearchResult = {
 export function searchDirectory(q: string, signal: AbortSignal) {
   return apiRequest<SearchResult>({
     method: "GET",
-    url: "search",
+    url: "organization/search",
     params: { q, limitPerType: SEARCH_PAGE_SIZE },
     signal,
   });
@@ -28,7 +28,7 @@ export function searchDirectoryPage(
 ) {
   return apiRequest<SearchPage>({
     method: "GET",
-    url: `search/${entityType}`,
+    url: `organization/search/${entityType}`,
     params: { q, page, pageSize: SEARCH_PAGE_SIZE },
     signal,
   });

@@ -45,7 +45,7 @@ export const locationsApi = {
   restoreLocationAsync: async ({ id }: { id: string }) =>
     apiRequest<void>({
       method: "POST",
-      url: `locations/${id}/restore`,
+      url: `organization/locations/${id}/restore`,
     }),
 
   getLocationsList: async (
@@ -55,7 +55,7 @@ export const locationsApi = {
     apiRequest<PagedResult<LocationListItemDto>>({
       ...options,
       method: "GET",
-      url: "locations",
+      url: "organization/locations",
       params: {
         ...request,
         departmentIds: request.departmentIds?.join(",") || undefined,
@@ -65,14 +65,14 @@ export const locationsApi = {
   createLocationAsync: async (request: CreateLocationRequest) =>
     apiRequest<LocationDto>({
       method: "POST",
-      url: "locations",
+      url: "organization/locations",
       data: request,
     }),
 
   updateLocationAsync: async ({ id, ...body }: UpdateLocationRequest) => {
     return apiRequest<string>({
       method: "PATCH",
-      url: `locations/${id}`,
+      url: `organization/locations/${id}`,
       data: body,
     });
   },
@@ -80,7 +80,7 @@ export const locationsApi = {
   deleteLocationAsync: async (request: DeleteLocationRequest) =>
     apiRequest<void>({
       method: "DELETE",
-      url: `locations/${request.id}`,
+      url: `organization/locations/${request.id}`,
     }),
 };
 

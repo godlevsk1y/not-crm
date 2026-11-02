@@ -27,11 +27,11 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var position = await CreatePositionAsync();
 
-        var response = await _client.DeleteAsync($"api/positions/{position.Id}");
+        var response = await _client.DeleteAsync($"positions/{position.Id}");
 
         Assert.Equal(204, (int)response.StatusCode);
 
-        var secondResponse = await _client.DeleteAsync($"api/positions/{position.Id}");
+        var secondResponse = await _client.DeleteAsync($"positions/{position.Id}");
         Assert.Equal(404, (int)secondResponse.StatusCode);
 
         var envelope = await secondResponse.Content.ReadFromJsonAsync<Envelope>();
@@ -55,7 +55,7 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var positionId = Guid.NewGuid();
 
-        var response = await _client.DeleteAsync($"api/positions/{positionId}");
+        var response = await _client.DeleteAsync($"positions/{positionId}");
 
         Assert.Equal(404, (int)response.StatusCode);
 
@@ -71,11 +71,11 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
         var departmentId = await CreateDepartmentAsync();
         var position = await CreatePositionAsync();
         var addResponse = await _client.PostAsync(
-            $"api/departments/{departmentId}/positions/{position.Id}",
+            $"departments/{departmentId}/positions/{position.Id}",
             content: null);
         addResponse.EnsureSuccessStatusCode();
 
-        var response = await _client.DeleteAsync($"api/positions/{position.Id}");
+        var response = await _client.DeleteAsync($"positions/{position.Id}");
 
         Assert.Equal(204, (int)response.StatusCode);
 
@@ -96,7 +96,7 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
         var departmentId = await CreateDepartmentAsync();
         var position = await CreatePositionAsync();
         var addResponse = await _client.PostAsync(
-            $"api/departments/{departmentId}/positions/{position.Id}",
+            $"departments/{departmentId}/positions/{position.Id}",
             content: null);
         addResponse.EnsureSuccessStatusCode();
 
@@ -113,7 +113,7 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
 
             try
             {
-                response = await _client.DeleteAsync($"api/positions/{position.Id}");
+                response = await _client.DeleteAsync($"positions/{position.Id}");
             }
             finally
             {
@@ -150,7 +150,7 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
             LocationIds: [],
             ParentId: null);
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
@@ -163,7 +163,7 @@ public class DeletePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var request = new CreatePositionRequest("Software Engineer");
 
-        var response = await _client.PostAsJsonAsync("api/positions", request);
+        var response = await _client.PostAsJsonAsync("positions", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<PositionDto>>();

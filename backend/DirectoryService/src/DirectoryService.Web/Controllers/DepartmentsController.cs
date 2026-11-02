@@ -33,7 +33,7 @@ namespace DirectoryService.Web.Controllers;
 [ProducesResponseType<Envelope>(StatusCodes.Status400BadRequest)]
 [ProducesResponseType<Envelope>(StatusCodes.Status500InternalServerError)]
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class DepartmentsController : ControllerBase
 {
     [HttpPost]
@@ -56,7 +56,7 @@ public class DepartmentsController : ControllerBase
         }
         
         return EndpointResults.Created(
-            $"/api/departments/{createResult.Value.Id}",
+            $"/departments/{createResult.Value.Id}",
             createResult.Value
         );
     }

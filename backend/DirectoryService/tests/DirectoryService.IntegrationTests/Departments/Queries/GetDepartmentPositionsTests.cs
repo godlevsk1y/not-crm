@@ -28,7 +28,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
     {
         var positions = await CreatePositionsAsync();
 
-        var result = await GetListAsync($"api/departments/{_departmentId}/positions");
+        var result = await GetListAsync($"departments/{_departmentId}/positions");
 
         Assert.Equal(1, result.Page);
         Assert.Equal(20, result.PageSize);
@@ -53,8 +53,8 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
         };
         var expected = ordered.ToArray();
 
-        var first = await GetListAsync($"api/departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
-        var second = await GetListAsync($"api/departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
+        var first = await GetListAsync($"departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
+        var second = await GetListAsync($"departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
 
         Assert.Equal(7, first.TotalCount);
         Assert.Equal(7, second.TotalCount);
@@ -91,8 +91,8 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
         }
         await context.SaveChangesAsync();
 
-        var first = await GetListAsync($"api/departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
-        var second = await GetListAsync($"api/departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
+        var first = await GetListAsync($"departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=1&pageSize=5");
+        var second = await GetListAsync($"departments/{_departmentId}/positions?sortBy={sortBy}&sortDirection={sortDirection}&page=2&pageSize=5");
 
         Assert.Equal(ids.Order(), first.Results.Concat(second.Results).Select(p => p.Id));
     }
@@ -105,7 +105,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
     {
         await CreatePositionsAsync();
 
-        var result = await GetListAsync($"api/departments/{_departmentId}/positions?page={page}&pageSize=5");
+        var result = await GetListAsync($"departments/{_departmentId}/positions?page={page}&pageSize=5");
 
         Assert.Equal(7, result.TotalCount);
         Assert.Equal(page, result.Page);
@@ -133,7 +133,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
         }
         await context.SaveChangesAsync();
 
-        var result = await GetListAsync($"api/departments/{_departmentId}/positions?page={page}&pageSize=5");
+        var result = await GetListAsync($"departments/{_departmentId}/positions?page={page}&pageSize=5");
 
         Assert.Equal(0, result.TotalCount);
         Assert.Equal(page, result.Page);
@@ -157,7 +157,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
             await context.SaveChangesAsync();
         }
 
-        using var response = await _client.GetAsync($"api/departments/{_departmentId}/positions");
+        using var response = await _client.GetAsync($"departments/{_departmentId}/positions");
 
         Assert.Equal(404, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
@@ -188,7 +188,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
     {
         await CreatePositionsAsync();
 
-        var result = await GetListAsync($"api/departments/{_departmentId}/positions?pageSize={pageSize}");
+        var result = await GetListAsync($"departments/{_departmentId}/positions?pageSize={pageSize}");
 
         Assert.Equal(pageSize, result.PageSize);
         Assert.Equal(7, result.TotalCount);
@@ -205,7 +205,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
     [InlineData("sortDirection=")]
     public async Task GetDepartmentPositions_ShouldReturnStandardError_WhenModelBindingFails(string query)
     {
-        using var response = await _client.GetAsync($"api/departments/{_departmentId}/positions?{query}");
+        using var response = await _client.GetAsync($"departments/{_departmentId}/positions?{query}");
 
         Assert.Equal(400, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
@@ -221,7 +221,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
         response.EnsureSuccessStatusCode();
         using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         var operation = document.RootElement.GetProperty("paths")
-            .GetProperty("/api/departments/{id}/positions").GetProperty("get");
+            .GetProperty("/departments/{id}/positions").GetProperty("get");
         var parameters = operation.GetProperty("parameters").EnumerateArray()
             .Where(p => string.Equals(p.GetProperty("in").GetString(), "query", StringComparison.Ordinal))
             .ToDictionary(p => p.GetProperty("name").GetString()!, p => p.GetProperty("schema"), StringComparer.OrdinalIgnoreCase);
@@ -250,7 +250,7 @@ public class GetDepartmentPositionsTests : IClassFixture<DirectoryServiceTestWeb
 
     private async Task AssertErrorAsync(string query, string code, string field)
     {
-        using var response = await _client.GetAsync($"api/departments/{_departmentId}/positions?{query}");
+        using var response = await _client.GetAsync($"departments/{_departmentId}/positions?{query}");
 
         Assert.Equal(400, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();

@@ -75,13 +75,13 @@ export const departmentsApi = {
     apiRequest<DepartmentBranchNodeDto[]>({
       ...options,
       method: "GET",
-      url: `departments/${id}/branch`,
+      url: `organization/departments/${id}/branch`,
     }),
 
   transferDepartmentAsync: async ({ id, ...body }: TransferDepartmentRequest) =>
     apiRequest<TransferredDepartmentDto>({
       method: "PUT",
-      url: `departments/${id}/parent`,
+      url: `organization/departments/${id}/parent`,
       data: body,
     }),
 
@@ -92,33 +92,33 @@ export const departmentsApi = {
     apiRequest<DepartmentDescendantDto[]>({
       ...options,
       method: "GET",
-      url: `departments/${id}/descendants`,
+      url: `organization/departments/${id}/descendants`,
     }),
 
   createDepartmentAsync: async (request: CreateDepartmentRequest) =>
     apiRequest<DepartmentDto>({
       method: "POST",
-      url: "departments",
+      url: "organization/departments",
       data: request,
     }),
 
   restoreDepartmentAsync: async ({ id }: { id: string }) =>
     apiRequest<void>({
       method: "POST",
-      url: `departments/${id}/restore`,
+      url: `organization/departments/${id}/restore`,
     }),
 
   updateDepartmentAsync: async ({ id, ...body }: UpdateDepartmentRequest) =>
     apiRequest<string>({
       method: "PATCH",
-      url: `departments/${id}`,
+      url: `organization/departments/${id}`,
       data: body,
     }),
 
   deleteDepartmentAsync: async ({ id }: DeleteDepartmentRequest) =>
     apiRequest<void>({
       method: "DELETE",
-      url: `departments/${id}`,
+      url: `organization/departments/${id}`,
     }),
 
   getDepartment: async (
@@ -128,7 +128,7 @@ export const departmentsApi = {
     apiRequest<DepartmentDto>({
       ...options,
       method: "GET",
-      url: `departments/${id}`,
+      url: `organization/departments/${id}`,
     }),
 
   getDepartmentList: async (
@@ -138,7 +138,7 @@ export const departmentsApi = {
     apiRequest<PagedResult<DepartmentListItemDto>>({
       ...options,
       method: "GET",
-      url: "departments",
+      url: "organization/departments",
       params: request,
       paramsSerializer: { indexes: null },
     }),
@@ -146,7 +146,7 @@ export const departmentsApi = {
   getRootDepartments: async (request: GetRootDepartmentsRequest) =>
     apiRequest<PagedResult<DepartmentNodeDto>>({
       method: "GET",
-      url: "departments/tree",
+      url: "organization/departments/tree",
       params: request,
     }),
 
@@ -156,7 +156,7 @@ export const departmentsApi = {
   ) =>
     apiRequest<PagedResult<DepartmentNodeDto>>({
       method: "GET",
-      url: `departments/${id}/children`,
+      url: `organization/departments/${id}/children`,
       params: request,
     }),
 };

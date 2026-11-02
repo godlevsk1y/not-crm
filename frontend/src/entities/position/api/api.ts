@@ -36,27 +36,27 @@ export const positionsApi = {
   createPositionAsync: async (request: CreatePositionRequest) =>
     apiRequest<Pick<PositionListItemDto, "id" | "name">>({
       method: "POST",
-      url: "positions",
+      url: "organization/positions",
       data: request,
     }),
 
   restorePositionAsync: async ({ id }: { id: string }) =>
     apiRequest<void>({
       method: "POST",
-      url: `positions/${id}/restore`,
+      url: `organization/positions/${id}/restore`,
     }),
 
   updatePositionAsync: async ({ id, ...body }: UpdatePositionRequest) =>
     apiRequest<string>({
       method: "PATCH",
-      url: `positions/${id}`,
+      url: `organization/positions/${id}`,
       data: body,
     }),
 
   deletePositionAsync: async ({ id }: DeletePositionRequest) =>
     apiRequest<void>({
       method: "DELETE",
-      url: `positions/${id}`,
+      url: `organization/positions/${id}`,
     }),
 
   getPositionsList: (
@@ -66,7 +66,7 @@ export const positionsApi = {
     apiRequest<PagedResult<PositionListItemDto>>({
       ...options,
       method: "GET",
-      url: "positions",
+      url: "organization/positions",
       params: request,
     }),
 
@@ -76,7 +76,7 @@ export const positionsApi = {
   ) =>
     apiRequest<PagedResult<PositionListItemDto>>({
       method: "GET",
-      url: `departments/${id}/positions`,
+      url: `organization/departments/${id}/positions`,
       params: request,
     }),
 };

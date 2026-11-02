@@ -25,7 +25,7 @@ public class CreateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: null
         );
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
         
         Assert.Equal(201, (int)response.StatusCode);
@@ -52,7 +52,7 @@ public class CreateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: null
         );
         
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         
         Assert.Equal(404, (int)response.StatusCode);
         Assert.NotEmpty(await response.Content.ReadAsStringAsync());
@@ -73,7 +73,7 @@ public class CreateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: null
         );
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         
         Assert.Equal(400, (int)response.StatusCode);
         Assert.NotEmpty(await response.Content.ReadAsStringAsync());

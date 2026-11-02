@@ -29,7 +29,7 @@ public class UpdateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
             HouseNumber: "28",
             PostalCode: "191186");
 
-        var response = await _client.PatchAsJsonAsync($"api/locations/{location.Id}", request);
+        var response = await _client.PatchAsJsonAsync($"locations/{location.Id}", request);
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -38,7 +38,7 @@ public class UpdateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
         Assert.False(updateEnvelope.IsError);
         Assert.Equal(location.Id, updateEnvelope.Result);
 
-        var getResponse = await _client.GetAsync($"api/locations/{location.Id}");
+        var getResponse = await _client.GetAsync($"locations/{location.Id}");
         var getEnvelope = await getResponse.Content.ReadFromJsonAsync<Envelope<LocationDto>>();
 
         Assert.NotNull(getEnvelope);
@@ -68,7 +68,7 @@ public class UpdateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
             HouseNumber: null,
             PostalCode: null);
 
-        var response = await _client.PatchAsJsonAsync($"api/locations/{locationId}", request);
+        var response = await _client.PatchAsJsonAsync($"locations/{locationId}", request);
 
         Assert.Equal(404, (int)response.StatusCode);
 
@@ -92,7 +92,7 @@ public class UpdateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
             HouseNumber: null,
             PostalCode: null);
 
-        var response = await _client.PatchAsJsonAsync($"api/locations/{location.Id}", request);
+        var response = await _client.PatchAsJsonAsync($"locations/{location.Id}", request);
 
         Assert.Equal(400, (int)response.StatusCode);
 
@@ -114,7 +114,7 @@ public class UpdateLocationTests : IClassFixture<DirectoryServiceTestWebFactory>
             HouseNumber: "1",
             PostalCode: "125009");
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<LocationDto>>();
