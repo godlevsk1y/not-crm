@@ -1,4 +1,4 @@
-name: directory-service-containers
+name: not-crm
 
 services:
   postgres:
