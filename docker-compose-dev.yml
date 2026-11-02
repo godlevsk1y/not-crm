@@ -19,8 +19,7 @@ services:
       timeout: 5s
       retries: 20
       start_period: 10s
-    
-    
+
   seq:
     container_name: seq
     image: datalust/seq:2026.1
@@ -32,36 +31,33 @@ services:
       - "8081:80"
     volumes:
       - seq_data:/data
-    
-    
+
   directory-service-migrations:
     image: directory-service-migrator:dev
-    
+
     build:
-      context: .
+      context: ./backend
       dockerfile: DirectoryService/Dockerfile
       target: migrator
       secrets:
         - github_nuget_credentials
-      
+
     environment:
       ConnectionStrings__DirectoryServiceDbContext: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       Seq__ServerUrl: http://seq
       Serilog__WriteTo__1__Args__serverUrl: http://seq
-      
+
     depends_on:
       postgres:
         condition: service_healthy
-        
+
     restart: no
-    
-    
-    
+
   directory-service:
     image: directory-service:dev
 
     build:
-      context: .
+      context: ./backend
       dockerfile: DirectoryService/Dockerfile
       target: final
       secrets:
@@ -70,31 +66,30 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       DOTNET_ENVIRONMENT: Development
-      
+
       ConnectionStrings__DirectoryServiceDbContext: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       Seq__ServerUrl: http://seq
       Serilog__WriteTo__1__Args__serverUrl: http://seq
-      
+
     ports:
       - "5231:8080"
-    
+
     depends_on:
       postgres:
         condition: service_healthy
-        
+
       directory-service-migrations:
         condition: service_completed_successfully
-        
+
       seq:
         condition: service_started
-        
+
     restart: unless-stopped
-      
 
 secrets:
   github_nuget_credentials:
     environment: GITHUB_NUGET_CREDENTIALS
-      
+
 volumes:
   postgres-data:
   seq_data:
