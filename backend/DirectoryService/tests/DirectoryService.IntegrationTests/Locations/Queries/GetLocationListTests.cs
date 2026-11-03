@@ -33,13 +33,13 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         {
             activeIds.Add(await CreateLocationAsync($"Active Office {i}", "Berlin"));
             var inactive = await CreateLocationAsync($"Inactive Office {i}", "Moscow");
-            using var deleteResponse = await _client.DeleteAsync($"api/locations/{inactive}");
+            using var deleteResponse = await _client.DeleteAsync($"locations/{inactive}");
             Assert.Equal(204, (int)deleteResponse.StatusCode);
             inactiveIds.Add(inactive);
         }
         await CreateLocationAsync("Active Hub", "Paris");
         var inactiveHub = await CreateLocationAsync("Inactive Hub", "Rome");
-        using var deleteHubResponse = await _client.DeleteAsync($"api/locations/{inactiveHub}");
+        using var deleteHubResponse = await _client.DeleteAsync($"locations/{inactiveHub}");
         Assert.Equal(204, (int)deleteHubResponse.StatusCode);
 
         var result = await GetLocationsAsync($"isActive={isActive}&search=office&page={page}");
@@ -57,7 +57,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
     [InlineData("1")]
     public async Task GetLocationList_ShouldReturnStandardError_WhenIsActiveIsInvalid(string isActive)
     {
-        using var response = await _client.GetAsync($"api/locations?isActive={isActive}");
+        using var response = await _client.GetAsync($"locations?isActive={isActive}");
 
         Assert.Equal(400, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
@@ -80,11 +80,11 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         await CreateDepartmentAsync("Remote", "remote", remote);
         var deleted = await CreateLocationAsync("Deleted Office", "Rome");
         await CreateDepartmentAsync("Deleted", "deleted", deleted);
-        var deleteResponse = await _client.DeleteAsync($"api/locations/{deleted}");
+        var deleteResponse = await _client.DeleteAsync($"locations/{deleted}");
         Assert.Equal(204, (int)deleteResponse.StatusCode);
 
         var response = await _client.GetAsync(
-            $"api/locations?search=office&minDepartmentCount=1&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
+            $"locations?search=office&minDepartmentCount=1&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -111,7 +111,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         await CreateDepartmentAsync("Support Team", "support-team", moscowId);
 
         var response = await _client.GetAsync(
-            "api/locations?search=office&minDepartmentCount=1" +
+            "locations?search=office&minDepartmentCount=1" +
             "&sortBy=departmentCount&sortDirection=desc&page=1&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
@@ -150,7 +150,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         await CreateLocationAsync("Moscow Office", "Moscow");
 
         var response = await _client.GetAsync(
-            $"api/locations?search=missing&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
+            $"locations?search=missing&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -167,7 +167,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
     public async Task GetLocationList_ShouldReturnBadRequest_WhenRequestIsInvalid()
     {
         var response = await _client.GetAsync(
-            "api/locations?sortBy=name&sortDirection=invalid&page=1&pageSize=5");
+            "locations?sortBy=name&sortDirection=invalid&page=1&pageSize=5");
 
         Assert.Equal(400, (int)response.StatusCode);
 
@@ -186,7 +186,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
         await CreateLocationAsync("Unlinked Office", "Paris");
         var department = await CreateDepartmentAsync("Finance", "finance", berlin, deleted);
         await CreateDepartmentAsync("Product", "product", moscow);
-        var deleteResponse = await _client.DeleteAsync($"api/locations/{deleted}");
+        var deleteResponse = await _client.DeleteAsync($"locations/{deleted}");
         deleteResponse.EnsureSuccessStatusCode();
 
         var result = await GetLocationsAsync($"departmentIds={department}");
@@ -313,7 +313,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
     [InlineData(",")]
     public async Task GetLocationList_ShouldReturnBadRequest_WhenDepartmentIdsAreInvalid(string departmentIds)
     {
-        var response = await _client.GetAsync($"api/locations?departmentIds={departmentIds}");
+        var response = await _client.GetAsync($"locations?departmentIds={departmentIds}");
 
         Assert.Equal(400, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
@@ -325,7 +325,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
 
     private async Task<PagedResult<LocationListItemDto>> GetLocationsAsync(string query)
     {
-        var response = await _client.GetAsync($"api/locations?pageSize=5&{query}");
+        var response = await _client.GetAsync($"locations?pageSize=5&{query}");
         Assert.Equal(200, (int)response.StatusCode);
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<PagedResult<LocationListItemDto>>>();
@@ -347,7 +347,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
             HouseNumber: "1",
             PostalCode: null);
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<LocationDto>>();
@@ -364,7 +364,7 @@ public class GetLocationListTests : IClassFixture<DirectoryServiceTestWebFactory
             LocationIds: locationIds,
             ParentId: null);
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();

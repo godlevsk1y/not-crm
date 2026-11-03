@@ -26,11 +26,11 @@ public class DeleteDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
     {
         var department = await CreateDepartmentAsync();
 
-        var response = await _client.DeleteAsync($"api/departments/{department.Id}");
+        var response = await _client.DeleteAsync($"departments/{department.Id}");
 
         Assert.Equal(204, (int)response.StatusCode);
 
-        var getResponse = await _client.GetAsync($"api/departments/{department.Id}");
+        var getResponse = await _client.GetAsync($"departments/{department.Id}");
         Assert.Equal(404, (int)getResponse.StatusCode);
 
         var envelope = await getResponse.Content.ReadFromJsonAsync<Envelope>();
@@ -54,7 +54,7 @@ public class DeleteDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
     {
         var departmentId = Guid.NewGuid();
 
-        var response = await _client.DeleteAsync($"api/departments/{departmentId}");
+        var response = await _client.DeleteAsync($"departments/{departmentId}");
 
         Assert.Equal(404, (int)response.StatusCode);
 
@@ -73,7 +73,7 @@ public class DeleteDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
             ParentId: null
         );
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();

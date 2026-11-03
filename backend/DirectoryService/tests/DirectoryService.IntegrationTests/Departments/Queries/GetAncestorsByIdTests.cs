@@ -29,7 +29,7 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
         await CreateDepartmentAsync("Business", "business");
 
         var response = await _client.GetAsync(
-            $"api/departments/{child.Id}/ancestors?page={page}&pageSize=5");
+            $"departments/{child.Id}/ancestors?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -57,7 +57,7 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
         await CreateDepartmentAsync("Sales", "sales", business.Id);
 
         var response = await _client.GetAsync(
-            $"api/departments/{backend.Id}/ancestors?page=1&pageSize=5");
+            $"departments/{backend.Id}/ancestors?page=1&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -106,7 +106,7 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
         var department = await CreateDepartmentAsync("Product", "product");
 
         var response = await _client.GetAsync(
-            $"api/departments/{department.Id}/ancestors?page={page}&pageSize=5");
+            $"departments/{department.Id}/ancestors?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -125,7 +125,7 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
     public async Task GetAncestorsById_ShouldReturnBadRequest_WhenPaginationIsInvalid()
     {
         var response = await _client.GetAsync(
-            $"api/departments/{Guid.NewGuid()}/ancestors?page=0&pageSize=5");
+            $"departments/{Guid.NewGuid()}/ancestors?page=0&pageSize=5");
 
         Assert.Equal(400, (int)response.StatusCode);
 
@@ -163,7 +163,7 @@ public class GetAncestorsByIdTests : IClassFixture<DirectoryServiceTestWebFactor
             LocationIds: [],
             ParentId: parentId);
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();

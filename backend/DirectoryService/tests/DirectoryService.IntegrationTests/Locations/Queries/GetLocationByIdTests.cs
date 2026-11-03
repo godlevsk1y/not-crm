@@ -20,7 +20,7 @@ public class GetLocationByIdTests : IClassFixture<DirectoryServiceTestWebFactory
     {
         var createdLocation = await CreateLocationAsync();
 
-        var response = await _client.GetAsync($"api/locations/{createdLocation.Id}");
+        var response = await _client.GetAsync($"locations/{createdLocation.Id}");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -34,7 +34,7 @@ public class GetLocationByIdTests : IClassFixture<DirectoryServiceTestWebFactory
     [Fact]
     public async Task GetLocationById_ShouldReturnNotFound_WhenLocationDoesNotExist()
     {
-        var response = await _client.GetAsync($"api/locations/{Guid.NewGuid()}");
+        var response = await _client.GetAsync($"locations/{Guid.NewGuid()}");
 
         Assert.Equal(404, (int)response.StatusCode);
 
@@ -56,7 +56,7 @@ public class GetLocationByIdTests : IClassFixture<DirectoryServiceTestWebFactory
             HouseNumber: "1",
             PostalCode: "125009");
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<LocationDto>>();

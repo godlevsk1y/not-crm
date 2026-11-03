@@ -19,7 +19,7 @@ namespace DirectoryService.Web.Controllers;
 [ProducesResponseType<Envelope>(StatusCodes.Status400BadRequest)]
 [ProducesResponseType<Envelope>(StatusCodes.Status500InternalServerError)]
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class LocationsController : ControllerBase
 {
     [HttpPost]
@@ -41,7 +41,7 @@ public class LocationsController : ControllerBase
         }
         
         return EndpointResults.Created(
-            $"/api/locations/{createResult.Value.Id}",
+            $"/locations/{createResult.Value.Id}",
             createResult.Value
         );
     }

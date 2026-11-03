@@ -67,7 +67,7 @@ public class GetDescendantsByIdTests : IClassFixture<DirectoryServiceTestWebFact
     [Fact]
     public async Task GetDescendantsById_ShouldReturnNotFound_WhenDepartmentDoesNotExist()
     {
-        var response = await _client.GetAsync($"api/departments/{Guid.NewGuid()}/descendants");
+        var response = await _client.GetAsync($"departments/{Guid.NewGuid()}/descendants");
 
         Assert.Equal(404, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
@@ -105,7 +105,7 @@ public class GetDescendantsByIdTests : IClassFixture<DirectoryServiceTestWebFact
 
         Guid? newParentId = moveToRoot ? null : operations.Id;
         var response = await _client.PutAsJsonAsync(
-            $"api/departments/{backend.Id}/parent", new TransferDepartmentRequest(newParentId));
+            $"departments/{backend.Id}/parent", new TransferDepartmentRequest(newParentId));
         Assert.Equal(200, (int)response.StatusCode);
 
         await AssertDescendantsAsync(engineering.Id, frontend);
@@ -120,7 +120,7 @@ public class GetDescendantsByIdTests : IClassFixture<DirectoryServiceTestWebFact
     {
         using var document = JsonDocument.Parse(await _client.GetStringAsync("openapi/v1.json"));
         var operation = document.RootElement.GetProperty("paths")
-            .GetProperty("/api/departments/{id}/descendants").GetProperty("get");
+            .GetProperty("/departments/{id}/descendants").GetProperty("get");
         var parameter = Assert.Single(operation.GetProperty("parameters").EnumerateArray());
         Assert.Equal("id", parameter.GetProperty("name").GetString());
         Assert.Equal("path", parameter.GetProperty("in").GetString());
@@ -140,7 +140,7 @@ public class GetDescendantsByIdTests : IClassFixture<DirectoryServiceTestWebFact
 
     private async Task AssertDescendantsAsync(Guid id, params DepartmentDto[] expected)
     {
-        var response = await _client.GetAsync($"api/departments/{id}/descendants");
+        var response = await _client.GetAsync($"departments/{id}/descendants");
         Assert.Equal(200, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<IReadOnlyList<DepartmentDescendantDto>>>();
         Assert.NotNull(envelope);
@@ -154,7 +154,7 @@ public class GetDescendantsByIdTests : IClassFixture<DirectoryServiceTestWebFact
     private async Task<DepartmentDto> CreateDepartmentAsync(string name, string slug, Guid? parentId = null)
     {
         var response = await _client.PostAsJsonAsync(
-            "api/departments", new CreateDepartmentRequest(name, slug, [], parentId));
+            "departments", new CreateDepartmentRequest(name, slug, [], parentId));
         response.EnsureSuccessStatusCode();
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
         Assert.NotNull(envelope?.Result);
@@ -163,7 +163,7 @@ public class GetDescendantsByIdTests : IClassFixture<DirectoryServiceTestWebFact
 
     private async Task ArchiveDepartmentAsync(Guid id)
     {
-        var response = await _client.DeleteAsync($"api/departments/{id}");
+        var response = await _client.DeleteAsync($"departments/{id}");
         Assert.Equal(204, (int)response.StatusCode);
     }
 

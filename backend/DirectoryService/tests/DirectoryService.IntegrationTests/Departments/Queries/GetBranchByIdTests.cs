@@ -79,7 +79,7 @@ public class GetBranchByIdTests : IClassFixture<DirectoryServiceTestWebFactory>,
             await context.SaveChangesAsync();
         }
 
-        using var response = await _client.GetAsync($"api/departments/{id}/branch");
+        using var response = await _client.GetAsync($"departments/{id}/branch");
 
         Assert.Equal(404, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
@@ -108,7 +108,7 @@ public class GetBranchByIdTests : IClassFixture<DirectoryServiceTestWebFactory>,
             .ToArray());
 
         // The existing ancestors endpoint remains paginated and excludes the target.
-        using var response = await _client.GetAsync($"api/departments/{targetId}/ancestors");
+        using var response = await _client.GetAsync($"departments/{targetId}/ancestors");
         response.EnsureSuccessStatusCode();
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<PagedResult<DepartmentAncestorDto>>>();
         Assert.NotNull(envelope?.Result);
@@ -128,7 +128,7 @@ public class GetBranchByIdTests : IClassFixture<DirectoryServiceTestWebFactory>,
         var otherRoot = CreateDepartment(context, "Other company", "other");
         await context.SaveChangesAsync();
 
-        using var response = await _client.PutAsJsonAsync($"api/departments/{engineering.Id.Value}/parent",
+        using var response = await _client.PutAsJsonAsync($"departments/{engineering.Id.Value}/parent",
             new TransferDepartmentRequest(otherRoot.Id.Value));
         response.EnsureSuccessStatusCode();
         await context.Entry(engineering).ReloadAsync();
@@ -142,7 +142,7 @@ public class GetBranchByIdTests : IClassFixture<DirectoryServiceTestWebFactory>,
     {
         using var document = JsonDocument.Parse(await _client.GetStringAsync("openapi/v1.json"));
         var operation = document.RootElement.GetProperty("paths")
-            .GetProperty("/api/departments/{id}/branch").GetProperty("get");
+            .GetProperty("/departments/{id}/branch").GetProperty("get");
         var parameter = Assert.Single(operation.GetProperty("parameters").EnumerateArray());
         Assert.Equal("id", parameter.GetProperty("name").GetString());
         Assert.Equal("path", parameter.GetProperty("in").GetString());
@@ -175,7 +175,7 @@ public class GetBranchByIdTests : IClassFixture<DirectoryServiceTestWebFactory>,
 
     private async Task AssertBranchAsync(Guid id, params (Department Department, int ChildCount)[] expected)
     {
-        using var response = await _client.GetAsync($"api/departments/{id}/branch");
+        using var response = await _client.GetAsync($"departments/{id}/branch");
         Assert.Equal(200, (int)response.StatusCode);
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<IReadOnlyList<DepartmentBranchNodeDto>>>();
         Assert.NotNull(envelope);

@@ -29,11 +29,11 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
         var other = await CreateDepartmentAsync("Business", "business");
         await CreateDepartmentAsync("Sales", "sales", other.Id);
         var deleted = await CreateDepartmentAsync("Deleted", "deleted", root.Id);
-        var deleteResponse = await _client.DeleteAsync($"api/departments/{deleted.Id}");
+        var deleteResponse = await _client.DeleteAsync($"departments/{deleted.Id}");
         Assert.Equal(204, (int)deleteResponse.StatusCode);
 
         var response = await _client.GetAsync(
-            $"api/departments/{root.Id}/children?page={page}&pageSize=5");
+            $"departments/{root.Id}/children?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -60,7 +60,7 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
         await CreateDepartmentAsync("Sales", "sales", business.Id);
 
         var response = await _client.GetAsync(
-            $"api/departments/{product.Id}/children?page=1&pageSize=5");
+            $"departments/{product.Id}/children?page=1&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -101,7 +101,7 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
         var department = await CreateDepartmentAsync("Product", "product");
 
         var response = await _client.GetAsync(
-            $"api/departments/{department.Id}/children?page={page}&pageSize=5");
+            $"departments/{department.Id}/children?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -120,7 +120,7 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
     public async Task GetChildrenByParentId_ShouldReturnBadRequest_WhenPaginationIsInvalid()
     {
         var response = await _client.GetAsync(
-            $"api/departments/{Guid.NewGuid()}/children?page=0&pageSize=5");
+            $"departments/{Guid.NewGuid()}/children?page=0&pageSize=5");
 
         Assert.Equal(400, (int)response.StatusCode);
 
@@ -159,7 +159,7 @@ public class GetChildrenByParentIdTests : IClassFixture<DirectoryServiceTestWebF
             LocationIds: [],
             ParentId: parentId);
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();

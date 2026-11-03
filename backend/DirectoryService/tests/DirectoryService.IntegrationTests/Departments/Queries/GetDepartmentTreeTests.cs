@@ -26,11 +26,11 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
         await CreateDepartmentAsync("Business", "business");
         await CreateDepartmentAsync("Engineering", "engineering", root.Id);
         var deleted = await CreateDepartmentAsync("Deleted", "deleted");
-        var deleteResponse = await _client.DeleteAsync($"api/departments/{deleted.Id}");
+        var deleteResponse = await _client.DeleteAsync($"departments/{deleted.Id}");
         Assert.Equal(204, (int)deleteResponse.StatusCode);
 
         var response = await _client.GetAsync(
-            $"api/departments/tree?page={page}&pageSize=5");
+            $"departments/tree?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -57,7 +57,7 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
         await CreateDepartmentAsync("Backend", "backend", engineering.Id);
         await CreateDepartmentAsync("Sales", "sales", business.Id);
 
-        var response = await _client.GetAsync("api/departments/tree?page=1&pageSize=5");
+        var response = await _client.GetAsync("departments/tree?page=1&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -100,7 +100,7 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
     [InlineData(2)]
     public async Task GetDepartmentTree_ShouldReturnEmptyPage_WhenDepartmentsDoNotExist(int page)
     {
-        var response = await _client.GetAsync($"api/departments/tree?page={page}&pageSize=5");
+        var response = await _client.GetAsync($"departments/tree?page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -116,7 +116,7 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
     [Fact]
     public async Task GetDepartmentTree_ShouldReturnBadRequest_WhenPaginationIsInvalid()
     {
-        var response = await _client.GetAsync("api/departments/tree?page=0&pageSize=5");
+        var response = await _client.GetAsync("departments/tree?page=0&pageSize=5");
 
         Assert.Equal(400, (int)response.StatusCode);
 
@@ -154,7 +154,7 @@ public class GetDepartmentTreeTests : IClassFixture<DirectoryServiceTestWebFacto
             LocationIds: [],
             ParentId: parentId);
 
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();

@@ -27,7 +27,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
         await CreateMockDepartmentsAsync();
 
         var response = await _client.GetAsync(
-            $"api/departments?search=team&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
+            $"departments?search=team&sortBy=name&sortDirection=asc&page={page}&pageSize=5");
 
         Assert.Equal(200, (int)response.StatusCode);
 
@@ -56,7 +56,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
             PageSize = 10,
         };
         
-        var response = await _client.GetAsync($"api/departments?" +
+        var response = await _client.GetAsync($"departments?" +
                                               $"search={queryParams.Search}" +
                                               $"&sortBy={queryParams.SortBy}" +
                                               $"&sortDirection={queryParams.SortDirection}" +
@@ -94,7 +94,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
             PageSize = 10,
         };
         
-        var response = await _client.GetAsync($"api/departments?" +
+        var response = await _client.GetAsync($"departments?" +
                                               $"search={queryParams.Search}" +
                                               $"&sortBy={queryParams.SortBy}" +
                                               $"&sortDirection={queryParams.SortDirection}" +
@@ -128,7 +128,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
             PageSize = 10,
         };
         
-        var response = await _client.GetAsync($"api/departments?" +
+        var response = await _client.GetAsync($"departments?" +
                                               $"search={queryParams.Search}" +
                                               $"&sortBy={queryParams.SortBy}" +
                                               $"&sortDirection={queryParams.SortDirection}" +
@@ -154,7 +154,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
     {
         var activeId = await CreateDepartmentAsync("Active Team", "active-team");
         var deletedId = await CreateDepartmentAsync("Deleted Team", "deleted-team");
-        var deleteResponse = await _client.DeleteAsync($"api/departments/{deletedId}");
+        var deleteResponse = await _client.DeleteAsync($"departments/{deletedId}");
         Assert.Equal(204, (int)deleteResponse.StatusCode);
 
         var result = await GetDepartmentListAsync(queryString);
@@ -178,7 +178,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
     {
         var activeId = await CreateDepartmentAsync("Active Team", "active-team");
         var deletedId = await CreateDepartmentAsync("Deleted Team", "deleted-team");
-        var deleteResponse = await _client.DeleteAsync($"api/departments/{deletedId}");
+        var deleteResponse = await _client.DeleteAsync($"departments/{deletedId}");
         Assert.Equal(204, (int)deleteResponse.StatusCode);
 
         var result = await GetDepartmentListAsync("?isActive=");
@@ -283,7 +283,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
         var deletedId = await CreateDepartmentAsync("Deleted Team", "deleted-team", [moscowId]);
         await CreateDepartmentAsync("Remote Team", "remote-team", [berlinId]);
         await CreateDepartmentAsync("Research Lab", "research-lab", [moscowId]);
-        var deleteResponse = await _client.DeleteAsync($"api/departments/{deletedId}");
+        var deleteResponse = await _client.DeleteAsync($"departments/{deletedId}");
         Assert.Equal(204, (int)deleteResponse.StatusCode);
 
         var result = await GetDepartmentListAsync(
@@ -298,7 +298,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
 
     private async Task<PagedResult<DepartmentListItemDto>> GetDepartmentListAsync(string queryString)
     {
-        var response = await _client.GetAsync($"api/departments{queryString}");
+        var response = await _client.GetAsync($"departments{queryString}");
         Assert.Equal(200, (int)response.StatusCode);
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<PagedResult<DepartmentListItemDto>>>();
@@ -312,7 +312,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
     private async Task<Guid> CreateDepartmentAsync(string name, string slug, Guid[]? locationIds = null)
     {
         var request = new CreateDepartmentRequest(name, slug, locationIds ?? []);
-        var response = await _client.PostAsJsonAsync("api/departments", request);
+        var response = await _client.PostAsJsonAsync("departments", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<DepartmentDto>>();
@@ -333,7 +333,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
             HouseNumber: "1",
             PostalCode: null);
 
-        var response = await _client.PostAsJsonAsync("api/locations", request);
+        var response = await _client.PostAsJsonAsync("locations", request);
         response.EnsureSuccessStatusCode();
 
         var envelope = await response.Content.ReadFromJsonAsync<Envelope<LocationDto>>();
@@ -380,7 +380,7 @@ public class GetDepartmentListTests : IClassFixture<DirectoryServiceTestWebFacto
 
         foreach (var request in requests)
         {
-            var response = await _client.PostAsJsonAsync("/api/departments", request);
+            var response = await _client.PostAsJsonAsync("/departments", request);
             response.EnsureSuccessStatusCode();
         }
     }

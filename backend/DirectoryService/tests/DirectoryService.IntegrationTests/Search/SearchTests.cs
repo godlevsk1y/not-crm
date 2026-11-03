@@ -31,7 +31,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             await SeedAsync(type, "Unrelated");
         }
 
-        using var response = await _client.GetAsync("api/search?q=%20%20рАз%20%20");
+        using var response = await _client.GetAsync("search?q=%20%20рАз%20%20");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         using var json = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         Assert.False(json.RootElement.GetProperty("isError").GetBoolean());
@@ -44,7 +44,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             var item = Assert.Single(block.GetProperty("items").EnumerateArray());
             Assert.Equal(["id", "name"], item.EnumerateObject().Select(p => p.Name).Order(StringComparer.Ordinal));
             Assert.Equal("Отдел Разработки", item.GetProperty("name").GetString());
-            var page = await GetAsync<SearchPageDto>($"api/search/{type}?q=%20рАз%20");
+            var page = await GetAsync<SearchPageDto>($"search/{type}?q=%20рАз%20");
             Assert.Equal("Отдел Разработки", Assert.Single(page.Items).Name);
             Assert.False(page.HasMore);
         }
@@ -57,7 +57,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
     public async Task Search_ShouldReturnMatchesOnlyForSelectedType(string entityType)
     {
         await SeedAsync(entityType, "Engineering");
-        var result = await GetAsync<SearchResultDto>("api/search?q=gInEeR");
+        var result = await GetAsync<SearchResultDto>("search?q=gInEeR");
         foreach (var (type, page) in Blocks(result))
         {
             Assert.Equal(string.Equals(type, entityType, StringComparison.Ordinal) ? 1 : 0, page.Items.Count);
@@ -71,7 +71,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
     public async Task Search_ShouldReturnEmptyBlocks_WhenNoMatches(string query)
     {
         await SeedAsync("positions", "Other");
-        var result = await GetAsync<SearchResultDto>($"api/search?q={query}");
+        var result = await GetAsync<SearchResultDto>($"search?q={query}");
         foreach (var (_, block) in Blocks(result))
         {
             Assert.Empty(block.Items);
@@ -95,10 +95,10 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             await SeedAsync(type, "Prefix a%_ suffix");
         }
         var encoded = Uri.EscapeDataString(query);
-        var combined = await GetAsync<SearchResultDto>($"api/search?q={encoded}");
+        var combined = await GetAsync<SearchResultDto>($"search?q={encoded}");
         foreach (var (type, block) in Blocks(combined))
         {
-            var page = await GetAsync<SearchPageDto>($"api/search/{type}?q={encoded}");
+            var page = await GetAsync<SearchPageDto>($"search/{type}?q={encoded}");
             Assert.Equal(block.Items, page.Items);
             Assert.All(block.Items, item => Assert.Contains(query, item.Name, StringComparison.Ordinal));
             Assert.Contains(block.Items, item => string.Equals(item.Name, $"Prefix {query} suffix", StringComparison.Ordinal));
@@ -117,7 +117,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             for (var i = 0; i < (string.Equals(type, "locations", StringComparison.Ordinal) ? 1 : limit + 1); i++)
                 await SeedAsync(type, $"Match {i:D3}");
 
-        var result = await GetAsync<SearchResultDto>($"api/search?q=match{parameter}");
+        var result = await GetAsync<SearchResultDto>($"search?q=match{parameter}");
         Assert.Equal(limit, result.Departments.Items.Count);
         Assert.Equal(limit, result.Positions.Items.Count);
         Assert.True(result.Departments.HasMore);
@@ -126,7 +126,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
         Assert.False(result.Locations.HasMore);
         foreach (var (type, block) in Blocks(result))
         {
-            var page = await GetAsync<SearchPageDto>($"api/search/{type}?q=match&pageSize={limit}");
+            var page = await GetAsync<SearchPageDto>($"search/{type}?q=match&pageSize={limit}");
             Assert.Equal(block.Items, page.Items);
             Assert.Equal(block.HasMore, page.HasMore);
         }
@@ -143,10 +143,10 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             for (var i = 0; i < count; i++)
                 await SeedAsync(type, $"Match {i:D3}");
 
-        var combined = await GetAsync<SearchResultDto>("api/search?q=match&limitPerType=3");
+        var combined = await GetAsync<SearchResultDto>("search?q=match&limitPerType=3");
         foreach (var (type, block) in Blocks(combined))
         {
-            var page = await GetAsync<SearchPageDto>($"api/search/{type}?q=match&pageSize=3");
+            var page = await GetAsync<SearchPageDto>($"search/{type}?q=match&pageSize=3");
             Assert.Equal(Math.Min(count, 3), block.Items.Count);
             Assert.Equal(hasMore, block.HasMore);
             Assert.Equal(block.Items, page.Items);
@@ -169,10 +169,10 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             await SeedAsync(type, name, id: id);
             expected.Add(new SearchItemDto(id, name));
         }
-        var combined = await GetAsync<SearchResultDto>("api/search?q=match&limitPerType=3");
-        var first = await GetAsync<SearchPageDto>($"api/search/{type}?q=match&pageSize=3");
-        var second = await GetAsync<SearchPageDto>($"api/search/{type}?q=match&page=2&pageSize=3");
-        var third = await GetAsync<SearchPageDto>($"api/search/{type}?q=match&page=3&pageSize=3");
+        var combined = await GetAsync<SearchResultDto>("search?q=match&limitPerType=3");
+        var first = await GetAsync<SearchPageDto>($"search/{type}?q=match&pageSize=3");
+        var second = await GetAsync<SearchPageDto>($"search/{type}?q=match&page=2&pageSize=3");
+        var third = await GetAsync<SearchPageDto>($"search/{type}?q=match&page=3&pageSize=3");
         var block = Blocks(combined).Single(b => string.Equals(b.Type, type, StringComparison.Ordinal)).Page;
         Assert.Equal(block.Items, first.Items);
         Assert.Equal(block.HasMore, first.HasMore);
@@ -193,7 +193,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
     public async Task SearchPage_ShouldReturnEmptyBeyondEnd_WithoutOffsetOverflow(string type, int page)
     {
         await SeedAsync(type, "Match");
-        var result = await GetAsync<SearchPageDto>($"api/search/{type}?q=match&page={page}&pageSize=100");
+        var result = await GetAsync<SearchPageDto>($"search/{type}?q=match&page={page}&pageSize=100");
         Assert.Empty(result.Items);
         Assert.False(result.HasMore);
     }
@@ -215,7 +215,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             await connection.ExecuteAsync($"ALTER TABLE {table} RENAME TO unavailable_{table}");
         try
         {
-            var result = await GetAsync<SearchPageDto>($"api/search/{type}?q=match");
+            var result = await GetAsync<SearchPageDto>($"search/{type}?q=match");
             Assert.Equal(20, result.Items.Count);
             Assert.Equal("Match 000", result.Items[0].Name);
             Assert.True(result.HasMore);
@@ -235,7 +235,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
     [InlineData("q=%20x%20")]
     public async Task Search_ShouldRejectInvalidQuery_OnBothEndpoints(string query)
     {
-        foreach (var path in new[] { "api/search", "api/search/departments", "api/search/locations", "api/search/positions" })
+        foreach (var path in new[] { "search", "search/departments", "search/locations", "search/positions" })
             await AssertErrorAsync($"{path}?{query}", HttpStatusCode.BadRequest, "search.query.invalid");
     }
 
@@ -248,7 +248,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
     [InlineData("limitPerType=no", "invalid.model.state")]
     [InlineData("limitPerType=2147483648", "invalid.model.state")]
     public async Task Search_ShouldRejectInvalidLimit(string parameter, string code) =>
-        await AssertErrorAsync($"api/search?q=ab&{parameter}", HttpStatusCode.BadRequest, code);
+        await AssertErrorAsync($"search?q=ab&{parameter}", HttpStatusCode.BadRequest, code);
 
     [Theory]
     [InlineData("page=0", "search.page.invalid")]
@@ -265,13 +265,13 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
     [InlineData("pageSize=no", "invalid.model.state")]
     [InlineData("pageSize=2147483648", "invalid.model.state")]
     public async Task SearchPage_ShouldRejectInvalidPagination(string parameter, string code) =>
-        await AssertErrorAsync($"api/search/positions?q=ab&{parameter}", HttpStatusCode.BadRequest, code);
+        await AssertErrorAsync($"search/positions?q=ab&{parameter}", HttpStatusCode.BadRequest, code);
 
     [Theory]
     [InlineData("unknown")]
     [InlineData("Departments")]
     public async Task SearchPage_ShouldReturnNotFoundForUnknownType(string type) =>
-        await AssertErrorAsync($"api/search/{type}?q=ab", HttpStatusCode.NotFound, "search.entity.type.not.found");
+        await AssertErrorAsync($"search/{type}?q=ab", HttpStatusCode.NotFound, "search.entity.type.not.found");
 
     [Fact]
     public async Task SearchIndexes_ShouldBePartialGinIndexes_ForAllTypes()
@@ -296,7 +296,7 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
         response.EnsureSuccessStatusCode();
         using var document = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
         var paths = document.RootElement.GetProperty("paths");
-        foreach (var path in new[] { "/api/search", "/api/search/{entityType}" })
+        foreach (var path in new[] { "/search", "/search/{entityType}" })
         {
             var operation = paths.GetProperty(path).GetProperty("get");
             var parameters = operation.GetProperty("parameters").EnumerateArray()

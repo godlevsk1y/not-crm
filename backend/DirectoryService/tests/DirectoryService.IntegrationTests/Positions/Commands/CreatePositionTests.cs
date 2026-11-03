@@ -20,7 +20,7 @@ public class CreatePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var request = new CreatePositionRequest("Software Engineer");
 
-        var response = await _client.PostAsJsonAsync("api/positions", request);
+        var response = await _client.PostAsJsonAsync("positions", request);
 
         Assert.Equal(201, (int)response.StatusCode);
 
@@ -37,7 +37,7 @@ public class CreatePositionTests : IClassFixture<DirectoryServiceTestWebFactory>
     {
         var request = new CreatePositionRequest("");
 
-        var response = await _client.PostAsJsonAsync("api/positions", request);
+        var response = await _client.PostAsJsonAsync("positions", request);
 
         Assert.Equal(400, (int)response.StatusCode);
 
