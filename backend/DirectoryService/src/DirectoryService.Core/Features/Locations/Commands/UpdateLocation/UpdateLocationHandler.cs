@@ -90,6 +90,6 @@ public partial class UpdateLocationHandler : ICommandHandler<UpdateLocationComma
 
     [LoggerMessage(
         LogLevel.Information, 
-        "Location updated with id {LocationId}")]
+        "Location {LocationId} updated")]
     private partial void LogLocationUpdated(Guid locationId);
 }

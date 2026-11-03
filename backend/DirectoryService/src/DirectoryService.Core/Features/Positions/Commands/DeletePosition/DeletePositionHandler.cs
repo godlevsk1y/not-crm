@@ -70,6 +70,6 @@ public partial class DeletePositionHandler : ICommandHandler<DeletePositionComma
 
     [LoggerMessage(
         LogLevel.Information,
-        "Position deleted with ID {PositionId}")]
+        "Position {PositionId} deleted")]
     private partial void LogPositionDeleted(Guid positionId);
 }

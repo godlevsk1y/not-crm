@@ -55,6 +55,6 @@ public partial class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentC
 
     [LoggerMessage(
         LogLevel.Information,
-        "Department deleted with ID {DepartmentId}")]
+        "Department {DepartmentId} deleted")]
     private partial void LogDepartmentDeleted(Guid departmentId);
 }

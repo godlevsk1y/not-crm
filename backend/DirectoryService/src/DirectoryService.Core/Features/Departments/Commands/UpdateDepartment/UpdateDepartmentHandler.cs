@@ -121,6 +121,6 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
 
     [LoggerMessage(
         LogLevel.Information, 
-        "Department updated with ID {DepartmentId}")]
+        "Department {DepartmentId} updated")]
     private partial void LogDepartmentUpdated(Guid departmentId);
 }

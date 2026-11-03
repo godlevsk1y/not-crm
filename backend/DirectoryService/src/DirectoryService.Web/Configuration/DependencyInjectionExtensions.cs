@@ -1,6 +1,7 @@
 using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Web.Documentation;
+using DirectoryService.Web.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
@@ -55,6 +56,7 @@ public static class DependencyInjectionExtensions
             .ReadFrom.Configuration(configuration)
             .ReadFrom.Services(sp)
             .Enrich.FromLogContext()
+            .Enrich.With<SourceNameEnricher>()
             .Enrich.WithExceptionDetails()
             .Enrich.WithProperty("ServiceName", "DirectoryService"),
             preserveStaticLogger: true

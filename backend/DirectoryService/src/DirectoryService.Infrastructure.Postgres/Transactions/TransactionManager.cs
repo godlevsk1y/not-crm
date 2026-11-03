@@ -105,8 +105,13 @@ public partial class TransactionManager : ITransactionManager
         catch (Exception ex)
         {
             var error = PostgresExceptionMapper.Map(ex);
-            
-            return error ?? GeneralErrors.Internal();
+            if (error is not null)
+            {
+                return error;
+            }
+
+            LogTransactionOperationFailed(ex);
+            return GeneralErrors.Internal();
         }
     }
 
@@ -116,4 +121,7 @@ public partial class TransactionManager : ITransactionManager
 
     [LoggerMessage(LogLevel.Error, "Failed to save changes")]
     private partial void LogFailedToSaveChanges(Exception exception);
+
+    [LoggerMessage(LogLevel.Error, "Transaction operation failed")]
+    private partial void LogTransactionOperationFailed(Exception exception);
 }

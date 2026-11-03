@@ -63,6 +63,6 @@ public partial class CreatePositionHandler : ICommandHandler<CreatePositionComma
 
     [LoggerMessage(
         LogLevel.Information,
-        "Position created with ID {PositionId}")]
+        "Position {PositionId} created")]
     private partial void LogPositionCreated(Guid positionId);
 }

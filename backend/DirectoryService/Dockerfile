@@ -22,6 +22,8 @@ COPY DirectoryService/src/DirectoryService.Contracts/DirectoryService.Contracts.
 
 COPY DirectoryService/src/DirectoryService.Infrastructure.Postgres/DirectoryService.Infrastructure.Postgres.csproj \
      DirectoryService/src/DirectoryService.Infrastructure.Postgres/
+
+COPY Shared/Shared.Framework/Shared.Framework.csproj Shared/Shared.Framework/
      
      
 RUN --mount=type=secret,id=github_nuget_credentials,env=NuGetPackageSourceCredentials_github,required=true \
@@ -30,6 +32,7 @@ RUN --mount=type=secret,id=github_nuget_credentials,env=NuGetPackageSourceCreden
     --configfile nuget.config 
 
 COPY DirectoryService/src/ DirectoryService/src/
+COPY Shared/Shared.Framework/ Shared/Shared.Framework/
 
 RUN dotnet publish \
     DirectoryService/src/DirectoryService.Web/DirectoryService.Web.csproj \

@@ -100,6 +100,6 @@ public partial class CreateLocationHandler : ICommandHandler<CreateLocationComma
     
     [LoggerMessage(
         LogLevel.Information,
-        "Location created with id {LocationId}")]
+        "Location {LocationId} created")]
     private partial void LogLocationCreated(Guid locationId);
 }

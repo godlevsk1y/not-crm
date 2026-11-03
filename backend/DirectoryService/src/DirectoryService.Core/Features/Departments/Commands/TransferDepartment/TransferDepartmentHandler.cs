@@ -4,27 +4,31 @@ using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
 using Shared.Kernel.Errors;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Shared.Core.Abstractions;
 using Shared.Core.Database;
 using Shared.Core.Extensions;
 
 namespace DirectoryService.Core.Features.Departments.Commands.TransferDepartment;
 
-public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentCommand, TransferredDepartmentDto>
+public partial class TransferDepartmentHandler : ICommandHandler<TransferDepartmentCommand, TransferredDepartmentDto>
 {
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly IValidator<TransferDepartmentCommand> _validator;
+    private readonly ILogger<TransferDepartmentHandler> _logger;
 
     public TransferDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
         ITransactionManager transactionManager,
-        IValidator<TransferDepartmentCommand> validator
+        IValidator<TransferDepartmentCommand> validator,
+        ILogger<TransferDepartmentHandler> logger
     )
     {
         _departmentsRepository = departmentsRepository;
         _transactionManager = transactionManager;
         _validator = validator;
+        _logger = logger;
     }
     
     public async Task<Result<TransferredDepartmentDto, Error>> Handle(
@@ -37,6 +41,8 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
             return validationResult.ToError();
         }
 
+        Guid? oldParentId = null;
+        var parentChanged = false;
         var result = await _transactionManager.ExecuteAsync(async ct =>
         {
             var departmentId = new DepartmentId(command.DepartmentId);
@@ -46,7 +52,8 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
                 return DepartmentErrors.NotFound(departmentId);
             }
 
-            if (department.ParentId?.Value == command.NewParentId)
+            oldParentId = department.ParentId?.Value;
+            if (oldParentId == command.NewParentId)
             {
                 return new TransferredDepartmentDto(
                     department.Id, 
@@ -58,6 +65,7 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
                 );
             }
         
+            parentChanged = true;
             if (command.NewParentId is null)
             {
                 return await TransferDepartment(department, parent: null, ct);
@@ -83,7 +91,12 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
         
             return await TransferDepartment(department, newParent, ct);
         }, cancellationToken);
-        
+
+        if (result.IsSuccess && parentChanged)
+        {
+            LogDepartmentTransferred(command.DepartmentId, oldParentId, command.NewParentId);
+        }
+
         return result;
     }
 
@@ -119,4 +132,9 @@ public class TransferDepartmentHandler : ICommandHandler<TransferDepartmentComma
             department.ParentId?.ToGuid()
         );
     }
+
+    [LoggerMessage(
+        LogLevel.Information,
+        "Department {DepartmentId} transferred from parent {OldParentId} to parent {NewParentId}")]
+    private partial void LogDepartmentTransferred(Guid departmentId, Guid? oldParentId, Guid? newParentId);
 }

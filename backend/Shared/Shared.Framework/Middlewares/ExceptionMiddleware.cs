@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Shared.Kernel.Errors;
@@ -22,16 +23,35 @@ public partial class ExceptionMiddleware
         {
             await _next(context);
         }
+        catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+        {
+            if (!context.Response.HasStarted)
+            {
+                context.Response.StatusCode = StatusCodes.Status499ClientClosedRequest;
+            }
+        }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex);
+            context.Features.Set<IExceptionHandlerFeature>(new ExceptionHandlerFeature
+            {
+                Error = ex,
+                Path = context.Request.Path.ToString(),
+            });
+            LogException(ex);
+
+            if (context.Response.HasStarted)
+            {
+                context.Abort();
+                return;
+            }
+
+            await HandleExceptionAsync(context);
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception ex)
+    private static async Task HandleExceptionAsync(HttpContext context)
     {
-        LogException(ex);
-        
+        context.Response.Clear();
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
