@@ -40,13 +40,12 @@ internal sealed class OperationDocumentation : IOpenApiOperationTransformer
             errors.Add(new ApiError(DepartmentErrors.TransferConflict(),
                 "PostgreSQL deadlock mapped during saving or commit. Despite its name, this code can occur on all writes."));
         }
-        errors.Add(new ApiError(GeneralErrors.Internal(), "Unhandled exception (raw Error) or unmapped persistence failure (envelope). Internal details are not exposed."));
+        errors.Add(new ApiError(GeneralErrors.Internal(), "Unhandled exception or unmapped persistence failure. Internal details are not exposed."));
 
         QueryDocumentation.Describe(operation, action);
         DescribeSuccess(operation, context);
 
         var envelopeSchema = await context.GetOrCreateSchemaAsync(typeof(Envelope), cancellationToken: cancellationToken);
-        var errorSchema = await context.GetOrCreateSchemaAsync(typeof(Error), cancellationToken: cancellationToken);
         // Replace inherited error declarations with the statuses actually reachable by this operation.
         foreach (var status in operation.Responses.Keys.Where(s => int.TryParse(s, CultureInfo.InvariantCulture, out var code) && code >= 400).ToArray())
             operation.Responses.Remove(status);
@@ -54,9 +53,7 @@ internal sealed class OperationDocumentation : IOpenApiOperationTransformer
         {
             var media = new OpenApiMediaType
             {
-                Schema = string.Equals(group.Key, "500", StringComparison.Ordinal)
-                    ? new OpenApiSchema { OneOf = [envelopeSchema, errorSchema] }
-                    : envelopeSchema,
+                Schema = envelopeSchema,
                 Examples = new Dictionary<string, IOpenApiExample>(StringComparer.Ordinal),
             };
             foreach (var entry in group)
@@ -70,9 +67,6 @@ internal sealed class OperationDocumentation : IOpenApiOperationTransformer
                     Value = ContractExamples.Json(Envelope.Failure(entry.Error) with { TimeGenerated = ContractExamples.Timestamp }),
                 });
             }
-            if (string.Equals(group.Key, "500", StringComparison.Ordinal))
-                media.Examples.Add("unhandled.exception", new OpenApiExample { Summary = "Unexpected exception: raw Error, without an envelope.", Value = ContractExamples.Json(GeneralErrors.Internal()) });
-
             operation.Responses.Add(group.Key, new OpenApiResponse
             {
                 Description = ApiError.Table(group),

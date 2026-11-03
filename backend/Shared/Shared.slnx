@@ -2,4 +2,5 @@
   <Project Path="Shared.Core/Shared.Core.csproj" />
   <Project Path="Shared.Framework/Shared.Framework.csproj" />
   <Project Path="Shared.Kernel/Shared.Kernel.csproj" />
+  <Project Path="Shared.Framework.Tests/Shared.Framework.Tests.csproj" />
 </Solution>
