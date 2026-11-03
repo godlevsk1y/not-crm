@@ -60,6 +60,6 @@ public partial class RestoreDepartmentHandler : ICommandHandler<RestoreDepartmen
 
     [LoggerMessage(
         LogLevel.Information,
-        "Department restored with ID {DepartmentId}")]
+        "Department {DepartmentId} restored")]
     private partial void LogDepartmentRestored(Guid departmentId);
 }

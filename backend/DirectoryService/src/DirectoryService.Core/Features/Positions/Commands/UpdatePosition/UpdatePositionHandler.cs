@@ -69,6 +69,6 @@ public partial class UpdatePositionHandler : ICommandHandler<UpdatePositionComma
 
     [LoggerMessage(
         LogLevel.Information,
-        "Position updated with ID {PositionId}")]
+        "Position {PositionId} updated")]
     private partial void LogPositionUpdated(Guid positionId);
 }

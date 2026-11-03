@@ -55,6 +55,6 @@ public partial class RestoreLocationHandler : ICommandHandler<RestoreLocationCom
 
     [LoggerMessage(
         LogLevel.Information,
-        "Location restored with ID {LocationId}")]
+        "Location {LocationId} restored")]
     private partial void LogLocationRestored(Guid locationId);
 }

@@ -111,6 +111,6 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
     
     [LoggerMessage(
         LogLevel.Information, 
-        "Department created with ID {DepartmentId}")]
+        "Department {DepartmentId} created")]
     private partial void LogDepartmentCreated(Guid departmentId);
 }

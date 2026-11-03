@@ -1,10 +1,14 @@
 using System.Globalization;
 using DirectoryService.Web.Configuration;
+using DirectoryService.Web.Logging;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
-    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .Enrich.With<SourceNameEnricher>()
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss.fff} {Level:u3}] {SourceName:l} {Message:lj} TraceId={TraceId}{NewLine}{Exception}",
+        formatProvider: CultureInfo.InvariantCulture)
     .CreateBootstrapLogger();
 
 try

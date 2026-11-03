@@ -38,7 +38,14 @@ public partial class DatabaseCleanupBackgroundService : BackgroundService
 
                     var rowsAffected = await cleanupService.CleanupAsync(stoppingToken);
 
-                    LogCleanupSucceed(rowsAffected);
+                    if (rowsAffected == 0)
+                    {
+                        LogCleanupEmpty();
+                    }
+                    else
+                    {
+                        LogCleanupCompleted(rowsAffected);
+                    }
                 }
                 catch (OperationCanceledException)
                     when (stoppingToken.IsCancellationRequested)
@@ -65,12 +72,15 @@ public partial class DatabaseCleanupBackgroundService : BackgroundService
 
     [LoggerMessage(
         LogLevel.Information, 
-        "Successfully cleaned up {RowsAffected} row(s)")]
-    private partial void LogCleanupSucceed(int rowsAffected);
+        "Database cleanup completed: {RowsAffected} rows deleted")]
+    private partial void LogCleanupCompleted(int rowsAffected);
+
+    [LoggerMessage(LogLevel.Debug, "Database cleanup completed: no rows deleted")]
+    private partial void LogCleanupEmpty();
 
     [LoggerMessage(
-        LogLevel.Information, 
-        "Background Service is stopped")]
+        LogLevel.Debug,
+        "Database cleanup stopped")]
     private partial void LogBackgroundServiceStopped();
 
     [LoggerMessage(
