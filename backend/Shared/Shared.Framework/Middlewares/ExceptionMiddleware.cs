@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Shared.Framework.Results;
 using Shared.Kernel.Errors;
 
 namespace Shared.Framework.Middlewares;
@@ -57,7 +58,7 @@ public partial class ExceptionMiddleware
 
         var error = GeneralErrors.Internal();
         
-        await context.Response.WriteAsJsonAsync(error, cancellationToken: context.RequestAborted);
+        await context.Response.WriteAsJsonAsync(Envelope.Failure(error), cancellationToken: context.RequestAborted);
     }
 
     [LoggerMessage(

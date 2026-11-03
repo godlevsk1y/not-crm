@@ -312,6 +312,12 @@ public class SearchTests : IClassFixture<DirectoryServiceTestWebFactory>, IAsync
             Assert.True(responses.TryGetProperty("200", out _));
             Assert.True(responses.TryGetProperty("400", out _));
             Assert.True(responses.TryGetProperty("500", out _));
+            var internalError = responses.GetProperty("500").GetProperty("content").GetProperty("application/json");
+            Assert.False(internalError.GetProperty("schema").TryGetProperty("oneOf", out _));
+            var errorExample = internalError.GetProperty("examples").GetProperty("internal.server.error").GetProperty("value");
+            Assert.Equal(JsonValueKind.Null, errorExample.GetProperty("result").ValueKind);
+            Assert.True(errorExample.GetProperty("isError").GetBoolean());
+            Assert.Equal("internal.server.error", errorExample.GetProperty("error").GetProperty("messages")[0].GetProperty("code").GetString());
             var example = responses.GetProperty("200").GetProperty("content").GetProperty("application/json")
                 .GetProperty("example").GetProperty("result");
             if (parameters.TryGetValue("entityType", out var entityType))

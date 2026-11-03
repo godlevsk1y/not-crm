@@ -29,12 +29,12 @@ Order is explicit in `ApiDocumentation.Configure`: schema enrichment is register
 
 These were verified against the current implementation and documented without changing behavior:
 
-- `ExceptionMiddleware` returns a raw `Error` for unexpected exceptions; `EndpointResults.Error` returns an envelope for handled errors. The 500 schema uses `oneOf` and examples for both shapes.
+- `ExceptionMiddleware` and `EndpointResults.Error` return an envelope for unexpected and handled errors respectively, including HTTP 500 responses.
 - `ErrorType.BadRequest` falls through to 500 in `EndpointResults.Error`. The model-state handler bypasses it and explicitly returns 400 with `invalid.model.state`; no current business handler returns BadRequest.
 - Department PATCH treats omitted/null values as unchanged and the empty parent UUID as “make root”. It updates only the current department's path/depth and does not guard against descendant cycles. The transfer operation updates the subtree, checks cycles, and uses null/omission to make a root; an empty UUID is a parent lookup returning 404.
 - Location PATCH cannot clear region, district or postal code: omission, null and `""` all retain the old value. Whitespace is stored. Position PATCH requires a name, unlike the other two PATCH operations.
 - Names are limited to 100 characters **after trimming**. A schema `maxLength: 100` on the raw request would reject accepted input, so this constraint is described in prose. Slugs have no application-level length check; the 100-character database limit can produce 500. Address components similarly have database-only limits of 60 characters (10 for postal code).
-- Repeated existing location IDs in department creation can throw during missing-ID detection and return raw 500; distinctness is usage guidance, not a validator-enforced rule. Missing IDs return 404.
+- Repeated existing location IDs in department creation can throw during missing-ID detection and return 500; distinctness is usage guidance, not a validator-enforced rule. Missing IDs return 404.
 - The root and child department queries do not select `created_at`, so `DepartmentNodeDto.CreatedAt` is serialized as the default DateTime. The examples show that value. Other DTOs' creation timestamps come from storage.
 - Position creation emits `/positions/{id}` in Location, and there is no position-by-ID GET route.
 - Location uniqueness includes stored soft-deleted locations. Department link counts can include soft-deleted departments until cleanup. Duplicate position names are allowed.

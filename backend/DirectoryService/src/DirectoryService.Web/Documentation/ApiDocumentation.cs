@@ -14,8 +14,8 @@ internal static class ApiDocumentation
         {
             document.Info.Title = "DirectoryService REST API";
             document.Info.Description = "Organizational departments, locations and positions. No authentication is configured. " +
-                "JSON uses camelCase. Successes and handled failures use { result, error, isError, timeGenerated }; " +
-                "204 has no body. Unexpected exceptions return a raw Error (see the 500 response schemas/examples). " +
+                "JSON uses camelCase. Successes and failures use { result, error, isError, timeGenerated }; " +
+                "204 has no body. " +
                 "Branch on messages[].code; human-readable messages may contain dynamic IDs/names. " +
                 "invalidField is a nullable server-side name, not necessarily the JSON field name. " +
                 "Model binding precedes handler validation; validators aggregate value-object errors as Validation. " +
