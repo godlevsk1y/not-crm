@@ -96,6 +96,16 @@ services:
       - directory-service
     restart: always
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+
+    ports:
+      - "3000:3000"
+
+    restart: always
+
 secrets:
   github_nuget_credentials:
     environment: GITHUB_NUGET_CREDENTIALS
