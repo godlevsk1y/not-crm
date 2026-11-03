@@ -31,9 +31,10 @@ at `Information`, with `RowsAffected`.
   response is left intact. The summary includes `RequestAborted=true`, without an
   exception stack. Cancellation without a cancelled request token is unexpected.
 
-DirectoryService references the local `Shared.Framework` project so its middleware
-changes are included immediately in builds and Docker images; no separately
-published package is required.
+DirectoryService consumes `GodlevskiyDev.Shared.Framework` version `1.0.2` through
+NuGet. This version includes the middleware changes above. The library's sources
+remain in `backend/Shared`; DirectoryService and its Docker build do not reference
+or copy the library project.
 
 ## Enabling diagnostics temporarily
 
