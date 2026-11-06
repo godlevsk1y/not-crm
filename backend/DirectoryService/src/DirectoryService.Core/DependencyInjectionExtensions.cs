@@ -10,7 +10,9 @@ public static class DependencyInjectionExtensions
     {
         services.AddStackExchangeRedisCache(options =>
             options.Configuration = configuration.GetConnectionString("Redis"));
-        services.AddHybridCache();
+
+        services.AddHybridCache(options =>
+            configuration.GetSection("HybridCache").Bind(options));
 
         services.AddHandlersAndValidators(typeof(DependencyInjectionExtensions).Assembly);
 
