@@ -23,7 +23,7 @@ internal static class ContractExamples
     public static IReadOnlyDictionary<Type, object> Requests { get; } = new Dictionary<Type, object>
     {
         [typeof(CreateDepartmentRequest)] = new CreateDepartmentRequest("Engineering", "engineering", [], null),
-        [typeof(UpdateDepartmentRequest)] = new UpdateDepartmentRequest("Engineering team", null, null),
+        [typeof(UpdateDepartmentRequest)] = new UpdateDepartmentRequest("Engineering team", null),
         [typeof(TransferDepartmentRequest)] = new TransferDepartmentRequest(null),
         [typeof(CreateLocationRequest)] = new CreateLocationRequest("Moscow Office", "Russia", null, "Moscow", null, "Tverskaya", "1", null),
         [typeof(UpdateLocationRequest)] = new UpdateLocationRequest(null, null, null, "Saint Petersburg", null, null, null, null),

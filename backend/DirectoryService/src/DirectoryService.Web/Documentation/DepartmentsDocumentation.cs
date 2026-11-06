@@ -6,7 +6,6 @@ using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTree;
 using DirectoryService.Core.Features.Departments.Queries.GetDepartmentTreeByName;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Core.Features.Positions;
-using DirectoryService.Domain.Models.Errors;
 using DirectoryService.Domain.ValueObjects.Errors;
 using DirectoryService.Web.Controllers;
 using Shared.Kernel.Errors;
@@ -60,10 +59,7 @@ internal static class DepartmentsDocumentation
         nameof(DepartmentsController.Update) =>
         [
             ..NameAndSlugValidation,
-            new(ModelErrors.Department.ParentToItself(),
-                "PATCH parentId equals the department ID."),
-            new(DepartmentErrors.NotFound(ContractExamples.Id),
-                "Active department or requested parentId is missing, including a parent foreign key race while saving."),
+            ..MissingDepartment,
         ],
         nameof(DepartmentsController.Restore) =>
         [

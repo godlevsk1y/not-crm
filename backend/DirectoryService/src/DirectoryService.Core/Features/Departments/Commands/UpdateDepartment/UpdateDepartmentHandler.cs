@@ -71,31 +71,6 @@ public partial class UpdateDepartmentHandler : ICommandHandler<UpdateDepartmentC
                 department.ChangeSlug(slugResult.Value);
             }
 
-            if (command.Dto.ParentId == Guid.Empty)
-            {
-                var setParentResult = department.SetParent(parent: null);
-                if (setParentResult.IsFailure)
-                {
-                    return setParentResult.Error;
-                }
-            }
-            else if (command.Dto.ParentId is not null)
-            {
-                var parentDepartment = await _departmentsRepository.GetByIdAsync(
-                    new DepartmentId(command.Dto.ParentId.Value), ct);
-
-                if (parentDepartment is null)
-                {
-                    return DepartmentErrors.NotFound(command.Dto.ParentId.Value);
-                }
-
-                var setParentResult = department.SetParent(parentDepartment);
-                if (setParentResult.IsFailure)
-                {
-                    return setParentResult.Error;
-                }
-            }
-
             var saveResult = await _transactionManager.SaveChangesAsync(ct);
             if (saveResult.IsFailure)
             {
