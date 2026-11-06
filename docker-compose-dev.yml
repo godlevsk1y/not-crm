@@ -69,6 +69,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       DOTNET_ENVIRONMENT: Development
 
+      ConnectionStrings__Redis: "redis:6379"
       ConnectionStrings__DirectoryServiceDbContext: "Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       Seq__ServerUrl: http://seq
       Serilog__WriteTo__1__Args__serverUrl: http://seq
@@ -85,6 +86,9 @@ services:
 
       seq:
         condition: service_started
+
+      redis:
+        condition: service_healthy
 
     restart: unless-stopped
 
@@ -115,11 +119,15 @@ services:
   redis:
     container_name: redis
     image: redis:8-alpine
-    ports:
-      - "6973:6973"
     volumes:
       - redis_data:/data
-    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
 
 secrets:
   github_nuget_credentials:
