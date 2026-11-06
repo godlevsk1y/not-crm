@@ -26,11 +26,10 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
     public async Task UpdateDepartment_ShouldSucceed_WhenRequestIsValid()
     {
         var parent = await CreateDepartmentAsync("Engineering", "engineering");
-        var department = await CreateDepartmentAsync("Backend Team", "backend-team");
+        var department = await CreateDepartmentAsync("Backend Team", "backend-team", parent.Id);
         var request = new UpdateDepartmentRequest(
             Name: "Platform Team",
-            Slug: "platform-team",
-            ParentId: parent.Id
+            Slug: "platform-team"
         );
 
         var response = await _client.PatchAsJsonAsync($"departments/{department.Id}", request);
@@ -55,6 +54,31 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
     }
 
     [Theory]
+    [InlineData("other-parent")]
+    [InlineData("root")]
+    [InlineData("descendant")]
+    public async Task UpdateDepartment_ShouldPreserveHierarchy_WhenParentIdIsSent(string target)
+    {
+        var parent = await CreateDepartmentAsync("Engineering", "engineering");
+        var department = await CreateDepartmentAsync("Backend", "backend", parent.Id);
+        var child = await CreateDepartmentAsync("Services", "services", department.Id);
+        var otherParent = await CreateDepartmentAsync("Operations", "operations");
+        var parentId = target switch
+        {
+            "root" => Guid.Empty,
+            "descendant" => child.Id,
+            _ => otherParent.Id,
+        };
+
+        var response = await _client.PatchAsJsonAsync(
+            $"departments/{department.Id}", new { parentId });
+
+        Assert.Equal(200, (int)response.StatusCode);
+        await AssertDepartmentPathAsync(department.Id, department.Path, parent.Id);
+        await AssertDepartmentPathAsync(child.Id, child.Path, department.Id);
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public async Task UpdateDepartment_ShouldUpdateDescendantPaths_WhenSlugChanges(bool isNested)
@@ -69,7 +93,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
 
         var response = await _client.PatchAsJsonAsync(
             $"departments/{department.Id}",
-            new UpdateDepartmentRequest(Name: null, Slug: "platform", ParentId: null));
+            new UpdateDepartmentRequest(Name: null, Slug: "platform"));
 
         Assert.Equal(200, (int)response.StatusCode);
         await AssertDepartmentPathAsync(department.Id, prefix, root?.Id);
@@ -123,7 +147,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         {
             var response = await _client.PatchAsJsonAsync(
                 $"departments/{department.Id}",
-                new UpdateDepartmentRequest(Name: null, Slug: "platform", ParentId: null));
+                new UpdateDepartmentRequest(Name: null, Slug: "platform"));
 
             Assert.Equal(500, (int)response.StatusCode);
             await AssertDepartmentPathAsync(department.Id, "engineering", parentId: null);
@@ -154,8 +178,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         var departmentId = Guid.NewGuid();
         var request = new UpdateDepartmentRequest(
             Name: "Platform Team",
-            Slug: null,
-            ParentId: null
+            Slug: null
         );
 
         var response = await _client.PatchAsJsonAsync($"departments/{departmentId}", request);
@@ -174,8 +197,7 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         var department = await CreateDepartmentAsync("Backend Team", "backend-team");
         var request = new UpdateDepartmentRequest(
             Name: null,
-            Slug: "INVALID SLUG",
-            ParentId: null
+            Slug: "INVALID SLUG"
         );
 
         var response = await _client.PatchAsJsonAsync($"departments/{department.Id}", request);
