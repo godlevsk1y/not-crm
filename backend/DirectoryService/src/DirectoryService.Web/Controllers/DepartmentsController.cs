@@ -63,7 +63,7 @@ public class DepartmentsController : ControllerBase
 
     [HttpPatch("{id:guid}")]
     [EndpointSummary("Update a department")]
-    [EndpointDescription("Null or omitted fields are unchanged. parentId = 00000000-0000-0000-0000-000000000000 makes a root. PATCH recalculates only this department path; use PUT /{id}/parent to transfer a subtree. Returns the ID.")]
+    [EndpointDescription("Updates name and slug only. Null or omitted fields are unchanged. Changing slug recalculates paths of this department and its descendants transactionally. Parent changes, including moving to root, require PUT /departments/{id}/parent. Returns the ID.")]
     [ProducesResponseType<Envelope<Guid>>(StatusCodes.Status200OK)]
     [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
     public async Task<IResult> Update(
