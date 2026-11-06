@@ -21,6 +21,7 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
     private readonly ITransactionManager _transactionManager;
     private readonly IValidator<CreateDepartmentRequest> _validator;
     private readonly ILogger<CreateDepartmentHandler> _logger;
+    private readonly DepartmentChildrenCache _cache;
 
     public CreateDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
@@ -28,7 +29,8 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         ILocationsRepository locationsRepository,
         ITransactionManager transactionManager,
         IValidator<CreateDepartmentRequest> validator,
-        ILogger<CreateDepartmentHandler> logger)
+        ILogger<CreateDepartmentHandler> logger,
+        DepartmentChildrenCache cache)
     {
         _departmentsRepository = departmentsRepository;
         _departmentLocationsRepository = departmentLocationsRepository;
@@ -36,6 +38,7 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
+        _cache = cache;
     }
     
     public async Task<Result<DepartmentDto, Error>> Handle(CreateDepartmentCommand command, CancellationToken cancellationToken)
@@ -97,6 +100,8 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         {
             return saveResult.Error;
         }
+
+        await _cache.InvalidateAllAsync(cancellationToken);
 
         LogDepartmentCreated(department.Id.Value);
         

@@ -12,15 +12,18 @@ public partial class RestoreDepartmentHandler : ICommandHandler<RestoreDepartmen
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<RestoreDepartmentHandler> _logger;
+    private readonly DepartmentChildrenCache _cache;
 
     public RestoreDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
         ITransactionManager transactionManager,
-        ILogger<RestoreDepartmentHandler> logger)
+        ILogger<RestoreDepartmentHandler> logger,
+        DepartmentChildrenCache cache)
     {
         _departmentsRepository = departmentsRepository;
         _transactionManager = transactionManager;
         _logger = logger;
+        _cache = cache;
     }
 
     public async Task<UnitResult<Error>> Handle(
@@ -52,6 +55,8 @@ public partial class RestoreDepartmentHandler : ICommandHandler<RestoreDepartmen
         {
             return saveResult.Error;
         }
+
+        await _cache.InvalidateAllAsync(cancellationToken);
 
         LogDepartmentRestored(department.Id.Value);
 

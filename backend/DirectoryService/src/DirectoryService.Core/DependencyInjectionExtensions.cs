@@ -1,3 +1,4 @@
+using DirectoryService.Core.Features.Departments;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Core.Extensions;
@@ -13,6 +14,8 @@ public static class DependencyInjectionExtensions
 
         services.AddHybridCache(options =>
             configuration.GetSection("HybridCache").Bind(options));
+
+        services.AddSingleton<DepartmentChildrenCache>();
 
         services.AddHandlersAndValidators(typeof(DependencyInjectionExtensions).Assembly);
 

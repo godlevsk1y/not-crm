@@ -12,15 +12,18 @@ public partial class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentC
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ITransactionManager _transactionManager;
     private readonly ILogger<DeleteDepartmentHandler> _logger;
+    private readonly DepartmentChildrenCache _cache;
 
     public DeleteDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
         ITransactionManager transactionManager,
-        ILogger<DeleteDepartmentHandler> logger)
+        ILogger<DeleteDepartmentHandler> logger,
+        DepartmentChildrenCache cache)
     {
         _departmentsRepository = departmentsRepository;
         _transactionManager = transactionManager;
         _logger = logger;
+        _cache = cache;
     }
 
     public async Task<UnitResult<Error>> Handle(
@@ -47,6 +50,8 @@ public partial class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentC
         {
             return saveResult.Error;
         }
+
+        await _cache.InvalidateAllAsync(cancellationToken);
 
         LogDepartmentDeleted(department.Id.Value);
 

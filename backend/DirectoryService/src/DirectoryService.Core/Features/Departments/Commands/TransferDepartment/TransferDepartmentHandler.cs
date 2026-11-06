@@ -17,18 +17,21 @@ public partial class TransferDepartmentHandler : ICommandHandler<TransferDepartm
     private readonly ITransactionManager _transactionManager;
     private readonly IValidator<TransferDepartmentCommand> _validator;
     private readonly ILogger<TransferDepartmentHandler> _logger;
+    private readonly DepartmentChildrenCache _cache;
 
     public TransferDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
         ITransactionManager transactionManager,
         IValidator<TransferDepartmentCommand> validator,
-        ILogger<TransferDepartmentHandler> logger
+        ILogger<TransferDepartmentHandler> logger,
+        DepartmentChildrenCache cache
     )
     {
         _departmentsRepository = departmentsRepository;
         _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
+        _cache = cache;
     }
     
     public async Task<Result<TransferredDepartmentDto, Error>> Handle(
@@ -94,6 +97,8 @@ public partial class TransferDepartmentHandler : ICommandHandler<TransferDepartm
 
         if (result.IsSuccess && parentChanged)
         {
+            await _cache.InvalidateAllAsync(cancellationToken);
+
             LogDepartmentTransferred(command.DepartmentId, oldParentId, command.NewParentId);
         }
 
