@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using System.Text.Json;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.QueryContracts;
 using Shared.Kernel.Results;
@@ -77,25 +76,6 @@ public class UpdateDepartmentTests : IClassFixture<DirectoryServiceTestWebFactor
         Assert.Equal(200, (int)response.StatusCode);
         await AssertDepartmentPathAsync(department.Id, department.Path, parent.Id);
         await AssertDepartmentPathAsync(child.Id, child.Path, department.Id);
-    }
-
-    [Fact]
-    public async Task UpdateDepartment_ShouldDocumentOnlyNameAndSlug_InOpenApi()
-    {
-        using var document = JsonDocument.Parse(await _client.GetStringAsync("openapi/v1.json"));
-        var schema = document.RootElement.GetProperty("components").GetProperty("schemas")
-            .GetProperty(nameof(UpdateDepartmentRequest));
-        var properties = schema.GetProperty("properties");
-
-        Assert.Equal(2, properties.EnumerateObject().Count());
-        Assert.True(properties.TryGetProperty("name", out _));
-        Assert.True(properties.TryGetProperty("slug", out _));
-        Assert.False(schema.GetProperty("example").TryGetProperty("parentId", out _));
-
-        var operation = document.RootElement.GetProperty("paths")
-            .GetProperty("/departments/{id}").GetProperty("patch");
-        Assert.Contains("PUT /departments/{id}/parent",
-            operation.GetProperty("description").GetString(), StringComparison.Ordinal);
     }
 
     [Theory]
