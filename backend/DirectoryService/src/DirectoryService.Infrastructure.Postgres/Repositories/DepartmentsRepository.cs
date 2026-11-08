@@ -78,6 +78,16 @@ public class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
+    public async Task<IReadOnlyList<DepartmentId>> GetSubtreeIdsAsync(
+        Path path, CancellationToken cancellationToken)
+    {
+        return await _context.Departments
+            .FromSqlInterpolated($"SELECT * FROM departments WHERE path <@ {path.Value}::ltree")
+            .IgnoreQueryFilters()
+            .Select(department => department.Id)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Department?> GetByIdIncludingDeletedAsync(DepartmentId id, CancellationToken cancellationToken)
     {
         return await _context.Departments

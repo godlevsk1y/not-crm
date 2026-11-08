@@ -18,6 +18,8 @@ public interface IDepartmentsRepository
     
     Task<Department?> GetByIdWithParentAsync(DepartmentId id, CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<DepartmentId>> GetSubtreeIdsAsync(Path path, CancellationToken cancellationToken);
+
     void Delete(Department department);
     
     Task<bool> HasActiveChildrenAsync(DepartmentId parentId, CancellationToken cancellationToken);

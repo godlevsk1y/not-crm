@@ -1,12 +1,17 @@
 using System.Data;
 using DirectoryService.Core.Database;
+using DirectoryService.Core.Features.Departments;
+using DirectoryService.Core.Features.Departments.Caching;
 using DirectoryService.Infrastructure.Postgres;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
@@ -22,6 +27,15 @@ public class DirectoryServiceTestWebFactory : WebApplicationFactory<Program>, IA
         .WithPassword("postgres")
         .Build();
 
+    private readonly IContainer _redisContainer = new ContainerBuilder("redis:8-alpine")
+        .WithPortBinding(6379, assignRandomHostPort: true)
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(6379))
+        .Build();
+
+    private int _openedReadConnections;
+
+    public int OpenedReadConnections => Volatile.Read(ref _openedReadConnections);
+
     private Respawner _respawner = null!;
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -31,17 +45,22 @@ public class DirectoryServiceTestWebFactory : WebApplicationFactory<Program>, IA
             services.RemoveAll<DirectoryServiceDbContext>();
             services.RemoveAll<IDbConnectionFactory>();
 
+            services.Configure<RedisCacheOptions>(options =>
+                options.Configuration = $"{_redisContainer.Hostname}:{_redisContainer.GetMappedPublicPort(6379)}");
+
             services.AddDbContext<DirectoryServiceDbContext>(options =>
                 options.UseNpgsql(_dbContainer.GetConnectionString()));
 
             services.AddScoped<IDbConnectionFactory>(_ =>
-                new TestDbConnectionFactory(_dbContainer.GetConnectionString()));
+                new TestDbConnectionFactory(_dbContainer.GetConnectionString(),
+                    () => Interlocked.Increment(ref _openedReadConnections)));
         });
     }
 
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+        await _redisContainer.StartAsync();
 
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<DirectoryServiceDbContext>();
@@ -60,6 +79,7 @@ public class DirectoryServiceTestWebFactory : WebApplicationFactory<Program>, IA
         finally
         {
             await _dbContainer.DisposeAsync();
+            await _redisContainer.DisposeAsync();
         }
     }
 
@@ -71,6 +91,7 @@ public class DirectoryServiceTestWebFactory : WebApplicationFactory<Program>, IA
         await connection.OpenAsync();
 
         await _respawner.ResetAsync(connection);
+        await Services.GetRequiredService<DepartmentChildrenCache>().InvalidateAllAsync(CancellationToken.None);
     }
 
     private async Task InitializeRespawner()
@@ -90,7 +111,7 @@ public class DirectoryServiceTestWebFactory : WebApplicationFactory<Program>, IA
         );
     }
 
-    private sealed class TestDbConnectionFactory(string connectionString) : IDbConnectionFactory
+    private sealed class TestDbConnectionFactory(string connectionString, Action onOpen) : IDbConnectionFactory
     {
         public async Task<IDbConnection> OpenConnectionAsync(CancellationToken cancellationToken)
         {
@@ -98,6 +119,7 @@ public class DirectoryServiceTestWebFactory : WebApplicationFactory<Program>, IA
             try
             {
                 await connection.OpenAsync(cancellationToken);
+                onOpen();
                 return connection;
             }
             catch

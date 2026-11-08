@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Contracts.Departments.QueryContracts;
 using DirectoryService.Core.Database;
+using DirectoryService.Core.Features.Departments.Caching;
 using Shared.Kernel.Errors;
 using Shared.Kernel.Results;
 using FluentValidation;
@@ -17,13 +18,16 @@ public class GetChildrenByParentIdQueryHandler : IQueryHandler<
 {
     private readonly IDbConnectionFactory _factory;
     private readonly IValidator<GetChildrenByParentIdQuery> _validator;
+    private readonly DepartmentChildrenCache _cache;
 
     public GetChildrenByParentIdQueryHandler(
         IDbConnectionFactory factory, 
-        IValidator<GetChildrenByParentIdQuery> validator)
+        IValidator<GetChildrenByParentIdQuery> validator,
+        DepartmentChildrenCache cache)
     {
         _factory = factory;
         _validator = validator;
+        _cache = cache;
     }
 
     public async Task<Result<PagedResult<DepartmentNodeDto>, Error>> Handle(
@@ -35,6 +39,13 @@ public class GetChildrenByParentIdQueryHandler : IQueryHandler<
             return validationResult.ToError();
         }
         
+        return await _cache.GetOrCreateAsync(
+            query, ct => ReadChildrenAsync(query, ct), cancellationToken);
+    }
+
+    private async ValueTask<PagedResult<DepartmentNodeDto>> ReadChildrenAsync(
+        GetChildrenByParentIdQuery query, CancellationToken cancellationToken)
+    {
         using var connection = await _factory.OpenConnectionAsync(cancellationToken);
         
         var parameters = new DynamicParameters();
@@ -71,14 +82,13 @@ public class GetChildrenByParentIdQueryHandler : IQueryHandler<
         
         var children = await connection
             .QueryAsync<DepartmentNodeDto, long, DepartmentNodeDto>(
-                sql: sql,
+                command: new CommandDefinition(sql, parameters, cancellationToken: cancellationToken),
                 map: (dto, total) =>
                 {
                     totalCount ??= total;
 
                     return dto;
                 },
-                param: parameters,
                 splitOn: "total_count"
             );
         

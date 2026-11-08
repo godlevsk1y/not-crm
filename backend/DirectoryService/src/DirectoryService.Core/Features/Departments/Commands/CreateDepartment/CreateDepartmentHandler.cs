@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Core.Features.Departments.Caching;
 using DirectoryService.Core.Features.Locations;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.Models;
@@ -21,6 +22,7 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
     private readonly ITransactionManager _transactionManager;
     private readonly IValidator<CreateDepartmentRequest> _validator;
     private readonly ILogger<CreateDepartmentHandler> _logger;
+    private readonly DepartmentChildrenCache _cache;
 
     public CreateDepartmentHandler(
         IDepartmentsRepository departmentsRepository,
@@ -28,7 +30,8 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         ILocationsRepository locationsRepository,
         ITransactionManager transactionManager,
         IValidator<CreateDepartmentRequest> validator,
-        ILogger<CreateDepartmentHandler> logger)
+        ILogger<CreateDepartmentHandler> logger,
+        DepartmentChildrenCache cache)
     {
         _departmentsRepository = departmentsRepository;
         _departmentLocationsRepository = departmentLocationsRepository;
@@ -36,6 +39,7 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
+        _cache = cache;
     }
     
     public async Task<Result<DepartmentDto, Error>> Handle(CreateDepartmentCommand command, CancellationToken cancellationToken)
@@ -96,6 +100,19 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
         if (saveResult.IsFailure)
         {
             return saveResult.Error;
+        }
+
+        if (department.ParentId is not null)
+        {
+            var parentId = department.ParentId.Value;
+            var grandParentId = parentDepartment!.ParentId?.Value;
+            
+            await _cache.InvalidateAsync(
+                grandParentId is null ? 
+                    [parentId] : 
+                    [parentId, grandParentId.Value], 
+                cancellationToken
+            );
         }
 
         LogDepartmentCreated(department.Id.Value);
