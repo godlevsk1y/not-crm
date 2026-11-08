@@ -1,4 +1,5 @@
 using DirectoryService.Core.Features.Departments;
+using DirectoryService.Core.Features.Departments.Caching;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Core.Extensions;

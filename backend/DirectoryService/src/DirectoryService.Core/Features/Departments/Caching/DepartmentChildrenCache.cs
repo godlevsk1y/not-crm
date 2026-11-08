@@ -3,7 +3,7 @@ using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 using Microsoft.Extensions.Caching.Hybrid;
 using Shared.Kernel.Results;
 
-namespace DirectoryService.Core.Features.Departments;
+namespace DirectoryService.Core.Features.Departments.Caching;
 
 public sealed class DepartmentChildrenCache(HybridCache cache)
 {

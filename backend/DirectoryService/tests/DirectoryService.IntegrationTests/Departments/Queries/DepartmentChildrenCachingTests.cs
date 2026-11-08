@@ -3,6 +3,7 @@ using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.QueryContracts;
 using DirectoryService.Contracts.WebApi.Departments;
 using DirectoryService.Core.Features.Departments;
+using DirectoryService.Core.Features.Departments.Caching;
 using DirectoryService.Core.Features.Departments.Queries.GetChildrenByParentId;
 using DirectoryService.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;

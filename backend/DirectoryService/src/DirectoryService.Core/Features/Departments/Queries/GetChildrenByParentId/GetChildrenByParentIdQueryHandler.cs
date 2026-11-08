@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Contracts.Departments.QueryContracts;
 using DirectoryService.Core.Database;
+using DirectoryService.Core.Features.Departments.Caching;
 using Shared.Kernel.Errors;
 using Shared.Kernel.Results;
 using FluentValidation;

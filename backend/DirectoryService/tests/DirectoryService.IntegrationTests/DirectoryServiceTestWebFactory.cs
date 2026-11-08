@@ -1,6 +1,7 @@
 using System.Data;
 using DirectoryService.Core.Database;
 using DirectoryService.Core.Features.Departments;
+using DirectoryService.Core.Features.Departments.Caching;
 using DirectoryService.Infrastructure.Postgres;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;

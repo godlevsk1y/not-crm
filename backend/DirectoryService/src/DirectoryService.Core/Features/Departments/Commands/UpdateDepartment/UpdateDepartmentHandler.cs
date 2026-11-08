@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Core.Features.Departments.Caching;
 using DirectoryService.Domain.Ids;
 using DirectoryService.Domain.ValueObjects;
 using Shared.Kernel.Errors;
