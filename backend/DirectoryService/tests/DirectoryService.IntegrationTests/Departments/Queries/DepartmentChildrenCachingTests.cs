@@ -130,8 +130,39 @@ public class DepartmentChildrenCachingTests : IClassFixture<DirectoryServiceTest
         Assert.Equal(connections + 3, _factory.OpenedReadConnections);
     }
 
+    [Fact]
+    public async Task Create_ShouldInvalidateParentAndGrandparent_WhilePreservingAnotherBranch()
+    {
+        var root = await CreateAsync("Root", "root");
+        var branch = await CreateAsync("Branch", "branch", root.Id);
+        var sibling = await CreateAsync("Sibling", "sibling", root.Id);
+        var other = await CreateAsync("Other", "other", sibling.Id);
+        var branchNode = Assert.Single((await ChildrenAsync(root.Id)).Results, node => node.Id == branch.Id);
+        Assert.Equal(0, branchNode.ChildCount);
+        Assert.False(branchNode.HasChildren);
+        Assert.Empty((await ChildrenAsync(branch.Id)).Results);
+        await ChildrenAsync(sibling.Id);
+
+        var child = await CreateAsync("New child", "new-child", branch.Id);
+        var connections = _factory.OpenedReadConnections;
+
+        var branchPage = await ChildrenAsync(branch.Id);
+        Assert.Equal(child.Id, Assert.Single(branchPage.Results).Id);
+        Assert.Equal(1, branchPage.TotalCount);
+        Assert.Equal(connections + 1, _factory.OpenedReadConnections);
+
+        var rootPage = await ChildrenAsync(root.Id);
+        branchNode = Assert.Single(rootPage.Results, node => node.Id == branch.Id);
+        Assert.Equal(1, branchNode.ChildCount);
+        Assert.True(branchNode.HasChildren);
+        Assert.Equal(2, rootPage.TotalCount);
+        Assert.Equal(connections + 2, _factory.OpenedReadConnections);
+
+        Assert.Equal(other.Id, Assert.Single((await ChildrenAsync(sibling.Id)).Results).Id);
+        Assert.Equal(connections + 2, _factory.OpenedReadConnections);
+    }
+
     [Theory]
-    [InlineData("create")]
     [InlineData("delete")]
     [InlineData("restore")]
     [InlineData("transfer")]
@@ -151,8 +182,6 @@ public class DepartmentChildrenCachingTests : IClassFixture<DirectoryServiceTest
 
         using var response = operation switch
         {
-            "create" => await _client.PostAsJsonAsync("departments",
-                new CreateDepartmentRequest("New child", "new-child", [], root.Id)),
             "delete" => await _client.DeleteAsync($"departments/{branch.Id}"),
             "restore" => await _client.PostAsync($"departments/{branch.Id}/restore", null),
             _ => await _client.PutAsJsonAsync($"departments/{branch.Id}/parent",
@@ -165,7 +194,7 @@ public class DepartmentChildrenCachingTests : IClassFixture<DirectoryServiceTest
         var destinationPage = await ChildrenAsync(destination.Id);
         await ChildrenAsync(unrelated.Id);
         Assert.Equal(connections + 3, _factory.OpenedReadConnections);
-        Assert.Equal(operation switch { "create" => 2, "restore" => 1, _ => 0 }, sourcePage.TotalCount);
+        Assert.Equal(string.Equals(operation, "restore", StringComparison.Ordinal) ? 1 : 0, sourcePage.TotalCount);
         if (string.Equals(operation, "transfer", StringComparison.Ordinal))
         {
             Assert.Equal("destination.branch", Assert.Single(destinationPage.Results).Path);

@@ -102,7 +102,18 @@ public partial class CreateDepartmentHandler : ICommandHandler<CreateDepartmentC
             return saveResult.Error;
         }
 
-        await _cache.InvalidateAllAsync(cancellationToken);
+        if (department.ParentId is not null)
+        {
+            var parentId = department.ParentId.Value;
+            var grandParentId = parentDepartment!.ParentId?.Value;
+            
+            await _cache.InvalidateAsync(
+                grandParentId is null ? 
+                    [parentId] : 
+                    [parentId, grandParentId.Value], 
+                cancellationToken
+            );
+        }
 
         LogDepartmentCreated(department.Id.Value);
         
