@@ -9,7 +9,6 @@ Run from the repository root:
 ```sh
 dotnet restore backend/EmployeeService/EmployeeService.slnx
 dotnet build backend/EmployeeService/EmployeeService.slnx --no-restore
-dotnet test backend/EmployeeService/EmployeeService.slnx --no-build
 dotnet run --project backend/EmployeeService/src/EmployeeService.Web -- --environment Development --urls http://localhost:5100
 ```
 
