@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EmployeeService.Domain/EmployeeService.Domain.csproj" />
+    <Project Path="src/EmployeeService.Core/EmployeeService.Core.csproj" />
+    <Project Path="src/EmployeeService.Contracts/EmployeeService.Contracts.csproj" />
+    <Project Path="src/EmployeeService.Infrastructure.Postgres/EmployeeService.Infrastructure.Postgres.csproj" />
+    <Project Path="src/EmployeeService.Web/EmployeeService.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EmployeeService.IntegrationTests/EmployeeService.IntegrationTests.csproj" />
+  </Folder>
+</Solution>
