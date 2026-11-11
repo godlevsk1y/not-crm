@@ -1,3 +1,4 @@
+using EmployeeService.Infrastructure.Postgres;
 using EmployeeService.Web.Logging;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
@@ -10,7 +11,8 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services
             .AddSerilogLogging(configuration)
-            .AddHealthCheckEndpoints(configuration);
+            .AddHealthCheckEndpoints(configuration)
+            .AddPostgresInfrastructure(configuration);
 
     private static IServiceCollection AddSerilogLogging(this IServiceCollection services, IConfiguration configuration)
     {

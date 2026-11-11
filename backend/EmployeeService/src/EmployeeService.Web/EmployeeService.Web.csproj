@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EmployeeService.Infrastructure.Postgres\EmployeeService.Infrastructure.Postgres.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Uris" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Enrichers.Environment" />
