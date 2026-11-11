@@ -49,13 +49,6 @@ public static class AppExtensions
         });
         app.UseExceptionMiddleware();
 
-        app.UseCors(builder =>
-        {
-            builder.WithOrigins("http://localhost:3000")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
-        
         if (!app.Environment.IsProduction())
         {
             app.MapOpenApi();
