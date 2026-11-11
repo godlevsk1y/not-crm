@@ -15,7 +15,6 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services
-            .AddCors()
             .AddWebDependencies(configuration)
             .AddCore(configuration)
             .AddPostgresInfrastructure(configuration);
