@@ -8,11 +8,11 @@ notCRM — проект для работы с организационной с
 
 | Путь | Назначение |
 | --- | --- |
-| [frontend](frontend/) | Веб-интерфейс: Next.js, React, TypeScript, Tailwind CSS, TanStack Query |
-| [backend/DirectoryService](backend/DirectoryService/) | Организационная структура, подразделения, локации и должности |
-| [backend/EmployeeService](backend/EmployeeService/) | Каркас сервиса сотрудников |
-| [backend/Shared](backend/Shared/) | Общие библиотеки: примитивы и результаты, абстракции Core, HTTP-инфраструктура |
-| [scripts/seed-directory-service-db](scripts/seed-directory-service-db/) | Go-утилита для заполнения базы DirectoryService тестовыми данными |
+| [frontend](frontend/README.md) | Веб-интерфейс: Next.js, React, TypeScript, Tailwind CSS, TanStack Query |
+| [backend/DirectoryService](backend/DirectoryService/README.md) | Организационная структура, подразделения, локации и должности |
+| [backend/EmployeeService](backend/EmployeeService/README.md) | Каркас сервиса сотрудников |
+| [backend/Shared](backend/Shared/README.md) | Общие библиотеки: примитивы и результаты, абстракции Core, HTTP-инфраструктура |
+| [scripts/seed-directory-service-db](scripts/seed-directory-service-db/README.md) | Go-утилита для заполнения базы DirectoryService тестовыми данными |
 | [deploy/postgres](deploy/postgres/) | Инициализация баз данных и пользователей сервисов |
 | [docker-compose-dev.yml](docker-compose-dev.yml) | Локальное окружение разработки |
 | [nginx.conf](nginx.conf) | Маршрутизация запросов к интерфейсу и API |
