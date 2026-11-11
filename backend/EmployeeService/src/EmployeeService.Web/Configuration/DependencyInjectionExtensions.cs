@@ -12,7 +12,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services
             .AddSerilogLogging(configuration)
-            .AddHealthCheckEndpoints(configuration)
+            .AddHealthCheckEndpoints()
             .AddPostgresInfrastructure(configuration);
 
     private static IServiceCollection AddSerilogLogging(this IServiceCollection services, IConfiguration configuration)
@@ -30,12 +30,8 @@ public static class DependencyInjectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddHealthCheckEndpoints(this IServiceCollection services,
-        IConfiguration configuration)
+    private static IServiceCollection AddHealthCheckEndpoints(this IServiceCollection services)
     {
-        var seqUrl = configuration["Seq:ServerUrl"] ??
-                     throw new InvalidOperationException("Seq:ServerUrl is not configured.");
-
         services.AddHealthChecks()
             .AddCheck(
                 name: "self",
@@ -46,12 +42,6 @@ public static class DependencyInjectionExtensions
                 tags: ["ready"],
                 customTestQuery: async (context, cancellationToken) =>
                     await context.Database.CanConnectAsync(cancellationToken)
-            )
-            .AddUrlGroup(
-                uri: new Uri($"{seqUrl.TrimEnd('/')}/health"),
-                name: "seq",
-                tags: ["ready"],
-                timeout: TimeSpan.FromSeconds(5)
             );
 
         return services;
