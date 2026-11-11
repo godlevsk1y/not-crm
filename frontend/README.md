@@ -1,58 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend notCRM
 
-## Getting Started
+Веб-интерфейс для работы с организационной структурой компании. Приложение обращается к DirectoryService через HTTP API и позволяет работать с подразделениями, локациями и должностями.
 
-First, run the development server:
+Основные возможности:
+
+- просмотр, поиск и фильтрация справочников;
+- создание, редактирование, удаление и восстановление записей;
+- просмотр дерева подразделений и перенос подразделения к другому родителю;
+- просмотр связанных локаций и должностей подразделения;
+- общий поиск по подразделениям, локациям и должностям.
+
+Обзор проекта и подготовка окружения находятся в [корневом README](../README.md).
+
+## Стек и структура
+
+Приложение использует Next.js 16, React 19 и TypeScript. Интерфейс построен на Tailwind CSS и компонентах shadcn/Base UI; серверное состояние хранится через TanStack Query, запросы выполняются через Axios, формы используют React Hook Form и Zod. Для состояния дерева подразделений используется Zustand.
+
+Точные версии зависимостей и команды указаны в [package.json](package.json), зафиксированные версии — в `package-lock.json`.
+
+| Каталог | Назначение |
+| --- | --- |
+| [app](app/) | Маршруты Next.js, корневой layout и обработчики ошибок |
+| [src/_app](src/_app/) | Общие провайдеры и глобальные стили |
+| [src/_pages](src/_pages/) | Реализация экранов: компоненты и состояние страниц |
+| [src/widgets](src/widgets/) | Общие блоки интерфейса: шапка и боковое меню |
+| [src/features](src/features/) | Пользовательские действия, выбор сущностей и общий поиск |
+| [src/entities](src/entities/) | API, типы, валидация и UI подразделений, локаций и должностей |
+| [src/shared](src/shared/) | HTTP-клиент, общие компоненты, конфигурация и утилиты |
+| [public](public/) | Статические файлы |
+
+Алиас `@/*` указывает на `src/*`; конфигурация находится в [tsconfig.json](tsconfig.json).
+
+Основные маршруты: `/`, `/organization-structure`, `/departments`, `/locations`, `/positions`. В `/playground/department-select` и `/playground/location-select` находятся страницы для проверки компонентов выбора.
+
+## Запуск всего приложения в Docker
+
+Для работы интерфейса с API используйте общее окружение Compose. Подготовьте корневой `.env` по [инструкции](../README.md), затем из корня репозитория выполните:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose -f docker-compose-dev.yml up -d --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost](http://localhost). Nginx проксирует страницы во frontend, а `/api/organization/*` — в DirectoryService. Порт `3000` доступен напрямую, но маршруты API обслуживаются через Nginx на порту `80`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+[Dockerfile](Dockerfile) устанавливает зависимости через `npm ci`, собирает приложение и запускает standalone-сборку на Node.js 24. Значение `NEXT_PUBLIC_API_URL=/api` задаётся во время сборки образа. При изменении публичного адреса API образ нужно пересобрать; изменение переменной только в запущенном контейнере не обновляет клиентскую сборку.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Локальная разработка
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## List status filters
-
-The department, location, and position lists initially request active records.
-
-| Endpoint               | Active          | Archived         | All             |
-| ---------------------- | --------------- | ---------------- | --------------- |
-| `GET /api/departments` | `isActive=true` | `isActive=false` | Omit `isActive` |
-| `GET /api/locations`   | `isActive=true` | `isActive=false` | Unavailable     |
-| `GET /api/positions`   | `isActive=true` | `isActive=false` | Unavailable     |
-
-Locations and positions accept only boolean values; empty and `null` values are invalid. Omitting `isActive` defaults to active records for these endpoints. Departments return both statuses when the parameter is omitted.
-
-The server applies the status together with the other filters before pagination and computes `totalCount` for the matching records. Changing status preserves other filters and sorting, resets paginated lists to page one, and restarts position loading from its first page.
-
-## Restore archived records
-
-Archived records have a «Восстановить» button. Departments also show it on archived cards in the «Все» view. Restoration refreshes directory queries, including selectors and the organization tree. Existing filters and sorting stay selected; a paginated list moves to its last available page if the current page disappears.
-
-Run the browser tests from `frontend`:
+Нужны Node.js 24 и npm. Команды этого раздела выполняются из каталога `frontend`.
 
 ```bash
 npm ci
-npx playwright install chromium
-npm run test:e2e
+cp .env.example .env
 ```
 
-The tests start a local development server on port 3112 and mock the API; no running backend is needed.
+В [шаблоне переменных](.env.example) есть одна настройка:
+
+| Переменная | Назначение |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Базовый адрес API, используемый браузерным Axios-клиентом |
+
+Например, для API через запущенный Nginx:
+
+```dotenv
+NEXT_PUBLIC_API_URL=http://localhost/api
+```
+
+Не добавляйте к этому значению `/organization`: этот префикс уже указан в запросах сущностей. Переменные `NEXT_PUBLIC_*` доступны браузеру и не должны содержать секреты. После изменения `.env` перезапустите сервер разработки.
+
+```bash
+npm run dev
+```
+
+По умолчанию сервер доступен на [http://localhost:3000](http://localhost:3000). Если этот порт занимает контейнерный frontend, выберите другой:
+
+```bash
+npm run dev -- --port 3001
+```
+
+При открытии локального frontend на порту `3000` или `3001` запросы к `http://localhost/api` идут на другой origin. В текущем [next.config.ts](next.config.ts) нет прокси для API, а в конфигурации backend и Nginx не настроен CORS. Для локальной работы с API потребуется настроить проксирование или CORS; готовый вариант с единым origin предоставляет запуск всего приложения через Compose. Простое указание `/api` для локального сервера Next.js не создаёт API-маршруты.
+
+## Команды и проверки
+
+| Команда | Назначение |
+| --- | --- |
+| `npm run dev` | Сервер разработки |
+| `npm run build` | Сборка приложения |
+| `npm run start` | Запуск приложения после сборки через Next.js |
+| `npm run lint` | Проверка ESLint |
+| `npm run test:e2e` | Запуск Playwright |
+
+Перед передачей изменений выполните:
+
+```bash
+npm run lint
+npm run build
+```
+
+Для сборки может потребоваться доступ к Google Fonts: корневой layout использует `next/font/google`.
+
+Для E2E подготовлена [конфигурация Playwright](playwright.config.ts), но каталог `tests` и сами тесты пока отсутствуют. Конфигурация запускает сервер разработки на порту `3112` и задаёт API-адрес `http://localhost:3112/api/`; реальный backend или моки она не поднимает. При добавлении тестов нужно обеспечить ответы API и установить используемые браузеры, например командой `npx playwright install chromium`.
+
+## Работа с API
+
+Общий [HTTP-клиент](src/shared/api/axios-instance.ts) использует `NEXT_PUBLIC_API_URL`. Обёртка [apiRequest](src/shared/api/api-request.ts) извлекает результат из API-конверта, обрабатывает ответ `204` и преобразует ошибки протокола, HTTP и сети в `ApiRequestError`. Запросы сущностей находятся в `src/entities/*/api`, запросы общего поиска — в `src/features/global-search/api`.
+
+Правила для AI-агентов находятся в [AGENTS.md](AGENTS.md).
