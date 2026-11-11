@@ -1,5 +1,6 @@
 using EmployeeService.Infrastructure.Postgres;
 using EmployeeService.Web.Logging;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Exceptions;
@@ -40,6 +41,12 @@ public static class DependencyInjectionExtensions
                 name: "self",
                 check: () => HealthCheckResult.Healthy(),
                 tags: ["live"])
+            .AddDbContextCheck<EmployeeServiceDbContext>(
+                name: "database",
+                tags: ["ready"],
+                customTestQuery: async (context, cancellationToken) =>
+                    await context.Database.CanConnectAsync(cancellationToken)
+            )
             .AddUrlGroup(
                 uri: new Uri($"{seqUrl.TrimEnd('/')}/health"),
                 name: "seq",
