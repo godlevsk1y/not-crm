@@ -7,7 +7,6 @@
     <Project Path="src/EmployeeService.Web/EmployeeService.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/EmployeeService.IntegrationTests/EmployeeService.IntegrationTests.csproj" />
     <Project Path="tests/EmployeeService.UnitTests/EmployeeService.UnitTests.csproj" />
   </Folder>
 </Solution>

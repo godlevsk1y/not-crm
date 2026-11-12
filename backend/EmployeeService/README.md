@@ -126,4 +126,4 @@ From `backend/EmployeeService`:
 dotnet test EmployeeService.slnx --configuration Debug
 ```
 
-Unit tests cover domain rules. Integration tests require Docker and start isolated PostgreSQL 17 containers, which are removed afterwards. They use migrations rather than EnsureCreated and verify rollback/reapplication, snapshot consistency, immutable name materialization, identifiers, dates, nullable fields, UTC timestamps, assignment changes, dismissal visibility and soft deletion/restoration across fresh contexts. Warnings are errors through [Directory.Build.props](../Directory.Build.props).
+Unit tests cover domain rules. Warnings are errors through [Directory.Build.props](../Directory.Build.props).
