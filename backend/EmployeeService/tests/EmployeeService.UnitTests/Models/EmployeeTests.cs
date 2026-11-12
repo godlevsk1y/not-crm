@@ -3,7 +3,7 @@ using EmployeeService.Domain.Models;
 using EmployeeService.Domain.ValueObjects;
 using Shared.Kernel.Errors;
 
-namespace EmployeeService.UnitTests;
+namespace EmployeeService.UnitTests.Models;
 
 public class EmployeeTests
 {

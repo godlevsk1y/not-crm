@@ -1,7 +1,7 @@
 using EmployeeService.Domain.ValueObjects;
 using Shared.Kernel.Errors;
 
-namespace EmployeeService.UnitTests;
+namespace EmployeeService.UnitTests.ValueObjects;
 
 public class EmployeeNameTests
 {
