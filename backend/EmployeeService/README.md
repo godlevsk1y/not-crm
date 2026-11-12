@@ -143,7 +143,7 @@ dotnet test EmployeeService.slnx --configuration Debug
 Модульные тесты проверяют доменные правила. Предупреждения считаются ошибками через общий [Directory.Build.props](../Directory.Build.props).
 
 
-Интеграционные тесты временно удалены; проект и `EmployeeServiceTestWebFactory` сохранены для будущих сценариев. Для тестов с этой фабрикой понадобятся запущенный Docker (например, Docker Desktop) и .NET SDK, указанный выше. Из корня репозитория:
+Интеграционные тесты требуют запущенный Docker (например, Docker Desktop) и .NET SDK, указанный выше. Из корня репозитория:
 
 ```bash
 dotnet test backend/EmployeeService/EmployeeService.slnx
@@ -156,5 +156,7 @@ dotnet test backend/EmployeeService/tests/EmployeeService.IntegrationTests/Emplo
 ```
 
 `EmployeeServiceTestWebFactory` используется через `IClassFixture<EmployeeServiceTestWebFactory>`: запускает изолированный PostgreSQL (`postgres:17`) со случайным портом, перенастраивает `NpgsqlDataSource` приложения и применяет существующие EF Core миграции. Локальная или общая база и Compose для тестов не нужны. При первом запуске Docker загружает образ PostgreSQL.
+
+Восемь HTTP-сценариев GetById из issue #158 находятся в одном файле [GetEmployeeByIdTests.cs](tests/EmployeeService.IntegrationTests/Employees/Queries/GetEmployeeByIdTests.cs). Проверки используют FluentAssertions, данные готовятся через EF Core без POST-эндпоинта. Тесты одного класса выполняются последовательно и очищают базу перед каждым сценарием. DirectoryService для запуска не нужен.
 
 Перед каждым тестом вызывайте `ResetDatabaseAsync()` (например, в `IAsyncLifetime.InitializeAsync()` тестового класса). Respawn очищает данные, включая мягко удалённых сотрудников, сохраняя схему и `__EFMigrationsHistory`. Тесты, использующие одну фабрику и базу, должны выполняться последовательно. После завершения fixture автоматически освобождает приложение и контейнер.
