@@ -1,3 +1,4 @@
+using EmployeeService.Core;
 using EmployeeService.Infrastructure.Postgres;
 using EmployeeService.Web.Documentation;
 using EmployeeService.Web.Logging;
@@ -13,6 +14,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services
             .AddWebDependencies(configuration)
+            .AddCore()
             .AddPostgresInfrastructure(configuration);
 
     private static IServiceCollection AddWebDependencies(this IServiceCollection services, IConfiguration configuration) =>

@@ -1,3 +1,4 @@
+using EmployeeService.Core.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,9 @@ public static class DependencyInjectionExtensions
         services.AddDbContext<EmployeeServiceDbContext>((sp, options) =>
             options.UseNpgsql(sp.GetRequiredService<NpgsqlDataSource>())
         );
+
+        services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
         return services;
     }
