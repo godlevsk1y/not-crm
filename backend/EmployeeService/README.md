@@ -1,6 +1,6 @@
 # EmployeeService
 
-EmployeeService implements the Employee domain model, immutable EmployeeName and typed identifiers. EF Core persists employees in PostgreSQL. Application use cases and employee HTTP APIs are not implemented yet.
+EmployeeService реализует доменную модель Employee, неизменяемый объект-значение EmployeeName и типизированные идентификаторы. EF Core обеспечивает сохранение сотрудников в PostgreSQL. Бизнес-сценарии и HTTP API сотрудников пока не реализованы.
 
 Подготовка общего окружения описана в [корневом README](../../README.md).
 
@@ -11,12 +11,12 @@ EmployeeService implements the Employee domain model, immutable EmployeeName and
 | Проект | Текущее состояние |
 | --- | --- |
 | [Web](src/EmployeeService.Web/) | Точка входа, настройка DI, Serilog, HTTP и health checks |
-| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Npgsql registration, Employee mapping and initial migration |
-| [Domain](src/EmployeeService.Domain/) | Employee, EmployeeName, typed IDs and domain rules |
+| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Регистрация Npgsql, конфигурация Employee и начальная миграция |
+| [Domain](src/EmployeeService.Domain/) | Employee, EmployeeName, типизированные идентификаторы и доменные правила |
 | [Core](src/EmployeeService.Core/) | Проект для бизнес-сценариев, пока без реализации |
 | [Contracts](src/EmployeeService.Contracts/) | Проект для DTO, пока без реализации |
 
-Web references Infrastructure.Postgres, which references Domain. The `employees` table stores names and external assignment IDs without cross-service foreign keys. The global query filter hides soft-deleted employees; dismissed employees remain visible. Domain methods supply UTC timestamps.
+Web ссылается на Infrastructure.Postgres, а Infrastructure.Postgres — на Domain. Таблица `employees` хранит имена, фамилии и внешние идентификаторы должностей и подразделений без межсервисных внешних ключей. Глобальный фильтр запросов скрывает мягко удалённых сотрудников; уволенные сотрудники остаются видимыми. Значения времени в UTC задаются доменными методами.
 
 ## Зависимости и конфигурация
 
@@ -84,15 +84,15 @@ docker compose -f docker-compose-dev.yml logs --tail=100 employee-service
 
 Команду просмотра логов выполняйте из корня репозитория. Для локального процесса используйте порт `5043` вместо `8020`.
 
-## Migrations
+## Миграции
 
-Run from `backend/EmployeeService` with `ConnectionStrings__EmployeeServiceDbContext` set as above. Install the EF tool if necessary:
+Команды выполняются из `backend/EmployeeService` с переменной `ConnectionStrings__EmployeeServiceDbContext`, заданной выше. При необходимости установите инструмент EF:
 
 ```bash
 dotnet tool install --global dotnet-ef --version 10.0.11
 ```
 
-The initial migration is already checked in. To generate a future migration, replace `Initial` with a new name:
+Начальная миграция уже включена в репозиторий. При генерации следующей миграции замените `Initial` новым именем:
 
 ```bash
 dotnet ef migrations add Initial \
@@ -102,7 +102,7 @@ dotnet ef migrations add Initial \
   --output-dir Migrations
 ```
 
-Apply migrations and check snapshot consistency:
+Применение миграций и проверка соответствия модели её снимку:
 
 ```bash
 dotnet ef database update \
@@ -116,14 +116,14 @@ dotnet ef migrations has-pending-model-changes \
   --context EmployeeServiceDbContext
 ```
 
-On an isolated database, roll back with `dotnet ef database update 0` using the same project/startup-project/context arguments, then run `database update` again to reapply. Generation requires a valid connection string; applying migrations requires a reachable database. The application does not apply migrations automatically.
+Для отката на изолированной базе выполните `dotnet ef database update 0` с теми же аргументами `--project`, `--startup-project` и `--context`, затем повторите `database update` для применения миграций. Для генерации нужна корректная строка подключения; для применения — доступная база данных. Приложение не применяет миграции автоматически.
 
-## Tests
+## Тесты
 
-From `backend/EmployeeService`:
+Из `backend/EmployeeService`:
 
 ```bash
 dotnet test EmployeeService.slnx --configuration Debug
 ```
 
-Unit tests cover domain rules. Warnings are errors through [Directory.Build.props](../Directory.Build.props).
+Модульные тесты проверяют доменные правила. Предупреждения считаются ошибками через общий [Directory.Build.props](../Directory.Build.props).
