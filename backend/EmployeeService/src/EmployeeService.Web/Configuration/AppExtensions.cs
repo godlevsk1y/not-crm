@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Context;
 using Serilog.Events;
@@ -34,6 +35,12 @@ public static class AppExtensions
                     : LogEventLevel.Information;
             };
         });
+
+        if (!app.Environment.IsProduction())
+        {
+            app.MapOpenApi();
+            app.MapScalarApiReference();
+        }
 
         app.MapGet("/", () => "Hello World!");
         app.ConfigureHealthChecks();

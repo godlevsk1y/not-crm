@@ -72,7 +72,16 @@ dotnet run --project src/EmployeeService.Web --launch-profile http
 | `GET /health/live` | Работа процесса |
 | `GET /health/ready` | Возможность подключения к PostgreSQL |
 
-Seq не входит в проверку готовности. OpenAPI и Scalar в сервисе пока не подключены.
+Seq не входит в проверку готовности.
+
+OpenAPI и Scalar доступны во всех средах, кроме `Production`:
+
+| Документация | Локальный запуск | Docker |
+| --- | --- | --- |
+| OpenAPI | [Спецификация](http://localhost:5043/openapi/v1.json) | [Спецификация](http://localhost:8020/openapi/v1.json) |
+| Scalar | [Просмотр API](http://localhost:5043/scalar/v1) | [Просмотр API](http://localhost:8020/scalar/v1) |
+
+В `Production` оба маршрута не публикуются. Бизнес-эндпоинты и DTO сотрудников пока не реализованы.
 
 Проверка Docker-окружения:
 
