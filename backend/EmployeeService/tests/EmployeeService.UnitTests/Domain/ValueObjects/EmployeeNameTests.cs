@@ -12,7 +12,7 @@ public class EmployeeNameTests
     [InlineData("First", null, "employee.name.last.empty")]
     [InlineData("First", "", "employee.name.last.empty")]
     [InlineData("First", " \t\n", "employee.name.last.empty")]
-    public void NameRejectsMissingParts(string? first, string? last, string code)
+    public void Create_ShouldReturnDomainError_WhenNamePartIsMissing(string? first, string? last, string code)
     {
         var result = EmployeeName.Create(first, last);
 
@@ -22,7 +22,7 @@ public class EmployeeNameTests
     }
 
     [Fact]
-    public void CreateTrimsBothNameParts()
+    public void Create_ShouldTrimBothNameParts_WhenNameIsValid()
     {
         var result = EmployeeName.Create("  Ada\t", "\nLovelace  ");
 
@@ -32,7 +32,7 @@ public class EmployeeNameTests
     }
 
     [Fact]
-    public void NamesWithSamePartsAreEqual()
+    public void Equals_ShouldReturnTrue_WhenNamePartsAreEqual()
     {
         var first = EmployeeName.Create("Ada", "Lovelace").Value;
         var second = EmployeeName.Create("Ada", "Lovelace").Value;
@@ -43,7 +43,7 @@ public class EmployeeNameTests
     [Theory]
     [InlineData("Grace", "Lovelace")]
     [InlineData("Ada", "Hopper")]
-    public void NamesWithDifferentPartsAreNotEqual(string firstName, string lastName)
+    public void Equals_ShouldReturnFalse_WhenNamePartsDiffer(string firstName, string lastName)
     {
         var original = EmployeeName.Create("Ada", "Lovelace").Value;
         var different = EmployeeName.Create(firstName, lastName).Value;

@@ -5,7 +5,7 @@ namespace EmployeeService.UnitTests.Domain.Ids;
 public class IdentifierTests
 {
     [Fact]
-    public void EmployeeIdPreservesValueAndSupportsGuidConversion()
+    public void EmployeeId_ShouldPreserveValueAndSupportGuidConversion()
     {
         var value = Guid.NewGuid();
         var id = new EmployeeId(value);
@@ -20,7 +20,7 @@ public class IdentifierTests
     }
 
     [Fact]
-    public void PositionIdPreservesValueAndSupportsGuidConversion()
+    public void PositionId_ShouldPreserveValueAndSupportGuidConversion()
     {
         var value = Guid.NewGuid();
         var id = new PositionId(value);
@@ -35,7 +35,7 @@ public class IdentifierTests
     }
 
     [Fact]
-    public void DepartmentIdPreservesValueAndSupportsGuidConversion()
+    public void DepartmentId_ShouldPreserveValueAndSupportGuidConversion()
     {
         var value = Guid.NewGuid();
         var id = new DepartmentId(value);

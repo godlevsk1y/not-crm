@@ -10,7 +10,7 @@ public class EmployeeTests
     private static readonly DateOnly HiringDate = new(2026, 1, 1);
 
     [Fact]
-    public void CreateInitializesEmployee()
+    public void Create_ShouldInitializeEmployee_WhenArgumentsAreValid()
     {
         var name = EmployeeName.Create("Ada", "Lovelace").Value;
         var position = new PositionId(Guid.NewGuid());
@@ -35,7 +35,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void CreateAllowsDuplicateNamesAndGeneratesDistinctIds()
+    public void Create_ShouldGenerateDistinctIds_WhenNamesAreEqual()
     {
         var first = CreateEmployee();
 
@@ -51,7 +51,7 @@ public class EmployeeTests
     [InlineData(false, false)]
     [InlineData(true, true)]
     [InlineData(false, true)]
-    public void InvalidAssignmentIsRejectedWithoutChangingState(bool invalidPosition, bool nullId)
+    public void CreateAndChangeAssignment_ShouldReturnDomainErrorAndPreserveState_WhenAssignmentIsInvalid(bool invalidPosition, bool nullId)
     {
         var employee = CreateEmployee();
         var state = Snapshot(employee);
@@ -72,7 +72,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void NullNameIsRejectedWithoutChangingState()
+    public void CreateAndRename_ShouldReturnDomainErrorAndPreserveState_WhenNameIsNull()
     {
         var employee = CreateEmployee();
         var state = Snapshot(employee);
@@ -87,7 +87,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void RenameUpdatesNameAndTimestamp()
+    public void Rename_ShouldUpdateNameAndTimestamp_WhenNameIsValid()
     {
         var employee = CreateEmployee();
         var name = EmployeeName.Create("Grace", "Hopper").Value;
@@ -100,7 +100,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void ChangeAssignmentUpdatesBothIdentifiersAndTimestamp()
+    public void ChangeAssignment_ShouldUpdateBothIdentifiersAndTimestamp_WhenAssignmentIsValid()
     {
         var employee = CreateEmployee();
         var position = new PositionId(Guid.NewGuid());
@@ -117,7 +117,7 @@ public class EmployeeTests
     [Theory]
     [InlineData(0)]
     [InlineData(30)]
-    public void DismissAcceptsHiringDateOrLater(int days)
+    public void Dismiss_ShouldSetDismissalDateAndUpdateTimestamp_WhenDateIsOnOrAfterHiring(int days)
     {
         var employee = CreateEmployee();
         var date = HiringDate.AddDays(days);
@@ -131,7 +131,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void DismissWhenAlreadyDismissedReturnsErrorAndPreservesState()
+    public void Dismiss_ShouldReturnDomainErrorAndPreserveState_WhenEmployeeIsAlreadyDismissed()
     {
         var employee = CreateEmployee();
         employee.Dismiss(HiringDate);
@@ -145,7 +145,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void DismissBeforeHiringPreservesState()
+    public void Dismiss_ShouldReturnDomainErrorAndPreserveState_WhenDatePrecedesHiring()
     {
         var employee = CreateEmployee();
         var state = Snapshot(employee);
@@ -158,7 +158,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void SoftDeleteMarksEmployeeAsDeletedAndUpdatesTimestamp()
+    public void SoftDelete_ShouldSetDeletionDateAndUpdateTimestamp_WhenEmployeeIsNotDeleted()
     {
         var employee = CreateEmployee();
         var before = WaitForNextInstant(employee);
@@ -171,7 +171,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void SoftDeleteWhenAlreadyDeletedDoesNotChangeState()
+    public void SoftDelete_ShouldPreserveState_WhenEmployeeIsAlreadyDeleted()
     {
         var employee = CreateEmployee();
         employee.SoftDelete();
@@ -184,7 +184,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void RestoreClearsDeletionAndUpdatesTimestamp()
+    public void Restore_ShouldClearDeletionDateAndUpdateTimestamp_WhenEmployeeIsDeleted()
     {
         var employee = CreateEmployee();
         employee.SoftDelete();
@@ -199,7 +199,7 @@ public class EmployeeTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void RestoreWhenNotDeletedDoesNotChangeState(bool previouslyDeleted)
+    public void Restore_ShouldPreserveState_WhenEmployeeIsNotDeleted(bool previouslyDeleted)
     {
         var employee = CreateEmployee();
         if (previouslyDeleted)
@@ -219,7 +219,7 @@ public class EmployeeTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void SoftDeleteAndRestorePreserveEmployment(bool dismissed)
+    public void SoftDeleteAndRestore_ShouldPreserveEmploymentDates(bool dismissed)
     {
         var employee = CreateEmployee();
         if (dismissed)
@@ -243,7 +243,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void RenameWhenDeletedReturnsErrorAndPreservesState()
+    public void Rename_ShouldReturnDomainErrorAndPreserveState_WhenEmployeeIsDeleted()
     {
         var employee = CreateEmployee();
         employee.SoftDelete();
@@ -258,7 +258,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void ChangeAssignmentWhenDeletedReturnsErrorAndPreservesState()
+    public void ChangeAssignment_ShouldReturnDomainErrorAndPreserveState_WhenEmployeeIsDeleted()
     {
         var employee = CreateEmployee();
         employee.SoftDelete();
@@ -274,7 +274,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void DismissWhenDeletedReturnsErrorAndPreservesState()
+    public void Dismiss_ShouldReturnDomainErrorAndPreserveState_WhenEmployeeIsDeleted()
     {
         var employee = CreateEmployee();
         employee.SoftDelete();
@@ -288,7 +288,7 @@ public class EmployeeTests
     }
 
     [Fact]
-    public void RestoredEmployeeCanBeRenamedReassignedAndDismissed()
+    public void RenameChangeAssignmentAndDismiss_ShouldSucceed_WhenEmployeeIsRestored()
     {
         var employee = CreateEmployee();
         employee.SoftDelete();
