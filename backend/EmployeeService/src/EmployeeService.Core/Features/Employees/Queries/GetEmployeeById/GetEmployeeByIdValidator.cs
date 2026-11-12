@@ -1,4 +1,4 @@
-using System.Text.Json;
+using EmployeeService.Core.Validation;
 using FluentValidation;
 
 namespace EmployeeService.Core.Features.Employees.Queries.GetEmployeeById;
@@ -9,6 +9,6 @@ public class GetEmployeeByIdValidator : AbstractValidator<GetEmployeeByIdQuery>
     {
         RuleFor(query => query.Id)
             .NotEmpty()
-            .WithMessage(JsonSerializer.Serialize(EmployeeErrors.IdEmpty()));
+            .WithError(EmployeeErrors.IdEmpty());
     }
 }
