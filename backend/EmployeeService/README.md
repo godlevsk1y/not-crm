@@ -1,6 +1,6 @@
 # EmployeeService
 
-EmployeeService — каркас будущего сервиса сотрудников notCRM. Сейчас реализованы запуск ASP.NET Core, подключение к PostgreSQL, отправка логов в Seq и проверки состояния. Доменные модели сотрудников, бизнес-сценарии и HTTP API для работы с сотрудниками пока отсутствуют.
+EmployeeService — сервис учёта сотрудников notCRM (в активной разработке).
 
 Подготовка общего окружения описана в [корневом README](../../README.md).
 
@@ -11,12 +11,12 @@ EmployeeService — каркас будущего сервиса сотрудн�
 | Проект | Текущее состояние |
 | --- | --- |
 | [Web](src/EmployeeService.Web/) | Точка входа, настройка DI, Serilog, HTTP и health checks |
-| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Регистрация Npgsql и пустой `EmployeeServiceDbContext` |
-| [Domain](src/EmployeeService.Domain/) | Проект для доменной модели, пока без реализации |
+| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Регистрация Npgsql, конфигурация Employee и начальная миграция |
+| [Domain](src/EmployeeService.Domain/) | Employee, EmployeeName, типизированные идентификаторы и доменные правила |
 | [Core](src/EmployeeService.Core/) | Проект для бизнес-сценариев, пока без реализации |
 | [Contracts](src/EmployeeService.Contracts/) | Проект для DTO, пока без реализации |
 
-Web сейчас ссылается на Infrastructure.Postgres. Миграций, таблиц сотрудников и тестовых проектов в сервисе пока нет.
+Web ссылается на Infrastructure.Postgres, а Infrastructure.Postgres — на Domain. Таблица `employees` хранит имена, фамилии и внешние идентификаторы должностей и подразделений без межсервисных внешних ключей. Глобальный фильтр запросов скрывает мягко удалённых сотрудников; уволенные сотрудники остаются видимыми. Значения времени в UTC задаются доменными методами.
 
 ## Зависимости и конфигурация
 
@@ -64,8 +64,6 @@ dotnet run --project src/EmployeeService.Web --launch-profile http
 
 При использовании PostgreSQL из Compose укажите опубликованный `POSTGRES_PORT` и параметры базы и пользователя `EMPLOYEE_POSTGRES_*`. Профиль `http` слушает `http://localhost:5043`. Seq из Compose доступен на `http://localhost:8081`.
 
-Миграции для текущего пустого контекста не предусмотрены: сервису нужна существующая доступная база, схема сотрудников пока не создаётся.
-
 ## HTTP и проверки состояния
 
 | Метод и путь | Ответ / проверка |
@@ -86,4 +84,46 @@ docker compose -f docker-compose-dev.yml logs --tail=100 employee-service
 
 Команду просмотра логов выполняйте из корня репозитория. Для локального процесса используйте порт `5043` вместо `8020`.
 
-Автоматических тестов в решении пока нет. Доступная проверка исходников — сборка решения; предупреждения считаются ошибками через общий [Directory.Build.props](../Directory.Build.props).
+## Миграции
+
+Команды выполняются из `backend/EmployeeService` с переменной `ConnectionStrings__EmployeeServiceDbContext`, заданной выше. При необходимости установите инструмент EF:
+
+```bash
+dotnet tool install --global dotnet-ef --version 10.0.11
+```
+
+Начальная миграция уже включена в репозиторий. При генерации следующей миграции замените `Initial` новым именем:
+
+```bash
+dotnet ef migrations add Initial \
+  --project src/EmployeeService.Infrastructure.Postgres \
+  --startup-project src/EmployeeService.Web \
+  --context EmployeeServiceDbContext \
+  --output-dir Migrations
+```
+
+Применение миграций и проверка соответствия модели её снимку:
+
+```bash
+dotnet ef database update \
+  --project src/EmployeeService.Infrastructure.Postgres \
+  --startup-project src/EmployeeService.Web \
+  --context EmployeeServiceDbContext
+
+dotnet ef migrations has-pending-model-changes \
+  --project src/EmployeeService.Infrastructure.Postgres \
+  --startup-project src/EmployeeService.Web \
+  --context EmployeeServiceDbContext
+```
+
+Для отката на изолированной базе выполните `dotnet ef database update 0` с теми же аргументами `--project`, `--startup-project` и `--context`, затем повторите `database update` для применения миграций. Для генерации нужна корректная строка подключения; для применения — доступная база данных. Приложение не применяет миграции автоматически.
+
+## Тесты
+
+Из `backend/EmployeeService`:
+
+```bash
+dotnet test EmployeeService.slnx --configuration Debug
+```
+
+Модульные тесты проверяют доменные правила. Предупреждения считаются ошибками через общий [Directory.Build.props](../Directory.Build.props).
