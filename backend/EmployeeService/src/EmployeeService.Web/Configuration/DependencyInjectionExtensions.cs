@@ -12,10 +12,14 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services
+            .AddWebDependencies(configuration)
+            .AddPostgresInfrastructure(configuration);
+
+    private static IServiceCollection AddWebDependencies(this IServiceCollection services, IConfiguration configuration) =>
+        services
             .AddOpenApi(ApiDocumentation.Configure)
             .AddSerilogLogging(configuration)
-            .AddHealthCheckEndpoints()
-            .AddPostgresInfrastructure(configuration);
+            .AddHealthCheckEndpoints();
 
     private static IServiceCollection AddSerilogLogging(this IServiceCollection services, IConfiguration configuration)
     {
