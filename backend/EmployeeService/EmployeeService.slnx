@@ -6,7 +6,4 @@
     <Project Path="src/EmployeeService.Infrastructure.Postgres/EmployeeService.Infrastructure.Postgres.csproj" />
     <Project Path="src/EmployeeService.Web/EmployeeService.Web.csproj" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/EmployeeService.Domain.Tests/EmployeeService.Domain.Tests.csproj" />
-  </Folder>
 </Solution>
