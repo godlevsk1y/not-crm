@@ -32,12 +32,12 @@ public class GetEmployeeByIdQueryHandler : IQueryHandler<GetEmployeeByIdQuery, R
                            SELECT id, first_name, last_name, position_id, department_id,
                                   hired_at, dismissed_at, updated_at
                            FROM employees
-                           WHERE id = @id AND deleted_at IS NULL
+                           WHERE id = @Id AND deleted_at IS NULL
                            """;
 
         await using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
         var employee = await connection.QuerySingleOrDefaultAsync<EmployeeDto>(
-            new CommandDefinition(sql, new { id = query.Id }, cancellationToken: cancellationToken));
+            new CommandDefinition(sql, new { query.Id }, cancellationToken: cancellationToken));
 
         if (employee is null)
         {
