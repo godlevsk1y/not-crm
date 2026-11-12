@@ -1,6 +1,6 @@
 # EmployeeService
 
-EmployeeService — каркас будущего сервиса сотрудников notCRM. Сейчас реализованы запуск ASP.NET Core, подключение к PostgreSQL, отправка логов в Seq и проверки состояния. Доменные модели сотрудников, бизнес-сценарии и HTTP API для работы с сотрудниками пока отсутствуют.
+EmployeeService implements the Employee domain model, immutable EmployeeName and typed identifiers. EF Core persists employees in PostgreSQL. Application use cases and employee HTTP APIs are not implemented yet.
 
 Подготовка общего окружения описана в [корневом README](../../README.md).
 
@@ -11,12 +11,12 @@ EmployeeService — каркас будущего сервиса сотрудн�
 | Проект | Текущее состояние |
 | --- | --- |
 | [Web](src/EmployeeService.Web/) | Точка входа, настройка DI, Serilog, HTTP и health checks |
-| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Регистрация Npgsql и пустой `EmployeeServiceDbContext` |
-| [Domain](src/EmployeeService.Domain/) | Проект для доменной модели, пока без реализации |
+| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Npgsql registration, Employee mapping and initial migration |
+| [Domain](src/EmployeeService.Domain/) | Employee, EmployeeName, typed IDs and domain rules |
 | [Core](src/EmployeeService.Core/) | Проект для бизнес-сценариев, пока без реализации |
 | [Contracts](src/EmployeeService.Contracts/) | Проект для DTO, пока без реализации |
 
-Web сейчас ссылается на Infrastructure.Postgres. Миграций, таблиц сотрудников и тестовых проектов в сервисе пока нет.
+Web references Infrastructure.Postgres, which references Domain. The `employees` table stores names and external assignment IDs without cross-service foreign keys. The global query filter hides soft-deleted employees; dismissed employees remain visible. Domain methods supply UTC timestamps.
 
 ## Зависимости и конфигурация
 
@@ -64,8 +64,6 @@ dotnet run --project src/EmployeeService.Web --launch-profile http
 
 При использовании PostgreSQL из Compose укажите опубликованный `POSTGRES_PORT` и параметры базы и пользователя `EMPLOYEE_POSTGRES_*`. Профиль `http` слушает `http://localhost:5043`. Seq из Compose доступен на `http://localhost:8081`.
 
-Миграции для текущего пустого контекста не предусмотрены: сервису нужна существующая доступная база, схема сотрудников пока не создаётся.
-
 ## HTTP и проверки состояния
 
 | Метод и путь | Ответ / проверка |
@@ -86,4 +84,46 @@ docker compose -f docker-compose-dev.yml logs --tail=100 employee-service
 
 Команду просмотра логов выполняйте из корня репозитория. Для локального процесса используйте порт `5043` вместо `8020`.
 
-Автоматических тестов в решении пока нет. Доступная проверка исходников — сборка решения; предупреждения считаются ошибками через общий [Directory.Build.props](../Directory.Build.props).
+## Migrations
+
+Run from `backend/EmployeeService` with `ConnectionStrings__EmployeeServiceDbContext` set as above. Install the EF tool if necessary:
+
+```bash
+dotnet tool install --global dotnet-ef --version 10.0.11
+```
+
+The initial migration is already checked in. To generate a future migration, replace `Initial` with a new name:
+
+```bash
+dotnet ef migrations add Initial \
+  --project src/EmployeeService.Infrastructure.Postgres \
+  --startup-project src/EmployeeService.Web \
+  --context EmployeeServiceDbContext \
+  --output-dir Migrations
+```
+
+Apply migrations and check snapshot consistency:
+
+```bash
+dotnet ef database update \
+  --project src/EmployeeService.Infrastructure.Postgres \
+  --startup-project src/EmployeeService.Web \
+  --context EmployeeServiceDbContext
+
+dotnet ef migrations has-pending-model-changes \
+  --project src/EmployeeService.Infrastructure.Postgres \
+  --startup-project src/EmployeeService.Web \
+  --context EmployeeServiceDbContext
+```
+
+On an isolated database, roll back with `dotnet ef database update 0` using the same project/startup-project/context arguments, then run `database update` again to reapply. Generation requires a valid connection string; applying migrations requires a reachable database. The application does not apply migrations automatically.
+
+## Tests
+
+From `backend/EmployeeService`:
+
+```bash
+dotnet test EmployeeService.slnx --configuration Debug
+```
+
+Unit tests cover domain rules. Integration tests require Docker and start isolated PostgreSQL 17 containers, which are removed afterwards. They use migrations rather than EnsureCreated and verify rollback/reapplication, snapshot consistency, immutable name materialization, identifiers, dates, nullable fields, UTC timestamps, assignment changes, dismissal visibility and soft deletion/restoration across fresh contexts. Warnings are errors through [Directory.Build.props](../Directory.Build.props).
