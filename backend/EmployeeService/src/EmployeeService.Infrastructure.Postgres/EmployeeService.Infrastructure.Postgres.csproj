@@ -7,10 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../EmployeeService.Core/EmployeeService.Core.csproj" />
     <ProjectReference Include="../EmployeeService.Domain/EmployeeService.Domain.csproj" />
   </ItemGroup>
 

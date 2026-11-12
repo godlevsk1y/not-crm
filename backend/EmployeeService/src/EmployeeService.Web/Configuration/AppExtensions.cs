@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using EmployeeService.Web.Endpoints;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Scalar.AspNetCore;
 using Serilog;
@@ -43,6 +44,7 @@ public static class AppExtensions
         }
 
         app.MapGet("/", () => "Hello World!");
+        app.MapEmployeeEndpoints();
         app.ConfigureHealthChecks();
 
         return app;

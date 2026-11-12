@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GodlevskiyDev.Shared.Core" />
+    <ProjectReference Include="../EmployeeService.Contracts/EmployeeService.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
