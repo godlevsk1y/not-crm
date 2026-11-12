@@ -1,4 +1,5 @@
 using EmployeeService.Infrastructure.Postgres;
+using EmployeeService.Web.Documentation;
 using EmployeeService.Web.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -11,9 +12,14 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddProgramDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services
-            .AddSerilogLogging(configuration)
-            .AddHealthCheckEndpoints()
+            .AddWebDependencies(configuration)
             .AddPostgresInfrastructure(configuration);
+
+    private static IServiceCollection AddWebDependencies(this IServiceCollection services, IConfiguration configuration) =>
+        services
+            .AddOpenApi(ApiDocumentation.Configure)
+            .AddSerilogLogging(configuration)
+            .AddHealthCheckEndpoints();
 
     private static IServiceCollection AddSerilogLogging(this IServiceCollection services, IConfiguration configuration)
     {
