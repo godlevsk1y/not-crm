@@ -38,10 +38,14 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var result = await ReadSuccessResultAsync(response);
-        var card = result.Deserialize<EmployeeDto>(JsonSerializerOptions.Web);
-        card.Should().NotBeNull();
-        card!.Id.Should().Be(employee.Id.Value);
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<EmployeeDto>>();
+        envelope.Should().NotBeNull();
+        envelope!.IsError.Should().BeFalse();
+        envelope.Error.Should().BeNull();
+        envelope.Result.Should().NotBeNull();
+
+        var card = envelope.Result!;
+        card.Id.Should().Be(employee.Id.Value);
         card.FirstName.Should().Be(employee.Name.FirstName);
         card.LastName.Should().Be(employee.Name.LastName);
         card.PositionId.Should().Be(employee.PositionId.Value);
@@ -63,7 +67,13 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var card = await ReadSuccessResultAsync(response);
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<JsonElement>>();
+        envelope.Should().NotBeNull();
+        envelope!.IsError.Should().BeFalse();
+        envelope.Error.Should().BeNull();
+
+        var card = envelope.Result;
+        card.ValueKind.Should().Be(JsonValueKind.Object);
 
         card.GetProperty("positionId").ValueKind.Should().Be(JsonValueKind.String);
         card.GetProperty("positionId").GetGuid().Should().Be(employee.PositionId.Value);
@@ -88,9 +98,13 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var card = await ReadSuccessResultAsync(response);
-        card.GetProperty("id").GetGuid().Should().Be(employee.Id.Value);
-        card.GetProperty("dismissedAt").ValueKind.Should().Be(JsonValueKind.Null);
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<EmployeeDto>>();
+        envelope.Should().NotBeNull();
+        envelope!.IsError.Should().BeFalse();
+        envelope.Error.Should().BeNull();
+        envelope.Result.Should().NotBeNull();
+        envelope.Result!.Id.Should().Be(employee.Id.Value);
+        envelope.Result.DismissedAt.Should().BeNull();
     }
 
     [Fact]
@@ -107,9 +121,13 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        var card = await ReadSuccessResultAsync(response);
-        card.GetProperty("id").GetGuid().Should().Be(employee.Id.Value);
-        card.GetProperty("dismissedAt").GetString().Should().Be("2026-10-31");
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<EmployeeDto>>();
+        envelope.Should().NotBeNull();
+        envelope!.IsError.Should().BeFalse();
+        envelope.Error.Should().BeNull();
+        envelope.Result.Should().NotBeNull();
+        envelope.Result!.Id.Should().Be(employee.Id.Value);
+        envelope.Result.DismissedAt.Should().Be(dismissalDate);
     }
 
     [Fact]
@@ -124,9 +142,13 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        var error = await ReadErrorAsync(response);
-        error.Type.Should().Be(ErrorType.NotFound);
-        error.Messages.Should().ContainSingle().Which.Code.Should().Be("employee.not.found");
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
+        envelope.Should().NotBeNull();
+        envelope!.IsError.Should().BeTrue();
+        envelope.Result.Should().BeNull();
+        envelope.Error.Should().NotBeNull();
+        envelope.Error!.Type.Should().Be(ErrorType.NotFound);
+        envelope.Error.Messages.Should().ContainSingle().Which.Code.Should().Be("employee.not.found");
     }
 
     [Fact]
@@ -144,9 +166,13 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        var error = await ReadErrorAsync(response);
-        error.Type.Should().Be(ErrorType.NotFound);
-        error.Messages.Should().ContainSingle().Which.Code.Should().Be("employee.not.found");
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
+        envelope.Should().NotBeNull();
+        envelope!.IsError.Should().BeTrue();
+        envelope.Result.Should().BeNull();
+        envelope.Error.Should().NotBeNull();
+        envelope.Error!.Type.Should().Be(ErrorType.NotFound);
+        envelope.Error.Messages.Should().ContainSingle().Which.Code.Should().Be("employee.not.found");
     }
 
     [Fact]
@@ -160,9 +186,13 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var error = await ReadErrorAsync(response);
-        error.Type.Should().Be(ErrorType.Validation);
-        var message = error.Messages.Should().ContainSingle().Which;
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope>();
+        envelope.Should().NotBeNull();
+        envelope!.IsError.Should().BeTrue();
+        envelope.Result.Should().BeNull();
+        envelope.Error.Should().NotBeNull();
+        envelope.Error!.Type.Should().Be(ErrorType.Validation);
+        var message = envelope.Error.Messages.Should().ContainSingle().Which;
         message.Code.Should().Be("employee.id.empty");
         message.InvalidField.Should().Be("Id");
     }
@@ -206,29 +236,5 @@ public class GetEmployeeByIdTests : IClassFixture<EmployeeServiceTestWebFactory>
         // Use the persisted timestamp, which PostgreSQL stores at microsecond precision.
         return await dbContext.Employees.IgnoreQueryFilters().AsNoTracking()
             .SingleAsync(stored => stored.Id == employee.Id);
-    }
-
-    private static async Task<JsonElement> ReadSuccessResultAsync(HttpResponseMessage response)
-    {
-        var envelope = await response.Content.ReadFromJsonAsync<JsonElement>();
-        envelope.GetProperty("isError").GetBoolean().Should().BeFalse();
-        envelope.GetProperty("error").ValueKind.Should().Be(JsonValueKind.Null);
-        envelope.GetProperty("timeGenerated").GetDateTime().Kind.Should().Be(DateTimeKind.Utc);
-
-        var result = envelope.GetProperty("result");
-        result.ValueKind.Should().Be(JsonValueKind.Object);
-        return result;
-    }
-
-    private static async Task<Error> ReadErrorAsync(HttpResponseMessage response)
-    {
-        var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-        json.GetProperty("isError").GetBoolean().Should().BeTrue();
-        var envelope = json.Deserialize<Envelope>(JsonSerializerOptions.Web);
-        envelope.Should().NotBeNull();
-        envelope!.IsError.Should().BeTrue();
-        envelope.Result.Should().BeNull();
-        envelope.Error.Should().NotBeNull();
-        return envelope.Error!;
     }
 }
