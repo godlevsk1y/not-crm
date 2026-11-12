@@ -36,25 +36,14 @@ public class GetEmployeeByIdQueryHandler : IQueryHandler<GetEmployeeByIdQuery, R
                            """;
 
         await using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
-        await using var reader = await connection.ExecuteReaderAsync(
+        var employee = await connection.QuerySingleOrDefaultAsync<EmployeeDto>(
             new CommandDefinition(sql, new { id = query.Id }, cancellationToken: cancellationToken));
 
-        if (!await reader.ReadAsync(cancellationToken))
+        if (employee is null)
         {
             return EmployeeErrors.NotFound(query.Id);
         }
 
-        // Map the selected columns explicitly, preserving PostgreSQL date and UUID types.
-        return new EmployeeDto(
-            Id: reader.GetGuid(0),
-            FirstName: reader.GetString(1),
-            LastName: reader.GetString(2),
-            PositionId: reader.GetGuid(3),
-            DepartmentId: reader.GetGuid(4),
-            HiredAt: await reader.GetFieldValueAsync<DateOnly>(5, cancellationToken),
-            DismissedAt: await reader.IsDBNullAsync(6, cancellationToken)
-                ? null
-                : await reader.GetFieldValueAsync<DateOnly>(6, cancellationToken),
-            UpdatedAt: reader.GetDateTime(7));
+        return employee;
     }
 }
