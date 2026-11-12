@@ -1,6 +1,6 @@
 using EmployeeService.Domain.Ids;
 
-namespace EmployeeService.UnitTests.Ids;
+namespace EmployeeService.UnitTests.Domain.Ids;
 
 public class IdentifierTests
 {
