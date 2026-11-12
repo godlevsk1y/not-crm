@@ -11,12 +11,12 @@ EmployeeService — сервис учёта сотрудников notCRM (в а
 | Проект | Текущее состояние |
 | --- | --- |
 | [Web](src/EmployeeService.Web/) | Точка входа, настройка DI, Serilog, HTTP и health checks |
-| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Dapper-чтение карточки, регистрация Npgsql, конфигурация Employee и начальная миграция |
+| [Infrastructure.Postgres](src/EmployeeService.Infrastructure.Postgres/) | Фабрика подключений, регистрация Npgsql, конфигурация Employee и начальная миграция |
 | [Domain](src/EmployeeService.Domain/) | Employee, EmployeeName, типизированные идентификаторы и доменные правила |
-| [Core](src/EmployeeService.Core/) | Запрос GetEmployeeById, валидация и абстракция чтения карточки |
+| [Core](src/EmployeeService.Core/) | Запрос GetEmployeeById, валидация, SQL и маппинг карточки через Dapper |
 | [Contracts](src/EmployeeService.Contracts/) | DTO карточки сотрудника |
 
-Web регистрирует Core и Infrastructure.Postgres. Core использует Contracts и общие CQRS-интерфейсы из `GodlevskiyDev.Shared.Core`; Infrastructure.Postgres реализует абстракцию чтения Core и сохраняет доменную модель через EF Core. Таблица `employees` хранит имена, фамилии и внешние идентификаторы должностей и подразделений без межсервисных внешних ключей. Глобальный фильтр EF Core и явное условие `deleted_at IS NULL` в Dapper скрывают мягко удалённых сотрудников; уволенные сотрудники остаются видимыми. Значения времени в UTC задаются доменными методами.
+Web регистрирует Core и Infrastructure.Postgres. Core использует Contracts и общие CQRS-интерфейсы из `GodlevskiyDev.Shared.Core`; обработчик GetEmployeeById выполняет SQL через Dapper и формирует DTO. Infrastructure.Postgres реализует фабрику подключений Core через существующий `NpgsqlDataSource` и сохраняет доменную модель через EF Core. Таблица `employees` хранит имена, фамилии и внешние идентификаторы должностей и подразделений без межсервисных внешних ключей. Глобальный фильтр EF Core и явное условие `deleted_at IS NULL` в Dapper скрывают мягко удалённых сотрудников; уволенные сотрудники остаются видимыми. Значения времени в UTC задаются доменными методами.
 
 ## Зависимости и конфигурация
 

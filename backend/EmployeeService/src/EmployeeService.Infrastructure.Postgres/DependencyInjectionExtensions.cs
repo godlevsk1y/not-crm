@@ -1,5 +1,4 @@
 using EmployeeService.Core.Database;
-using EmployeeService.Infrastructure.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +24,7 @@ public static class DependencyInjectionExtensions
             options.UseNpgsql(sp.GetRequiredService<NpgsqlDataSource>())
         );
 
-        services.AddScoped<IEmployeeReader, EmployeeReader>();
+        services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
 
         return services;
     }
