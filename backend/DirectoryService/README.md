@@ -19,6 +19,31 @@ DirectoryService управляет организационной структ�
 
 Общие абстракции и HTTP-механизмы подключаются через NuGet-пакеты `GodlevskiyDev.Shared.*`. Версии зависимостей заданы в [Directory.Packages.props](../Directory.Packages.props).
 
+## NuGet-пакет Contracts
+
+`GodlevskiyDev.DirectoryService.Contracts` публикуется в GitHub Packages аккаунта `godlevsk1y` как приватный пакет. Версия задаётся в [DirectoryService.Contracts.csproj](src/DirectoryService.Contracts/DirectoryService.Contracts.csproj). Пакет содержит DTO и HTTP-клиент с регистрацией через `AddDirectoryService`.
+
+Для подключения используйте источник `https://nuget.pkg.github.com/godlevsk1y/index.json` и токен с правом `read:packages`, как описано в корневом README. В проектах с централизованным управлением версиями добавьте в `Directory.Packages.props`:
+
+```xml
+<PackageVersion Include="GodlevskiyDev.DirectoryService.Contracts" Version="1.0.0" />
+```
+
+В проект-потребитель добавьте:
+
+```xml
+<PackageReference Include="GodlevskiyDev.DirectoryService.Contracts" />
+```
+
+Для выпуска новой версии обновите `<Version>` и выполните из `backend/DirectoryService`:
+
+```bash
+dotnet pack src/DirectoryService.Contracts/DirectoryService.Contracts.csproj --configuration Release --disable-build-servers -m:1
+dotnet nuget push src/DirectoryService.Contracts/bin/Release/GodlevskiyDev.DirectoryService.Contracts.<version>.nupkg --source github
+```
+
+Для публикации нужен токен с правом `write:packages`. Замените `<version>` на версию из проекта; уже опубликованную версию повторно не используйте.
+
 ## Зависимости и конфигурация
 
 Для локальной разработки нужен .NET SDK, совместимый с [global.json](../global.json) (`10.0.301`, `latestFeature`). Сервис использует PostgreSQL 17, Redis 8 и Seq. При отсутствии строки подключения Redis HybridCache работает без распределённого Redis-кеша.
