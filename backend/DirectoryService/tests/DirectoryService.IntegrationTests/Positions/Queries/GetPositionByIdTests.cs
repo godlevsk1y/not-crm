@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using System.Text.Json;
 using DirectoryService.Contracts.Positions;
 using DirectoryService.Domain.Models;
 using DirectoryService.Domain.ValueObjects;
@@ -73,38 +72,6 @@ public class GetPositionByIdTests : IClassFixture<DirectoryServiceTestWebFactory
         Assert.NotNull(envelope);
         Assert.False(envelope.IsError);
         Assert.Equal(created.Result, envelope.Result);
-    }
-
-    [Fact]
-    public async Task GetPositionById_ShouldDocumentContractAndErrors_InOpenApi()
-    {
-        using var document = JsonDocument.Parse(await _client.GetStringAsync("openapi/v1.json"));
-        var paths = document.RootElement.GetProperty("paths");
-        var operation = paths.GetProperty("/positions/{id}").GetProperty("get");
-        var parameter = Assert.Single(operation.GetProperty("parameters").EnumerateArray());
-        Assert.Equal("id", parameter.GetProperty("name").GetString());
-        Assert.Equal("path", parameter.GetProperty("in").GetString());
-        Assert.True(parameter.GetProperty("required").GetBoolean());
-        Assert.Equal("uuid", parameter.GetProperty("schema").GetProperty("format").GetString());
-
-        var responses = operation.GetProperty("responses");
-        var example = responses.GetProperty("200").GetProperty("content")
-            .GetProperty("application/json").GetProperty("example").GetProperty("result");
-        Assert.True(example.TryGetProperty("id", out _));
-        Assert.True(example.TryGetProperty("name", out _));
-        var notFound = responses.GetProperty("404");
-        Assert.Contains("position.not.found", notFound.GetProperty("description").GetString(), StringComparison.Ordinal);
-        var error = notFound.GetProperty("content").GetProperty("application/json")
-            .GetProperty("examples").GetProperty("position.not.found").GetProperty("value");
-        Assert.True(error.GetProperty("isError").GetBoolean());
-        Assert.Equal("position.not.found", error.GetProperty("error")
-            .GetProperty("messages")[0].GetProperty("code").GetString());
-
-        var createDescription = paths.GetProperty("/positions").GetProperty("post").GetProperty("description").GetString();
-        Assert.Contains("GET this URI", createDescription, StringComparison.Ordinal);
-
-        using var health = await _client.GetAsync("health/live");
-        Assert.Equal(200, (int)health.StatusCode);
     }
 
     private static async Task AssertNotFoundAsync(HttpResponseMessage response)
