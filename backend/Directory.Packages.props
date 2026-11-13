@@ -13,7 +13,6 @@
     <PackageVersion Include="GodlevskiyDev.Shared.Core" Version="1.0.0" />
     <PackageVersion Include="GodlevskiyDev.Shared.Framework" Version="1.0.3" />
     <PackageVersion Include="GodlevskiyDev.Shared.Kernel" Version="1.0.0" />
-    <PackageVersion Include="godlevskiydev.shared.kernel" Version="1.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.11" />
     <PackageVersion Include="AspNetCore.HealthChecks.Uris" Version="9.0.0" />
