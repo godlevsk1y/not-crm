@@ -6,6 +6,7 @@ using DirectoryService.Core.Features.Positions.Commands.CreatePosition;
 using DirectoryService.Core.Features.Positions.Commands.DeletePosition;
 using DirectoryService.Core.Features.Positions.Commands.RestorePosition;
 using DirectoryService.Core.Features.Positions.Commands.UpdatePosition;
+using DirectoryService.Core.Features.Positions.Queries.GetPositionById;
 using DirectoryService.Core.Features.Positions.Queries.GetPositionList;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Core.Abstractions;
@@ -49,9 +50,30 @@ public class PositionsController : ControllerBase
         return EndpointResults.Ok(getResult.Value);
     }
 
+    [HttpGet("{id:guid}")]
+    [EndpointSummary("Get a position by ID")]
+    [EndpointDescription("Returns an active position with id and name. Missing or archived (soft-deleted) positions return 404 with position.not.found. Does not change stored data.")]
+    [ProducesResponseType<Envelope<PositionDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<Envelope>(StatusCodes.Status404NotFound)]
+    public async Task<IResult> GetById(
+        [FromServices] IQueryHandler<GetPositionByIdQuery, Result<PositionDto, Error>> handler,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetPositionByIdQuery(id);
+
+        var getResult = await handler.Handle(query, cancellationToken);
+        if (getResult.IsFailure)
+        {
+            return EndpointResults.Error(getResult.Error);
+        }
+
+        return EndpointResults.Ok(getResult.Value);
+    }
+
     [HttpPost]
     [EndpointSummary("Create a position")]
-    [EndpointDescription("Creates a position. Name is trimmed; duplicate names are allowed. Location is /positions/{id}; there is currently no GET position-by-ID endpoint.")]
+    [EndpointDescription("Creates a position. Name is trimmed; duplicate names are allowed. Location is /positions/{id}; GET this URI to retrieve the created position.")]
     [ProducesResponseType<Envelope<PositionDto>>(StatusCodes.Status201Created)]
     public async Task<IResult> Create(
         [FromServices] ICommandHandler<CreatePositionCommand, PositionDto> handler,

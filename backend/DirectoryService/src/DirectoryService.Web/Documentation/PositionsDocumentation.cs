@@ -42,6 +42,11 @@ internal static class PositionsDocumentation
         [
             ..PositionMissing,
         ],
+        nameof(PositionsController.GetById) =>
+        [
+            new(PositionErrors.NotFound(ContractExamples.Id),
+                "Position with the route ID is missing or archived (soft-deleted)."),
+        ],
         nameof(PositionsController.GetPositionList) =>
         [
             new(Error.Validation(new ErrorMessage("positions.page.invalid", "The page parameter must be greater than 0.", nameof(GetPositionListQuery.Page))),
