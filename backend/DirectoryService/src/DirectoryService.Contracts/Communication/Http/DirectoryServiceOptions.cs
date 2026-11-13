@@ -1,3 +1,6 @@
 namespace DirectoryService.Contracts.Communication.Http;
 
-public record DirectoryServiceOptions(Uri BaseAddress, TimeSpan Timeout);
+public record DirectoryServiceOptions(Uri BaseAddress, TimeSpan Timeout)
+{
+    public DirectoryServiceOptions() : this(null!, default) { }
+}
