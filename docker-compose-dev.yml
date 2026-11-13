@@ -33,6 +33,7 @@ services:
       - seq_data:/data
 
   directory-service-database:
+    container_name: directory-service-database
     image: postgres:17
     environment:
       PGHOST: postgres
@@ -118,6 +119,8 @@ services:
     restart: unless-stopped
 
   employee-service-database:
+    container_name: employee-service-database
+    
     image: postgres:17
     environment:
       PGHOST: postgres
