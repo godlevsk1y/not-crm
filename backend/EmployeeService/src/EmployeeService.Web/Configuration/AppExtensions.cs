@@ -12,6 +12,23 @@ public static class AppExtensions
 {
     public static IApplicationBuilder Configure(this WebApplication app)
     {
+        app.ConfigureLogging();
+
+        if (!app.Environment.IsProduction())
+        {
+            app.MapOpenApi();
+            app.MapScalarApiReference();
+        }
+
+        app.MapGet("/", () => "Hello World!");
+        app.MapEmployeeEndpoints();
+        app.ConfigureHealthChecks();
+
+        return app;
+    }
+
+    private static WebApplication ConfigureLogging(this WebApplication app)
+    {
         app.Use(async (context, next) =>
         {
             using var traceId = LogContext.PushProperty(
@@ -36,16 +53,6 @@ public static class AppExtensions
                     : LogEventLevel.Information;
             };
         });
-
-        if (!app.Environment.IsProduction())
-        {
-            app.MapOpenApi();
-            app.MapScalarApiReference();
-        }
-
-        app.MapGet("/", () => "Hello World!");
-        app.MapEmployeeEndpoints();
-        app.ConfigureHealthChecks();
 
         return app;
     }
