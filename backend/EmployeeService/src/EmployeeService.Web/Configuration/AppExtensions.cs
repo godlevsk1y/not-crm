@@ -33,6 +33,7 @@ public static class AppExtensions
         {
             using var traceId = LogContext.PushProperty(
                 "TraceId", Activity.Current?.TraceId.ToString() ?? context.TraceIdentifier);
+            
             await next(context);
         });
 
