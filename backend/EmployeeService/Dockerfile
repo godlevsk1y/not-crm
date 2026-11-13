@@ -7,6 +7,15 @@ COPY Directory.Build.props Directory.Packages.props nuget.config .globalconfig .
 COPY EmployeeService/src/EmployeeService.Web/EmployeeService.Web.csproj \
      EmployeeService/src/EmployeeService.Web/
 
+COPY EmployeeService/src/EmployeeService.Core/EmployeeService.Core.csproj \
+     EmployeeService/src/EmployeeService.Core/
+
+COPY EmployeeService/src/EmployeeService.Domain/EmployeeService.Domain.csproj \
+     EmployeeService/src/EmployeeService.Domain/
+
+COPY EmployeeService/src/EmployeeService.Contracts/EmployeeService.Contracts.csproj \
+     EmployeeService/src/EmployeeService.Contracts/
+
 COPY EmployeeService/src/EmployeeService.Infrastructure.Postgres/EmployeeService.Infrastructure.Postgres.csproj \
      EmployeeService/src/EmployeeService.Infrastructure.Postgres/
 
