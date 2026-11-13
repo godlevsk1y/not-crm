@@ -19,7 +19,8 @@ public static class AppExtensions
             app.MapOpenApi();
             app.MapScalarApiReference();
         }
-        
+
+        app.MapGet("/", () => "Hello World!");
         app.MapEmployeeEndpoints();
         app.ConfigureHealthChecks();
 
