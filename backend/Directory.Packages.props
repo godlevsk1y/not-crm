@@ -11,7 +11,7 @@
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="GodlevskiyDev.Shared.Core" Version="1.0.0" />
-    <PackageVersion Include="GodlevskiyDev.Shared.Framework" Version="1.0.2" />
+    <PackageVersion Include="GodlevskiyDev.Shared.Framework" Version="1.0.3" />
     <PackageVersion Include="GodlevskiyDev.Shared.Kernel" Version="1.0.0" />
     <PackageVersion Include="godlevskiydev.shared.kernel" Version="1.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
