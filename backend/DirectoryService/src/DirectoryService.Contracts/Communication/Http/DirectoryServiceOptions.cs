@@ -1,3 +1,18 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DirectoryService.Contracts.Communication.Http;
 
-public record DirectoryServiceOptions(Uri BaseAddress, TimeSpan Timeout);
+public record DirectoryServiceOptions
+{
+    public required Uri BaseAddress { get; init; }
+    public required TimeSpan Timeout { get; init; }
+
+    public DirectoryServiceOptions() { }
+
+    [SetsRequiredMembers]
+    public DirectoryServiceOptions(Uri baseAddress, TimeSpan timeout)
+    {
+        BaseAddress = baseAddress;
+        Timeout = timeout;
+    }
+}
