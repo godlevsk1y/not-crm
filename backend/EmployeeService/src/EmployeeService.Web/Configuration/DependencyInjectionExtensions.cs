@@ -1,3 +1,4 @@
+using DirectoryService.Contracts.Communication.Http;
 using EmployeeService.Core;
 using EmployeeService.Infrastructure.Postgres;
 using EmployeeService.Web.Documentation;
@@ -15,7 +16,8 @@ public static class DependencyInjectionExtensions
         services
             .AddWebDependencies(configuration)
             .AddCore()
-            .AddPostgresInfrastructure(configuration);
+            .AddPostgresInfrastructure(configuration)
+            .AddDirectoryService(configuration);
 
     private static IServiceCollection AddWebDependencies(this IServiceCollection services, IConfiguration configuration) =>
         services

@@ -10,6 +10,7 @@
     <PackageVersion Include="CSharpFunctionalExtensions" Version="3.7.0" />
     <PackageVersion Include="Dapper" Version="2.1.79" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
+    <PackageVersion Include="godlevskiydev.directoryservice.contracts" Version="1.0.1" />
     <PackageVersion Include="GodlevskiyDev.Shared.Core" Version="1.0.0" />
     <PackageVersion Include="GodlevskiyDev.Shared.Framework" Version="1.0.3" />
     <PackageVersion Include="GodlevskiyDev.Shared.Kernel" Version="1.0.0" />
