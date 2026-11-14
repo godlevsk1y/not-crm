@@ -159,4 +159,16 @@ dotnet test backend/EmployeeService/tests/EmployeeService.IntegrationTests/Emplo
 
 Восемь HTTP-сценариев GetById из issue #158 находятся в одном файле [GetEmployeeByIdTests.cs](tests/EmployeeService.IntegrationTests/Employees/Queries/GetEmployeeByIdTests.cs). Проверки используют FluentAssertions, данные готовятся через EF Core без POST-эндпоинта. Тесты одного класса выполняются последовательно и очищают базу перед каждым сценарием. DirectoryService для запуска не нужен.
 
+Сценарии найма находятся в [HireEmployeeTests.cs](tests/EmployeeService.IntegrationTests/Employees/Commands/HireEmployeeTests.cs): успешное создание, восемь вариантов невалидного запроса, отсутствие должности и подразделения, недоступность DirectoryService и таймаут каждого справочного запроса. Все запросы проходят через `POST /` с настоящими обработчиком, HTTP-клиентом DirectoryService и PostgreSQL. Каждый тест создаёт собственный WireMock.Net на случайном порту и HTTP-хост через `WithWebHostBuilder`, меняя только адрес и timeout DirectoryService. Отдельный экземпляр WireMock позволяет остановить сервер в сценарии недоступности без влияния на остальные тесты.
+
+Для таймаута один ответ WireMock задерживается на 5 секунд, второй возвращается сразу. Timeout исходящего HTTP-клиента равен 1 секунде, клиента теста — 15 секундам. Тест проверяет ответ EmployeeService и дожидается появления задержанного запроса в журнале WireMock, который заполняется после обработки ответа. При ошибках проверяется отсутствие записей через новый DI scope с `IgnoreQueryFilters()`, включая мягко удалённых сотрудников. Успешный сценарий проверяет сохранённые поля и чтение карточки по `Location`.
+
+Сейчас тест успешного найма обнаруживает отсутствие сохранения в `HireEmployeeCommandHandler`: приложение возвращает `201`, но таблица `employees` остаётся пустой. Тест оставлен активным и падающим до исправления бизнес-логики.
+
+Только сценарии найма:
+
+```bash
+dotnet test backend/EmployeeService/tests/EmployeeService.IntegrationTests/EmployeeService.IntegrationTests.csproj --filter FullyQualifiedName~HireEmployeeTests
+```
+
 Перед каждым тестом вызывайте `ResetDatabaseAsync()` (например, в `IAsyncLifetime.InitializeAsync()` тестового класса). Respawn очищает данные, включая мягко удалённых сотрудников, сохраняя схему и `__EFMigrationsHistory`. Тесты, использующие одну фабрику и базу, должны выполняться последовательно. После завершения fixture автоматически освобождает приложение и контейнер.
