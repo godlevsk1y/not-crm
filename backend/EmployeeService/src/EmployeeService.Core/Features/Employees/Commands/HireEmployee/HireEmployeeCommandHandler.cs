@@ -7,26 +7,33 @@ using EmployeeService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared.Core.Abstractions;
+using Shared.Core.Database;
 using Shared.Core.Extensions;
 using Shared.Kernel.Errors;
 
 namespace EmployeeService.Core.Features.Employees.Commands.HireEmployee;
 
-public partial class HireEmployeeCommandHandler 
+public sealed partial class HireEmployeeCommandHandler
     : ICommandHandler<HireEmployeeCommand, EmployeeDto>
 {
+    private readonly IEmployeeRepository _employeeRepository;
+    private readonly ITransactionManager _transactionManager;
     private readonly IDirectoryServiceCommunication _directoryService;
     private readonly IValidator<HireEmployeeCommand> _validator;
     private readonly ILogger<HireEmployeeCommandHandler> _logger;
 
     public HireEmployeeCommandHandler( 
+        IEmployeeRepository employeeRepository,
+        ITransactionManager transactionManager,
         IDirectoryServiceCommunication directoryService,
         IValidator<HireEmployeeCommand> validator, 
         ILogger<HireEmployeeCommandHandler> logger)
     {
+        _employeeRepository = employeeRepository;
+        _directoryService = directoryService;
+        _transactionManager = transactionManager;
         _validator = validator;
         _logger = logger;
-        _directoryService = directoryService;
     }
     
     public async Task<Result<EmployeeDto, Error>> Handle(
@@ -78,6 +85,9 @@ public partial class HireEmployeeCommandHandler
         
         var employee = employeeResult.Value;
         
+        await _employeeRepository.AddAsync(employee, cancellationToken);
+        await _transactionManager.SaveChangesAsync(cancellationToken);
+
         LogEmployeeHired(employee.Id);
         
         return new EmployeeDto

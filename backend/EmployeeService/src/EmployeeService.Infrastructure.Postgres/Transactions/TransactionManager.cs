@@ -1,0 +1,127 @@
+using CSharpFunctionalExtensions;
+using Microsoft.Extensions.Logging;
+using Shared.Core.Database;
+using Shared.Kernel.Errors;
+
+namespace EmployeeService.Infrastructure.Postgres.Transactions;
+
+public partial class TransactionManager : ITransactionManager
+{
+    private readonly EmployeeServiceDbContext _context;
+    private readonly ILogger<TransactionManager> _logger;
+    private readonly ILoggerFactory _loggerFactory;
+
+    public TransactionManager(
+        EmployeeServiceDbContext context,
+        ILogger<TransactionManager> logger,
+        ILoggerFactory loggerFactory)
+    {
+        _context = context;
+        _logger = logger;
+        _loggerFactory = loggerFactory;
+    }
+
+    public async Task<Result<ITransaction, Error>> BeginTransactionAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            var transactionScopeLogger = _loggerFactory.CreateLogger<EmployeeService.Infrastructure.Postgres.Transactions.Transaction>();
+            var transactionScope = new EmployeeService.Infrastructure.Postgres.Transactions.Transaction(transaction, transactionScopeLogger);
+
+            return transactionScope;
+        }
+        catch (OperationCanceledException)
+            when(cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            LogBeginTransactionFailed(ex);
+            return GeneralErrors.Internal();
+        }
+    }
+
+    public async Task<UnitResult<Error>> SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+            return UnitResult.Success<Error>();
+        }
+        catch (OperationCanceledException)
+            when(cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var error = PostgresExceptionMapper.Map(ex);
+            if (error is not null)
+            {
+                return error;
+            }
+
+            LogFailedToSaveChanges(ex);
+
+            return GeneralErrors.Internal();
+        }
+    }
+
+    public async Task<Result<T, Error>> ExecuteAsync<T>(Func<CancellationToken, Task<Result<T, Error>>> operation,
+        CancellationToken cancellationToken)
+    {
+        var beginTransactionResult = await BeginTransactionAsync(cancellationToken);
+        if (beginTransactionResult.IsFailure)
+        {
+            return beginTransactionResult.Error;
+        }
+
+        await using var transaction = beginTransactionResult.Value;
+
+        try
+        {
+            var result = await operation(cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return result.Error;
+            }
+
+            var commitResult = await transaction.CommitAsync(cancellationToken);
+            if (commitResult.IsFailure)
+            {
+                return commitResult.Error;
+            }
+
+            return result.Value;
+        }
+        catch (OperationCanceledException)
+            when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            var error = PostgresExceptionMapper.Map(ex);
+            if (error is not null)
+            {
+                return error;
+            }
+
+            LogTransactionOperationFailed(ex);
+            return GeneralErrors.Internal();
+        }
+    }
+
+
+    [LoggerMessage(LogLevel.Error, "Failed to begin transaction")]
+    private partial void LogBeginTransactionFailed(Exception exception);
+
+    [LoggerMessage(LogLevel.Error, "Failed to save changes")]
+    private partial void LogFailedToSaveChanges(Exception exception);
+
+    [LoggerMessage(LogLevel.Error, "Transaction operation failed")]
+    private partial void LogTransactionOperationFailed(Exception exception);
+}
