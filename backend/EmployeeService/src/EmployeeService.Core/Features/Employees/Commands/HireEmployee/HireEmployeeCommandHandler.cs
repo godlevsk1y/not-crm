@@ -86,7 +86,12 @@ public sealed partial class HireEmployeeCommandHandler
         var employee = employeeResult.Value;
         
         await _employeeRepository.AddAsync(employee, cancellationToken);
-        await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
+        {
+            return saveResult.Error;
+        }
 
         LogEmployeeHired(employee.Id);
         
