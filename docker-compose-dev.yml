@@ -138,6 +138,30 @@ services:
         condition: service_healthy
     restart: no
 
+  employee-service-migrations:
+    container_name: employee-service-migrations
+    image: employee-service-migrator:dev
+
+    build:
+      context: ./backend
+      dockerfile: EmployeeService/Dockerfile
+      target: migrator
+      secrets:
+        - github_nuget_credentials
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_ENVIRONMENT: Development
+      ConnectionStrings__EmployeeServiceDbContext: "Host=postgres;Port=5432;Database=${EMPLOYEE_POSTGRES_DB};Username=${EMPLOYEE_POSTGRES_USER};Password=${EMPLOYEE_POSTGRES_PASSWORD:?Set EMPLOYEE_POSTGRES_PASSWORD in .env}"
+      Seq__ServerUrl: http://seq
+      Serilog__WriteTo__1__Args__serverUrl: http://seq
+
+    depends_on:
+      employee-service-database:
+        condition: service_completed_successfully
+
+    restart: no
+
   employee-service:
     image: employee-service:dev
     container_name: employee-service
@@ -154,6 +178,7 @@ services:
       DOTNET_ENVIRONMENT: Development
       ConnectionStrings__EmployeeServiceDbContext: "Host=postgres;Port=5432;Database=${EMPLOYEE_POSTGRES_DB};Username=${EMPLOYEE_POSTGRES_USER};Password=${EMPLOYEE_POSTGRES_PASSWORD:?Set EMPLOYEE_POSTGRES_PASSWORD in .env}"
       Serilog__WriteTo__1__Args__serverUrl: http://seq
+      DirectoryServiceOptions__BaseAddress: http://directory-service:8080
 
     ports:
       - "8020:8080"
@@ -166,7 +191,7 @@ services:
       start_period: 30s
 
     depends_on:
-      employee-service-database:
+      employee-service-migrations:
         condition: service_completed_successfully
       seq:
         condition: service_started

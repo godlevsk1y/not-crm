@@ -56,7 +56,7 @@ docker compose -f docker-compose-dev.yml up -d --build
 docker compose -f docker-compose-dev.yml ps -a
 ```
 
-Окружение включает PostgreSQL 17, Redis 8, Seq, оба backend-сервиса, frontend и Nginx. Сначала создаются базы и пользователи сервисов, затем отдельный контейнер `directory-service-migrations` применяет миграции DirectoryService. Успешное завершение контейнеров инициализации и миграций с кодом `0` — ожидаемое поведение.
+Окружение включает PostgreSQL 17, Redis 8, Seq, оба backend-сервиса, frontend и Nginx. Сначала создаются базы и пользователи сервисов, затем контейнеры `directory-service-migrations` и `employee-service-migrations` применяют миграции соответствующих сервисов. Каждый backend-сервис запускается после успешного завершения своего мигратора. Успешное завершение контейнеров инициализации и миграций с кодом `0` — ожидаемое поведение.
 
 Открывайте приложение через **[http://localhost](http://localhost)**: Nginx обслуживает интерфейс и перенаправляет `/api/organization/` в DirectoryService, а `/api/employees/` — в EmployeeService. В Docker-сборке frontend адрес API задан как `/api`.
 

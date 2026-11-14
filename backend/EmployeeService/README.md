@@ -40,7 +40,7 @@ Web регистрирует Core и Infrastructure.Postgres. Core исполь�
 docker compose -f docker-compose-dev.yml up -d --build employee-service
 ```
 
-Compose запустит PostgreSQL и Seq, создаст отдельную базу и пользователя из `EMPLOYEE_POSTGRES_*`, затем запустит сервис. Сборка Docker требует secret `GITHUB_NUGET_CREDENTIALS`, как задано в общем Compose-файле.
+Compose запустит PostgreSQL и Seq, создаст отдельную базу и пользователя из `EMPLOYEE_POSTGRES_*`, затем контейнер `employee-service-migrations` применит миграции EF Core из migration bundle. EmployeeService запустится только после успешного завершения мигратора с кодом `0`. Сборка Docker требует secret `GITHUB_NUGET_CREDENTIALS`, как задано в общем Compose-файле.
 
 Сервис доступен на `http://localhost:8020`. При полном запуске окружения Nginx перенаправляет `/api/employees/` в корень EmployeeService, удаляя этот префикс.
 
@@ -158,5 +158,15 @@ dotnet test backend/EmployeeService/tests/EmployeeService.IntegrationTests/Emplo
 `EmployeeServiceTestWebFactory` используется через `IClassFixture<EmployeeServiceTestWebFactory>`: запускает изолированный PostgreSQL (`postgres:17`) со случайным портом, перенастраивает `NpgsqlDataSource` приложения и применяет существующие EF Core миграции. Локальная или общая база и Compose для тестов не нужны. При первом запуске Docker загружает образ PostgreSQL.
 
 Восемь HTTP-сценариев GetById из issue #158 находятся в одном файле [GetEmployeeByIdTests.cs](tests/EmployeeService.IntegrationTests/Employees/Queries/GetEmployeeByIdTests.cs). Проверки используют FluentAssertions, данные готовятся через EF Core без POST-эндпоинта. Тесты одного класса выполняются последовательно и очищают базу перед каждым сценарием. DirectoryService для запуска не нужен.
+
+Сценарии найма находятся в [HireEmployeeTests.cs](tests/EmployeeService.IntegrationTests/Employees/Commands/HireEmployeeTests.cs): успешное создание, восемь вариантов невалидного запроса, отсутствие должности и подразделения, недоступность DirectoryService и таймаут каждого справочного запроса. Все запросы проходят через `POST /` с настоящими обработчиком, HTTP-клиентом DirectoryService и PostgreSQL. Каждый тест создаёт собственный WireMock.Net на случайном порту и HTTP-хост через `WithWebHostBuilder`, меняя только адрес и timeout DirectoryService. Отдельный экземпляр WireMock позволяет остановить сервер в сценарии недоступности без влияния на остальные тесты.
+
+Для таймаута один ответ WireMock задерживается на 5 секунд, второй возвращается сразу. Timeout исходящего HTTP-клиента равен 1 секунде, клиента теста — 15 секундам. Тест проверяет ответ EmployeeService и дожидается появления задержанного запроса в журнале WireMock, который заполняется после обработки ответа. При ошибках проверяется отсутствие записей через новый DI scope с `IgnoreQueryFilters()`, включая мягко удалённых сотрудников. Успешный сценарий проверяет сохранённые поля и чтение карточки по `Location`.
+
+Только сценарии найма:
+
+```bash
+dotnet test backend/EmployeeService/tests/EmployeeService.IntegrationTests/EmployeeService.IntegrationTests.csproj --filter FullyQualifiedName~HireEmployeeTests
+```
 
 Перед каждым тестом вызывайте `ResetDatabaseAsync()` (например, в `IAsyncLifetime.InitializeAsync()` тестового класса). Respawn очищает данные, включая мягко удалённых сотрудников, сохраняя схему и `__EFMigrationsHistory`. Тесты, использующие одну фабрику и базу, должны выполняться последовательно. После завершения fixture автоматически освобождает приложение и контейнер.

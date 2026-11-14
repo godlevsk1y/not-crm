@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" />
+    <PackageReference Include="godlevskiydev.directoryservice.contracts" />
     <PackageReference Include="GodlevskiyDev.Shared.Core" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <ProjectReference Include="../EmployeeService.Contracts/EmployeeService.Contracts.csproj" />
+    <ProjectReference Include="..\EmployeeService.Domain\EmployeeService.Domain.csproj" />
   </ItemGroup>
 
 </Project>
