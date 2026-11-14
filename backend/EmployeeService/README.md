@@ -40,7 +40,7 @@ Web регистрирует Core и Infrastructure.Postgres. Core исполь�
 docker compose -f docker-compose-dev.yml up -d --build employee-service
 ```
 
-Compose запустит PostgreSQL и Seq, создаст отдельную базу и пользователя из `EMPLOYEE_POSTGRES_*`, затем запустит сервис. Сборка Docker требует secret `GITHUB_NUGET_CREDENTIALS`, как задано в общем Compose-файле.
+Compose запустит PostgreSQL и Seq, создаст отдельную базу и пользователя из `EMPLOYEE_POSTGRES_*`, затем контейнер `employee-service-migrations` применит миграции EF Core из migration bundle. EmployeeService запустится только после успешного завершения мигратора с кодом `0`. Сборка Docker требует secret `GITHUB_NUGET_CREDENTIALS`, как задано в общем Compose-файле.
 
 Сервис доступен на `http://localhost:8020`. При полном запуске окружения Nginx перенаправляет `/api/employees/` в корень EmployeeService, удаляя этот префикс.
 
