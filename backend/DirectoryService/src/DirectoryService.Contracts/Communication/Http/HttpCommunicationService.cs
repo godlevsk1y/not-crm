@@ -22,9 +22,13 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
     {
         try
         {
-            var httpResponse = await _httpClient.GetAsync($"departments/{departmentId}", cancellationToken);
+            using var httpResponse = await _httpClient.GetAsync($"departments/{departmentId}", cancellationToken);
 
             return await httpResponse.UnwrapEnvelopeAsync<DepartmentDto>(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -41,6 +45,10 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
             using var httpResponse = await _httpClient.GetAsync($"positions/{positionId}", cancellationToken);
 
             return await httpResponse.UnwrapEnvelopeAsync<PositionDto>(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
