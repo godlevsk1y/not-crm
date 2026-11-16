@@ -22,13 +22,31 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
     {
         try
         {
-            var httpResponse = await _httpClient.GetAsync($"departments/{departmentId}", cancellationToken);
+            using var httpResponse = await _httpClient.GetAsync($"departments/{departmentId}", cancellationToken);
 
             return await httpResponse.UnwrapEnvelopeAsync<DepartmentDto>(cancellationToken);
         }
+        catch (HttpRequestException ex)
+        {
+            LogErrorGettingTheDepartment(departmentId, ex);
+
+            return CommunicationErrors.ServiceUnavailable();
+        }
+        catch (OperationCanceledException ex)
+            when (!cancellationToken.IsCancellationRequested
+                  && ex.InnerException is TimeoutException)
+        {
+            LogErrorGettingTheDepartment(departmentId, ex);
+            
+            return CommunicationErrors.Timeout();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            LogErrorGettingTheDepartmentDepartmentid(departmentId, ex);
+            LogErrorGettingTheDepartment(departmentId, ex);
 
             return GeneralErrors.Internal();
         }
@@ -42,6 +60,24 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
 
             return await httpResponse.UnwrapEnvelopeAsync<PositionDto>(cancellationToken);
         }
+        catch (HttpRequestException ex)
+        {
+            LogErrorGettingThePosition(positionId, ex);
+            
+            return CommunicationErrors.ServiceUnavailable();
+        }
+        catch (OperationCanceledException ex)
+            when (!cancellationToken.IsCancellationRequested
+                  && ex.InnerException is TimeoutException)
+        {
+            LogErrorGettingThePosition(positionId, ex);
+
+            return CommunicationErrors.Timeout();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             LogErrorGettingThePosition(positionId, ex);
@@ -54,5 +90,5 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
     partial void LogErrorGettingThePosition(Guid positionId, Exception exception);
 
     [LoggerMessage(LogLevel.Error, "Error getting the department {departmentId}")]
-    partial void LogErrorGettingTheDepartmentDepartmentid(Guid departmentId, Exception exception);
+    partial void LogErrorGettingTheDepartment(Guid departmentId, Exception exception);
 }

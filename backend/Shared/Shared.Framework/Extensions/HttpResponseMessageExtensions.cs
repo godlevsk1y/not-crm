@@ -33,14 +33,18 @@ public static class HttpResponseMessageExtensions
 
             if (jsonResponse.Result is null)
             {
-                return GeneralErrors.Internal();
+                return Error.Internal();
             }
 
             return jsonResponse.Result;
         }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
         catch (Exception)
         {
-            return GeneralErrors.Internal();
+            return Error.Internal();
         }
     }
 }
