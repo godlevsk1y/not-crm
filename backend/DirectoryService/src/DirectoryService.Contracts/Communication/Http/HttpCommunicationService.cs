@@ -24,7 +24,21 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         {
             using var httpResponse = await _httpClient.GetAsync($"departments/{departmentId}", cancellationToken);
 
-            return await httpResponse.UnwrapEnvelopeAsync<DepartmentDto>(cancellationToken);
+            var unwrapResult = await httpResponse.UnwrapEnvelopeAsync<DepartmentDto>(cancellationToken);
+            if (unwrapResult.IsFailure)
+            {
+                return CommunicationErrors.InvalidResponse();
+            }
+            
+            return unwrapResult.Value;
+        }
+        catch (OperationCanceledException ex)
+            when (!cancellationToken.IsCancellationRequested
+                  && ex.InnerException is TimeoutException)
+        {
+            LogErrorGettingTheDepartment(departmentId, ex);
+            
+            return CommunicationErrors.Timeout();
         }
         catch (OperationCanceledException)
         {
@@ -32,9 +46,9 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         }
         catch (Exception ex)
         {
-            LogErrorGettingTheDepartmentDepartmentid(departmentId, ex);
+            LogErrorGettingTheDepartment(departmentId, ex);
 
-            return GeneralErrors.Internal();
+            return CommunicationErrors.ServiceUnavailable();
         }
     }
 
@@ -44,7 +58,21 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         {
             using var httpResponse = await _httpClient.GetAsync($"positions/{positionId}", cancellationToken);
 
-            return await httpResponse.UnwrapEnvelopeAsync<PositionDto>(cancellationToken);
+            var unwrapResult = await httpResponse.UnwrapEnvelopeAsync<PositionDto>(cancellationToken);
+            if (unwrapResult.IsFailure)
+            {
+                return CommunicationErrors.InvalidResponse();
+            }
+            
+            return unwrapResult.Value;
+        }
+        catch (OperationCanceledException ex)
+            when (!cancellationToken.IsCancellationRequested
+                  && ex.InnerException is TimeoutException)
+        {
+            LogErrorGettingThePosition(positionId, ex);
+
+            return CommunicationErrors.Timeout();
         }
         catch (OperationCanceledException)
         {
@@ -54,7 +82,7 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         {
             LogErrorGettingThePosition(positionId, ex);
 
-            return GeneralErrors.Internal();
+            return CommunicationErrors.ServiceUnavailable();
         }
     }
 
@@ -62,5 +90,5 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
     partial void LogErrorGettingThePosition(Guid positionId, Exception exception);
 
     [LoggerMessage(LogLevel.Error, "Error getting the department {departmentId}")]
-    partial void LogErrorGettingTheDepartmentDepartmentid(Guid departmentId, Exception exception);
+    partial void LogErrorGettingTheDepartment(Guid departmentId, Exception exception);
 }
