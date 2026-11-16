@@ -20,7 +20,7 @@ public static class DirectoryServiceExtensions
                 static options =>
                     options.Timeout > TimeSpan.Zero
                     && options.Timeout <= TimeSpan.FromMilliseconds(int.MaxValue),
-                "DirectoryServiceOptions:Timeout must be between 0 and int.MaxValue milliseconds.")
+                "DirectoryServiceOptions:Timeout must be positive and no greater than 2147483647 milliseconds")
             .ValidateOnStart();
 
         services.AddHttpClient<IDirectoryServiceCommunication, HttpCommunicationService>(
