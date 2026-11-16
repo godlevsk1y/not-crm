@@ -26,6 +26,12 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
 
             return await httpResponse.UnwrapEnvelopeAsync<DepartmentDto>(cancellationToken);
         }
+        catch (HttpRequestException ex)
+        {
+            LogErrorGettingTheDepartment(departmentId, ex);
+
+            return CommunicationErrors.ServiceUnavailable();
+        }
         catch (OperationCanceledException ex)
             when (!cancellationToken.IsCancellationRequested
                   && ex.InnerException is TimeoutException)
@@ -42,7 +48,7 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         {
             LogErrorGettingTheDepartment(departmentId, ex);
 
-            return CommunicationErrors.ServiceUnavailable();
+            return GeneralErrors.Internal();
         }
     }
 
@@ -52,13 +58,13 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         {
             using var httpResponse = await _httpClient.GetAsync($"positions/{positionId}", cancellationToken);
 
-            var unwrapResult = await httpResponse.UnwrapEnvelopeAsync<PositionDto>(cancellationToken);
-            if (unwrapResult.IsFailure)
-            {
-                return CommunicationErrors.InvalidResponse();
-            }
+            return await httpResponse.UnwrapEnvelopeAsync<PositionDto>(cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            LogErrorGettingThePosition(positionId, ex);
             
-            return unwrapResult.Value;
+            return CommunicationErrors.ServiceUnavailable();
         }
         catch (OperationCanceledException ex)
             when (!cancellationToken.IsCancellationRequested
@@ -76,7 +82,7 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         {
             LogErrorGettingThePosition(positionId, ex);
 
-            return CommunicationErrors.ServiceUnavailable();
+            return GeneralErrors.Internal();
         }
     }
 
