@@ -24,13 +24,7 @@ internal sealed partial class HttpCommunicationService : IDirectoryServiceCommun
         {
             using var httpResponse = await _httpClient.GetAsync($"departments/{departmentId}", cancellationToken);
 
-            var unwrapResult = await httpResponse.UnwrapEnvelopeAsync<DepartmentDto>(cancellationToken);
-            if (unwrapResult.IsFailure)
-            {
-                return CommunicationErrors.InvalidResponse();
-            }
-            
-            return unwrapResult.Value;
+            return await httpResponse.UnwrapEnvelopeAsync<DepartmentDto>(cancellationToken);
         }
         catch (OperationCanceledException ex)
             when (!cancellationToken.IsCancellationRequested
