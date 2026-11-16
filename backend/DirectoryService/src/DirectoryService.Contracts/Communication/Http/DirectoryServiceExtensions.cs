@@ -10,7 +10,18 @@ public static class DirectoryServiceExtensions
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        services.Configure<DirectoryServiceOptions>(configuration.GetSection(nameof(DirectoryServiceOptions)));
+        services.AddOptions<DirectoryServiceOptions>()
+            .Bind(configuration.GetSection(nameof(DirectoryServiceOptions)))
+            .Validate(
+                static options =>
+                    options.BaseAddress is { IsAbsoluteUri: true, Scheme: "http" or "https" },
+                "DirectoryServiceOptions:BaseAddress must be an absolute HTTP(S) URL.")
+            .Validate(
+                static options =>
+                    options.Timeout > TimeSpan.Zero
+                    && options.Timeout <= TimeSpan.FromMilliseconds(int.MaxValue),
+                "DirectoryServiceOptions:Timeout must be between 0 and int.MaxValue milliseconds.")
+            .ValidateOnStart();
 
         services.AddHttpClient<IDirectoryServiceCommunication, HttpCommunicationService>(
             (sp, config) =>
